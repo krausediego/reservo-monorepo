@@ -1,0 +1,19 @@
+# files
+
+Dockerfile
+.dockerignore
+.env\*
+jest.config.js
+.prettierrc
+.lintstagedrc
+.huskyrc
+eslint.config.mjs
+commitlint.config.js
+
+# folders
+
+dist/
+node_modules/
+coverage/
+docs/
+libs/

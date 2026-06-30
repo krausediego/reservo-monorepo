@@ -14,6 +14,6 @@ export const upload = multer({
     if (!allowedMimes.includes(file.mimetype)) {
       return cb(new BadRequestError("Invalid image format"));
     }
-    cb(null, true);
+    return cb(null, true);
   },
 });

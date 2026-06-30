@@ -86,7 +86,6 @@ model Organizations {
   id       String  @id @default(cuid())
   name     String
   slug     String  @unique
-  logo     String?
   metadata String?
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -140,22 +139,23 @@ model Invitations {
 // ---- WITHOUT BETTER_AUTH -------------------------------------------------------------------------------
 
 model Establishments {
-  id             String  @id @default(cuid())
-  organizationId String  @unique @map("organization_id")
-  name           String
-  slug           String  @unique
-  description    String
-  address        String
-  city           String
-  state          String
-  zipCode        String  @map("zip_code")
-  latitude       Decimal
-  longitude      Decimal
-  businessHours  Json    @map("business_hours")
-  isActive       Boolean @default(true) @map("is_active")
-  phone          String?
-  avatarUrl      String? @map("avatar_url")
-  coverUrl       String? @map("cover_url")
+  id              String  @id @default(cuid())
+  organizationId  String  @unique @map("organization_id")
+  name            String
+  slug            String  @unique
+  cnpj            String
+  description     String
+  address         String
+  city            String
+  state           String
+  zipCode         String  @map("zip_code")
+  latitude        Decimal
+  longitude       Decimal
+  businessHours   Json    @map("business_hours")
+  isActive        Boolean @default(true) @map("is_active")
+  phone           String?
+  logoStorageKey  String? @map("logo_storage_key")
+  coverStorageKey String? @map("cover_storage_key")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -169,13 +169,13 @@ model Establishments {
 }
 
 model Professionals {
-  id              String  @id @default(cuid())
-  establishmentId String  @map("establishment_id")
-  memberId        String  @unique @map("member_id")
-  name            String
-  bio             String
-  isActive        Boolean @default(true) @map("is_active")
-  avatarUrl       String? @map("avatar_url")
+  id               String  @id @default(cuid())
+  establishmentId  String  @map("establishment_id")
+  memberId         String  @unique @map("member_id")
+  name             String
+  bio              String
+  isActive         Boolean @default(true) @map("is_active")
+  avatarStorageKey String? @map("avatar_storage_key")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -116,7 +116,7 @@ import { z } from "zod";
 
 import { ${camel}Schema, ${camel}ResponseSchema } from "${schemasPkgImport}";
 
-export namespace ${pascal}Schema {
+export namespace ${pascal} {
   export type GetParams  = z.infer<typeof ${camel}Schema>;
   export type GetResponse = z.infer<typeof ${camel}ResponseSchema>;
 }
@@ -184,6 +184,8 @@ export interface I${pascal} {
 
 export namespace ${pascal} {
   export type Params = ${pascal}Schema.GetParams & {
+    userId: string;
+    organizationId: string;
     traceId: string;
   };
 
@@ -196,7 +198,6 @@ export namespace ${pascal} {
 import { setTraceId } from "@/helpers";
 import type { ILoggingManager } from "@/infra";
 import { BaseService } from "@/modules/shared";
-import type { ${pascal}Schema } from "${typesPkgImport}";
 
 import type { ${pascal}, I${pascal} } from ".";
 

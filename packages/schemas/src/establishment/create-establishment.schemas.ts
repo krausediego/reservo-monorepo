@@ -10,6 +10,11 @@ export const createEstablishmentSchema = z.object({
         error: "O nome não pode conter caracteres especiais",
       }),
 
+    cnpj: z
+      .string({ error: "O CNPJ é obrigatório" })
+      .min(14, "CNPJ deve ter pelo menos 14 caracteres")
+      .max(18, "CNPJ deve ter no máximo 18 caracteres"),
+
     description: z
       .string({ error: "A descrição é obrigatória" })
       .min(10, { error: "A descrição deve conter ao menos 10 caracteres" })
@@ -57,14 +62,14 @@ export const createEstablishmentSchema = z.object({
       })
       .optional(),
 
-    avatar: z
+    logo: z
       .file()
       .mime(["image/jpeg", "image/png", "image/webp"])
       .max(5 * 1024 * 1024, {
-        error: "O avatar deve ter no máximo 5MB",
+        error: "A logo deve ter no máximo 5MB",
       }),
 
-    coverUrl: z
+    cover: z
       .file()
       .mime(["image/jpeg", "image/png", "image/webp"])
       .max(10 * 1024 * 1024, {
@@ -73,4 +78,26 @@ export const createEstablishmentSchema = z.object({
   }),
 });
 
-export const createEstablishmentResponseSchema = z.object({});
+export const createEstablishmentResponseSchema = z.object({
+  establishment: z.object({
+    name: z.string(),
+    id: z.string(),
+    cnpj: z.string(),
+    description: z.string(),
+    address: z.string(),
+    city: z.string(),
+    state: z.string(),
+    zipCode: z.string(),
+    latitude: z.number(),
+    longitude: z.number(),
+    businessHours: z.object(),
+    phone: z.string().nullable(),
+    organizationId: z.string(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+    slug: z.string(),
+    isActive: z.boolean(),
+    logoStorageKey: z.string().nullable(),
+    coverStorageKey: z.string().nullable(),
+  }),
+});

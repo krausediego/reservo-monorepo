@@ -1,9 +1,15 @@
+import { Sessions, Users } from "generated/prisma/client";
+
 export namespace Http {
   export interface IRequest<Data = any> {
     method: string;
     path: string;
     data: Data;
-    locals?: any;
+    locals: {
+      traceId: string;
+      session: Sessions;
+      user: Users;
+    };
   }
 
   export interface IResponse {

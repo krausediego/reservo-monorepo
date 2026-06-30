@@ -31,6 +31,6 @@ export class AuthAdminMiddleware implements IMiddleware {
       return getHttpError(new UnauthorizedError(UNAUTHORIZED_REDIRECT, 555));
     }
 
-    return ok({ session });
+    return ok({ ...session });
   }
 }

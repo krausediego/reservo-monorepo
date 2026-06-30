@@ -16,7 +16,7 @@ export class ValidateRequestMiddleware implements IMiddleware {
 
       return ok({ validated: true });
     } catch (error: any) {
-      return getHttpError(new BadRequestError(error.errors));
+      return getHttpError(new BadRequestError(JSON.parse(error)));
     }
   }
 }

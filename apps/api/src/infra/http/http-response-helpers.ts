@@ -6,6 +6,7 @@ import {
   Http,
   UnauthorizedError,
   ConflictError,
+  NotAllowedError,
 } from ".";
 
 type errorTypes =
@@ -14,7 +15,8 @@ type errorTypes =
   | ForbiddenError
   | InternalServerError
   | UnauthorizedError
-  | ConflictError;
+  | ConflictError
+  | NotAllowedError;
 
 export const ok = (data: Record<string, any>): Http.IResponse => ({
   statusCode: 200,

@@ -4,3 +4,4 @@ export * from "./forbidden-error";
 export * from "./internal-server-error";
 export * from "./unauthorized-error";
 export * from "./conflict-error";
+export * from "./not-allowed-error";

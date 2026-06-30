@@ -1,6 +1,7 @@
 import { getHttpError, type Http, ok } from "@/infra";
 import type { IController } from "@/modules/shared";
-import type { CreateEstablishment } from "@reservo/types";
+import { createEstablishmentSchema } from "@reservo/schemas";
+import type { ICreateEstablishmentSchema } from "@reservo/types";
 
 import type { ICreateEstablishment } from ".";
 
@@ -14,10 +15,10 @@ export class CreateEstablishmentController implements IController {
   async handle({
     data,
     locals,
-  }: Http.IRequest<CreateEstablishment.GetParams>): Promise<Http.IResponse> {
+  }: Http.IRequest<ICreateEstablishmentSchema.GetParams>): Promise<Http.IResponse> {
     try {
       const content = await this.createEstablishmentService().run({
-        ...data,
+        ...createEstablishmentSchema.parse({ body: data }).body,
         userId: locals.user.id,
         traceId: locals.traceId,
       });

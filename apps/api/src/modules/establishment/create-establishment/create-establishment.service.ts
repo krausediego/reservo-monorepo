@@ -25,7 +25,7 @@ export class CreateEstablishmentService
   @setTraceId
   async run(
     params: CreateEstablishment.Params,
-  ): Promise<CreateEstablishment.Response> {
+  ): Promise<CreateEstablishment.Response | undefined> {
     this.log("info", "Starting process create-establishment");
 
     const alreadyMember = await basePrisma.members.findFirst({
@@ -47,19 +47,19 @@ export class CreateEstablishmentService
         id: true,
       },
       where: {
-        cnpj: params.body.cnpj,
+        cnpj: params.cnpj,
       },
     });
 
     if (alreadyEstablishment) {
       this.log("warn", "Establishment already exists.", {
         sameEstablishment: alreadyEstablishment.id,
-        insertNewCnpj: params.body.cnpj,
+        insertNewCnpj: params.cnpj,
       });
       throw new ConflictError("Establishment already exists.");
     }
 
-    const slug = await generateUniqueSlug(params.body.name, (slugName) =>
+    const slug = await generateUniqueSlug(params.name, (slugName) =>
       basePrisma.organizations.count({
         where: {
           slug: slugName,
@@ -69,12 +69,32 @@ export class CreateEstablishmentService
 
     const establishmentId = createId();
 
+    const logoStorageKey = await this.uploadImage({
+      establishmentId,
+      context: "logo",
+      image: params.logo,
+    });
+
+    const coverStorageKey = await this.uploadImage({
+      establishmentId,
+      context: "cover",
+      image: params.cover,
+    });
+
     try {
       const { establishment } = await basePrisma.$transaction(async (tx) => {
         const { id } = await tx.organizations.create({
           data: {
-            name: params.body.name,
+            name: params.name,
             slug,
+          },
+        });
+
+        await tx.members.create({
+          data: {
+            userId: params.userId,
+            organizationId: id,
+            role: "OWNER",
           },
         });
 
@@ -82,31 +102,28 @@ export class CreateEstablishmentService
           data: {
             id: establishmentId,
             organizationId: id,
-            name: params.body.name,
+            name: params.name,
             slug,
-            cnpj: params.body.cnpj,
-            description: params.body.description,
-            address: params.body.address,
-            city: params.body.city,
-            state: params.body.state,
-            zipCode: params.body.zipCode,
-            latitude: params.body.latitude,
-            longitude: params.body.longitude,
-            businessHours: JSON.stringify(params.body.businessHours),
-            phone: params.body.phone,
-            logoStorageKey: await this.uploadImage({
-              establishmentId,
-              image: params.body.logo,
-            }),
-            coverStorageKey: await this.uploadImage({
-              establishmentId,
-              image: params.body.cover,
-            }),
+            cnpj: params.cnpj,
+            description: params.description,
+            address: params.address,
+            city: params.city,
+            state: params.state,
+            zipCode: params.zipCode,
+            latitude: params.latitude,
+            longitude: params.longitude,
+            businessHours: JSON.stringify(params.businessHours),
+            phone: params.phone,
+            logoStorageKey,
+            coverStorageKey,
           },
         });
 
         return { establishment: establishmentCreated };
       });
+
+      const logoSignedUrl = await this.getSignedUrl({ key: logoStorageKey });
+      const coverSignedUrl = await this.getSignedUrl({ key: coverStorageKey });
 
       return {
         establishment: {
@@ -114,9 +131,19 @@ export class CreateEstablishmentService
           businessHours: JSON.parse(establishment.businessHours!.toString()),
           latitude: establishment.latitude.toNumber(),
           longitude: establishment.longitude.toNumber(),
+          logoUrl: logoSignedUrl,
+          coverUrl: coverSignedUrl,
         },
       };
     } catch (error: any) {
+      if (logoStorageKey) {
+        await this.removeImage({ key: logoStorageKey });
+      }
+
+      if (coverStorageKey) {
+        await this.removeImage({ key: coverStorageKey });
+      }
+
       if (error?.message) {
         this.log(
           "warn",
@@ -128,6 +155,8 @@ export class CreateEstablishmentService
         );
       }
     }
+
+    return undefined;
   }
 
   private async uploadImage(
@@ -141,11 +170,27 @@ export class CreateEstablishmentService
       establishmentId: params.establishmentId,
       context: "establishments",
       entityId: params.establishmentId,
-      fileName: `logo_${Date.now()}.webp`,
+      fileName: `${params.context}_${Date.now()}.webp`,
       body: Buffer.from(await params.image.arrayBuffer()),
       contentType: params.image.type,
     });
 
     return key;
+  }
+
+  private async getSignedUrl(
+    params: CreateEstablishment.GetSignedUrlParams,
+  ): Promise<string | null> {
+    if (!params.key) {
+      return null;
+    }
+
+    return this.storage.getSignedUrl({ key: params.key });
+  }
+
+  private async removeImage(
+    params: CreateEstablishment.RemoveImageParams,
+  ): Promise<void> {
+    await this.storage.deleteByKey({ key: params.key });
   }
 }

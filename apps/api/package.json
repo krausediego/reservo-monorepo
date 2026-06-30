@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint src",
-    "dev:http": "PROCESS_NAME=http-server tsnd -r tsconfig-paths/register --transpile-only --ignore-watch node_modules --no-notify --respawn src/server.ts | pino-pretty --messageKey message --ignore severity",
+    "dev:http": "tsx watch --tsconfig tsconfig.json src/server.ts | pino-pretty --messageKey message --ignore severity",
     "generate": "tsx scripts/generate-module.ts"
   },
   "keywords": [],
@@ -17,6 +17,8 @@
     "@paralleldrive/cuid2": "^3.3.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@reservo/schemas": "workspace:*",
+    "@reservo/types": "workspace:*",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.6.22",
     "cors": "^2.8.6",
@@ -24,6 +26,7 @@
     "dotenv": "^17.4.2",
     "env-var": "^7.5.0",
     "express": "^5.2.1",
+    "multer": "^2.2.0",
     "pg": "^8.22.0",
     "pino": "^10.3.1",
     "zod": "^4.4.3"
@@ -32,10 +35,9 @@
     "@eslint/compat": "^2.1.0",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^10.0.1",
-    "@reservo/schemas": "workspace:*",
-    "@reservo/types": "workspace:*",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/multer": "^2.1.0",
     "@types/node": "^22.15.3",
     "@typescript-eslint/eslint-plugin": "^8.62.0",
     "@typescript-eslint/parser": "^8.62.0",

@@ -1,9 +1,9 @@
 import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import express from "express";
-import { globSync } from "fs";
-import { Server } from "http";
-import path from "path";
+import { globSync } from "node:fs";
+import { Server } from "node:http";
+import path from "node:path";
 
 import {
   ILoggingManager,

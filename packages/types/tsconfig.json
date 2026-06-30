@@ -8,8 +8,11 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "rootDir": "./src",
-    "outDir": "./dist"
+    "composite": true,
+    "outDir": "./dist",
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "src"

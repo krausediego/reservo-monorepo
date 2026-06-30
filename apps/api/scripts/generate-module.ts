@@ -116,7 +116,7 @@ import { z } from "zod";
 
 import { ${camel}Schema, ${camel}ResponseSchema } from "${schemasPkgImport}";
 
-export namespace ${pascal} {
+export namespace I${pascal}Schema {
   export type GetParams  = z.infer<typeof ${camel}Schema>;
   export type GetResponse = z.infer<typeof ${camel}ResponseSchema>;
 }
@@ -150,7 +150,7 @@ export const make${pascal}Service = (): I${pascal} => {
   [`${kebab}.controller.ts`]: `\
 import { getHttpError, type Http, ok } from "@/infra";
 import type { IController } from "@/modules/shared";
-import type { ${pascal}Schema } from "${typesPkgImport}";
+import type { I${pascal}Schema } from "${typesPkgImport}";
 
 import type { I${pascal} } from ".";
 
@@ -159,11 +159,11 @@ type ${pascal}Handler = () => I${pascal};
 export class ${pascal}Controller implements IController {
   constructor(private readonly ${camel}Service: ${pascal}Handler) {}
 
-  async handle({ data, locals }: Http.IRequest<${pascal}Schema.GetParams>): Promise<Http.IResponse> {
+  async handle({ data, locals }: Http.IRequest<I${pascal}Schema.GetParams>): Promise<Http.IResponse> {
     try {
       const content = await this.${camel}Service().run({
         ...data,
-        traceId: locals?.traceId,
+        traceId: locals.traceId,
       });
 
       return ok({ ...content });
@@ -176,20 +176,20 @@ export class ${pascal}Controller implements IController {
 
   // interface.ts
   [`${kebab}.interface.ts`]: `\
-import type { ${pascal}Schema } from "${typesPkgImport}";
+import type { I${pascal}Schema } from "${typesPkgImport}";
 
 export interface I${pascal} {
   run(params: ${pascal}.Params): Promise<${pascal}.Response>;
 }
 
 export namespace ${pascal} {
-  export type Params = ${pascal}Schema.GetParams & {
+  export type Params = I${pascal}Schema.GetParams & {
     userId: string;
     organizationId: string;
     traceId: string;
   };
 
-  export type Response = ${pascal}Schema.GetResponse;
+  export type Response = I${pascal}Schema.GetResponse;
 }
 `,
 

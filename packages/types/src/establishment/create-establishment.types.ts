@@ -5,7 +5,7 @@ import {
   createEstablishmentResponseSchema,
 } from "@reservo/schemas";
 
-export namespace CreateEstablishment {
-  export type GetParams = z.infer<typeof createEstablishmentSchema>;
+export namespace ICreateEstablishmentSchema {
+  export type GetParams = z.infer<typeof createEstablishmentSchema>["body"];
   export type GetResponse = z.infer<typeof createEstablishmentResponseSchema>;
 }

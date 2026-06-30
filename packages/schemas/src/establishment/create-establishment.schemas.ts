@@ -1,4 +1,72 @@
 import { z } from "zod";
+import { establishmentSchema } from ".";
+
+const businessHourSchema = z.object(
+  {
+    day: z
+      .int({ error: "O dia da semana é obrigatório" })
+      .min(0, { error: "O dia deve estar entre 0 e 6" })
+      .max(6, { error: "O dia deve estar entre 0 e 6" }),
+
+    open: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, {
+      error: "Horário de abertura inválido",
+    }),
+
+    close: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, {
+      error: "Horário de fechamento inválido",
+    }),
+
+    closed: z.boolean(),
+  },
+  { error: "O horário de funcionamento é obrigatório" },
+);
+
+const businessHoursArraySchema = z
+  .array(businessHourSchema)
+  .min(7, { error: "Horário de funcionamento em quantidade inválida" })
+  .max(7, { error: "Horário de funcionamento em quantidade inválida" })
+  .refine(
+    (hours) => {
+      const days = hours.map((h) => h.day);
+      return new Set(days).size === days.length;
+    },
+    { error: "Existem dias da semana duplicados" },
+  );
+// .refine(
+//   (hours) => {
+//     hours.every((h) => {
+//       if (h.closed) return true;
+//       return h.open < h.close;
+//     });
+//   },
+//   { error: "O horário de abertura deve ser anterior ao de fechamento" },
+// );
+
+const singleFileSchema = (maxSizeMb: number, fieldLabel: string) =>
+  z
+    .array(
+      z.object({
+        fieldname: z.string(),
+        originalname: z.string(),
+        mimetype: z.enum(["image/jpeg", "image/png", "image/webp"], {
+          error: `Formato de ${fieldLabel} inválido`,
+        }),
+        buffer: z.instanceof(Buffer),
+        size: z.number().max(maxSizeMb * 1024 * 1024, {
+          error: `${fieldLabel} deve ter no máximo ${maxSizeMb}MB`,
+        }),
+      }),
+    )
+    .max(1, { error: `Apenas um arquivo de ${fieldLabel} é permitido` })
+    .transform((files) => {
+      const file = files[0];
+      if (!file) return undefined;
+
+      return new File([file.buffer as BlobPart], file.originalname, {
+        type: file.mimetype,
+      });
+    })
+    .optional();
 
 export const createEstablishmentSchema = z.object({
   body: z.object({
@@ -43,17 +111,32 @@ export const createEstablishmentSchema = z.object({
         error: "CEP inválido",
       }),
 
-    latitude: z
+    latitude: z.coerce
       .number({ error: "A latitude é obrigatória" })
       .min(-90, { error: "Latitude inválida" })
       .max(90, { error: "Latitude inválida" }),
 
-    longitude: z
+    longitude: z.coerce
       .number({ error: "A longitude é obrigatória" })
       .min(-180, { error: "Longitude inválida" })
       .max(180, { error: "Longitude inválida" }),
 
-    businessHours: z.json(),
+    businessHours: z
+      .string({
+        error: "O horário de funcionamento é obrigatório",
+      })
+      .transform((val, ctx) => {
+        try {
+          return JSON.parse(val);
+        } catch {
+          ctx.addIssue({
+            code: "custom",
+            error: "businessHours deve ser um JSON válido",
+          });
+          return z.NEVER;
+        }
+      })
+      .pipe(businessHoursArraySchema),
 
     phone: z
       .string()
@@ -62,42 +145,12 @@ export const createEstablishmentSchema = z.object({
       })
       .optional(),
 
-    logo: z
-      .file()
-      .mime(["image/jpeg", "image/png", "image/webp"])
-      .max(5 * 1024 * 1024, {
-        error: "A logo deve ter no máximo 5MB",
-      }),
+    logo: singleFileSchema(5, "logo"),
 
-    cover: z
-      .file()
-      .mime(["image/jpeg", "image/png", "image/webp"])
-      .max(10 * 1024 * 1024, {
-        error: "A capa deve ter no máximo 10MB",
-      }),
+    cover: singleFileSchema(10, "cover"),
   }),
 });
 
 export const createEstablishmentResponseSchema = z.object({
-  establishment: z.object({
-    name: z.string(),
-    id: z.string(),
-    cnpj: z.string(),
-    description: z.string(),
-    address: z.string(),
-    city: z.string(),
-    state: z.string(),
-    zipCode: z.string(),
-    latitude: z.number(),
-    longitude: z.number(),
-    businessHours: z.object(),
-    phone: z.string().nullable(),
-    organizationId: z.string(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-    slug: z.string(),
-    isActive: z.boolean(),
-    logoStorageKey: z.string().nullable(),
-    coverStorageKey: z.string().nullable(),
-  }),
+  establishment: establishmentSchema,
 });

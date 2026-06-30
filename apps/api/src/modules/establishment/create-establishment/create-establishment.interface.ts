@@ -1,21 +1,30 @@
-import type { CreateEstablishmentSchema } from "@reservo/types";
+import type { ICreateEstablishmentSchema } from "@reservo/types";
 
 export interface ICreateEstablishment {
   run(
     params: CreateEstablishment.Params,
-  ): Promise<CreateEstablishment.Response>;
+  ): Promise<CreateEstablishment.Response | undefined>;
 }
 
 export namespace CreateEstablishment {
-  export type Params = CreateEstablishmentSchema.GetParams & {
+  export type Params = ICreateEstablishmentSchema.GetParams & {
     userId: string;
     traceId: string;
   };
 
-  export type Response = CreateEstablishmentSchema.GetResponse;
+  export type Response = ICreateEstablishmentSchema.GetResponse;
 
   export type UploadImageParams = {
     establishmentId: string;
-    image: File | null;
+    context: string;
+    image?: File;
+  };
+
+  export type RemoveImageParams = {
+    key: string;
+  };
+
+  export type GetSignedUrlParams = {
+    key: string | null;
   };
 }

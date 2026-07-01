@@ -117,7 +117,7 @@ import { z } from "zod";
 import { ${camel}Schema, ${camel}ResponseSchema } from "${schemasPkgImport}";
 
 export namespace I${pascal}Schema {
-  export type GetParams  = z.infer<typeof ${camel}Schema>;
+  export type GetParams  = z.infer<typeof ${camel}Schema>["body"];
   export type GetResponse = z.infer<typeof ${camel}ResponseSchema>;
 }
 `;

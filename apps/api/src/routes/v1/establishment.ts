@@ -2,10 +2,14 @@ import { Router } from "express";
 
 import { makeCreateEstablishmentController } from "@/modules/establishment/create-establishment";
 import { makeGetEstablishmentController } from "@/modules/establishment/get-establishment";
-import { createEstablishmentSchema } from "@reservo/schemas";
+import { makeUpdateEstablishmentController } from "@/modules/establishment/update-establishment";
+import {
+  createEstablishmentSchema,
+  updateEstablishmentSchema,
+} from "@reservo/schemas";
 
 import { adaptRoute, upload } from "../handlers";
-import { authAdmin, validateRequest } from "../middlewares";
+import { authAdmin, validateRequest, validateRole } from "../middlewares";
 
 export default (router: Router): void => {
   router.post(
@@ -23,5 +27,17 @@ export default (router: Router): void => {
     "/establishment",
     authAdmin,
     adaptRoute(makeGetEstablishmentController()),
+  );
+
+  router.put(
+    "/establishment",
+    authAdmin,
+    validateRole("OWNER"),
+    upload.fields([
+      { name: "logo", maxCount: 1 },
+      { name: "cover", maxCount: 1 },
+    ]),
+    validateRequest(updateEstablishmentSchema),
+    adaptRoute(makeUpdateEstablishmentController()),
   );
 };

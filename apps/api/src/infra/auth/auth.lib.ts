@@ -1,15 +1,48 @@
 import bcrypt from "bcryptjs";
-import { betterAuth } from "better-auth";
+import { betterAuth, BetterAuthOptions } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
-import { organization, phoneNumber, openAPI } from "better-auth/plugins";
+import {
+  organization,
+  phoneNumber,
+  openAPI,
+  customSession,
+} from "better-auth/plugins";
 
 import { basePrisma } from "../database";
 
+const options = {
+  plugins: [organization()],
+} satisfies BetterAuthOptions;
+
+const sessionMiddleware = customSession(async ({ user, session }) => {
+  if (!session.activeOrganizationId) {
+    return { user, session: { ...session, memberRole: null } };
+  }
+
+  const member = await basePrisma.members.findFirst({
+    select: { role: true },
+    where: {
+      userId: user.id,
+      organizationId: session.activeOrganizationId,
+    },
+  });
+
+  return {
+    user,
+    session: { ...session, memberRole: member?.role ?? null },
+  };
+}, options);
+
 export const auth = betterAuth({
   basePath: "/api/v1/auth",
-  // baseURL: "http://localhost:5173",
-  plugins: [organization(), phoneNumber(), openAPI()],
+  baseURL: "http://localhost:5173",
+  plugins: [
+    ...(options.plugins ?? []),
+    phoneNumber(),
+    openAPI(),
+    sessionMiddleware,
+  ],
   database: prismaAdapter(basePrisma, {
     provider: "postgresql",
     usePlural: true,
@@ -18,7 +51,7 @@ export const auth = betterAuth({
     database: {
       generateId: false,
     },
-    disableOriginCheck: true,
+    disableCSRFCheck: true,
   },
   user: {
     additionalFields: {
@@ -71,5 +104,29 @@ export const auth = betterAuth({
         },
       },
     },
+    session: {
+      create: {
+        before: async (session) => {
+          const membership = await basePrisma.members.findFirst({
+            where: {
+              userId: session.userId,
+            },
+          });
+
+          if (!membership) {
+            return { data: session };
+          }
+
+          return {
+            data: {
+              ...session,
+              activeOrganizationId: membership.organizationId,
+            },
+          };
+        },
+      },
+    },
   },
 });
+
+export type AppSession = typeof sessionMiddleware.$Infer.Session;

@@ -1,0 +1,24 @@
+info:
+  name: sign-in
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/auth/sign-in/email"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "diegoemanuelk@gmail.com",
+        "password": "diego0123",
+        "callbackURL": "",
+        "rememberMe": true
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

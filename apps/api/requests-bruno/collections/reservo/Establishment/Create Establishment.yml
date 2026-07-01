@@ -1,0 +1,56 @@
+info:
+  name: Create Establishment
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/establishment"
+  body:
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: Barbearia do seu zé
+      - name: cnpj
+        type: text
+        value: "50420633000121"
+      - name: description
+        type: text
+        value: Uma barbearia top
+      - name: address
+        type: text
+        value: Rua adolfo antonio emmendoerfer
+      - name: city
+        type: text
+        value: Jaraguá do sul
+      - name: state
+        type: text
+        value: SC
+      - name: zipCode
+        type: text
+        value: "89259695"
+      - name: latitude
+        type: text
+        value: "-26.516763304460536"
+      - name: longitude
+        type: text
+        value: "-49.081062293762926"
+      - name: businessHours
+        type: text
+        value: '[{"day":0,"open":"08:00","close":"18:00","closed":true},{"day":1,"open":"08:00","close":"18:00","closed":false},{"day":2,"open":"08:00","close":"18:00","closed":false},{"day":3,"open":"08:00","close":"18:00","closed":false},{"day":4,"open":"08:00","close":"18:00","closed":false},{"day":5,"open":"08:00","close":"18:00","closed":false},{"day":6,"open":"08:00","close":"18:00","closed":true}]'
+      - name: logo
+        type: file
+        value:
+          - /Users/diegokrause/Downloads/LEGO Logo.webp
+      - name: cover
+        type: file
+        value:
+          - /Users/diegokrause/Downloads/LinkedIn Cover.jpg
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,27 @@
+info:
+  name: sign-up
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseURL}}/auth/sign-up/email"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Diego",
+        "email": "diegoemanuelk@gmail.com",
+        "password": "diego0123",
+        "image": "",
+        "callbackURL": "",
+        "rememberMe": true,
+        "role": "ADMIN"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

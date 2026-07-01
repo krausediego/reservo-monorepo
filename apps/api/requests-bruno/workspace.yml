@@ -1,0 +1,12 @@
+opencollection: 1.0.0
+info:
+  name: "Reservo"
+  type: workspace
+
+collections:
+  - name: "reservo"
+    path: "collections/reservo"
+
+specs:
+
+docs: ''

@@ -18,7 +18,7 @@ export class UpdateEstablishmentController implements IController {
   }: Http.IRequest<IUpdateEstablishmentSchema.GetParams>): Promise<Http.IResponse> {
     try {
       const content = await this.updateEstablishmentService().run({
-        ...updateEstablishmentSchema.parse({ body: data }).body,
+        ...updateEstablishmentSchema.shape.body.parse({ ...data }),
         id: data.id,
         userId: locals.user.id,
         organizationId: locals.session.activeOrganizationId as string,
@@ -27,7 +27,7 @@ export class UpdateEstablishmentController implements IController {
 
       return ok({ ...content });
     } catch (error: any) {
-      return getHttpError(error);
+      return getHttpError(JSON.parse(error));
     }
   }
 }

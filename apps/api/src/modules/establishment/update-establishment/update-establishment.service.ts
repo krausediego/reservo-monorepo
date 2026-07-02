@@ -112,8 +112,9 @@ export class UpdateEstablishmentService
             longitude: params.longitude,
             businessHours: JSON.stringify(params.businessHours),
             phone: params.phone,
-            logoStorageKey,
-            coverStorageKey,
+            logoStorageKey: logoStorageKey ?? hasEstablishment.logoStorageKey,
+            coverStorageKey:
+              coverStorageKey ?? hasEstablishment.coverStorageKey,
           },
           where: {
             id: params.id,
@@ -133,6 +134,24 @@ export class UpdateEstablishmentService
 
         return { establishment: establishmentUpdated };
       });
+
+      // Remove old images if existing
+      const oldImages = [
+        hasEstablishment.logoStorageKey,
+        hasEstablishment.coverStorageKey,
+      ].filter((key): key is string => Boolean(key));
+
+      for (const oldImageKey of oldImages) {
+        try {
+          await this.removeImage({ key: oldImageKey });
+        } catch (error: any) {
+          this.log("warn", "Delete image occurred error", {
+            error,
+            key: oldImageKey,
+            establishmentId: params.id,
+          });
+        }
+      }
 
       return {
         establishment: {

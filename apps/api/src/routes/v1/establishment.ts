@@ -30,7 +30,7 @@ export default (router: Router): void => {
   );
 
   router.put(
-    "/establishment",
+    "/establishment/:id",
     authAdmin,
     validateRole("OWNER"),
     upload.fields([

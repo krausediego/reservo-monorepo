@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 export function slugify(text: string): string {
   return text
     .normalize("NFD")

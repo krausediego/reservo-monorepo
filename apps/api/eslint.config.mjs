@@ -70,6 +70,8 @@ export default [
     rules: {
       "prettier/prettier": "error",
       "no-use-before-define": "off",
+      "no-await-in-loop": "off",
+      "no-restricted-syntax": "off",
       curly: ["error", "all"],
       "no-underscore-dangle": "off",
       "@typescript-eslint/no-use-before-define": ["error"],

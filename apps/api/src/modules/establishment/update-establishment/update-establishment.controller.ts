@@ -19,7 +19,9 @@ export class UpdateEstablishmentController implements IController {
     try {
       const content = await this.updateEstablishmentService().run({
         ...updateEstablishmentSchema.parse({ body: data }).body,
+        id: data.id,
         userId: locals.user.id,
+        organizationId: locals.session.activeOrganizationId as string,
         traceId: locals.traceId,
       });
 

@@ -43,10 +43,12 @@ http:
         type: file
         value:
           - /Users/diegokrause/Downloads/LEGO Logo.webp
+        disabled: true
       - name: cover
         type: file
         value:
           - /Users/diegokrause/Downloads/LinkedIn Cover.jpg
+        disabled: true
   auth: inherit
 
 settings:

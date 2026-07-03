@@ -1,5 +1,4 @@
 import {
-  BadRequestError,
   basePrisma,
   getHttpError,
   Http,

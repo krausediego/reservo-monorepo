@@ -89,9 +89,9 @@ export class EnforceAccessMiddleware implements IMiddleware {
           "Acesso expirado, Reative sua assinatura para continuar.",
         ),
       );
-    } catch (err: any) {
-      this.logger.warn({ traceId }, err.message);
-      return getHttpError(new BadRequestError(err.message));
+    } catch (error: any) {
+      this.logger.warn({ traceId }, error.message);
+      return getHttpError(error);
     }
   }
 }

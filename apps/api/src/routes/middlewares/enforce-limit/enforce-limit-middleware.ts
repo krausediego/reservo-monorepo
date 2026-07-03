@@ -23,7 +23,7 @@ const usageCounters: Record<
     basePrisma.professionals.count({ where: { establishmentId } }),
   services: (establishmentId) =>
     basePrisma.services.count({ where: { establishmentId } }),
-  // products: (establishmentId) => basePrisma.products.count({where: {establishmentId}}),
+  // products: (establishmentId) => ,
   members: (organizationId) =>
     basePrisma.members.count({ where: { organizationId } }),
 };

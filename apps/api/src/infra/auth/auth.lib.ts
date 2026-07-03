@@ -10,6 +10,7 @@ import {
 } from "better-auth/plugins";
 
 import { basePrisma } from "../database";
+import { stripePlugin } from "./plugins";
 
 const options = {
   plugins: [organization()],
@@ -39,6 +40,7 @@ export const auth = betterAuth({
   baseURL: "http://localhost:5173",
   plugins: [
     ...(options.plugins ?? []),
+    ...(stripePlugin.plugins ?? []),
     phoneNumber(),
     openAPI(),
     sessionMiddleware,

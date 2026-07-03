@@ -6,5 +6,5 @@ export namespace LimitMiddleware {
 
   export type GetActiveLimitsResponse = Record<LimitKey, number> | null;
 
-  export type LimitKey = "professionals" | "services" | "products" | "members";
+  export type LimitKey = "professionals" | "services" | "members";
 }

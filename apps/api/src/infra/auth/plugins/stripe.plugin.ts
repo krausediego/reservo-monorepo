@@ -13,8 +13,7 @@ export const stripePlugin = {
   plugins: [
     stripe({
       stripeClient,
-      stripeWebhookSecret:
-        "whsec_62fd696affd2f7e15f18350840677fcae5a39031903aee64fc4e3fb1d46e5956",
+      stripeWebhookSecret: StripeEnv.webhookSecret,
       createCustomerOnSignUp: false,
       subscription: {
         enabled: true,
@@ -102,6 +101,28 @@ export const stripePlugin = {
               },
             });
           }
+        },
+        onSubscriptionCancel: async ({ subscription }) => {
+          await basePrisma.organizations.update({
+            data: {
+              accessState: "CANCELED",
+              gracePausedAt: new Date(),
+            },
+            where: {
+              id: subscription.referenceId,
+            },
+          });
+        },
+        onSubscriptionDeleted: async ({ subscription }) => {
+          await basePrisma.organizations.update({
+            data: {
+              accessState: "CANCELED",
+              gracePausedAt: new Date(),
+            },
+            where: {
+              id: subscription.referenceId,
+            },
+          });
         },
         authorizeReference: async ({ user, referenceId, action }) => {
           if (

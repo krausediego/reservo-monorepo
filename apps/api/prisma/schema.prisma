@@ -86,9 +86,9 @@ model Organizations {
   id               String                  @id @default(cuid())
   name             String
   slug             String                  @unique
-  stripeCustomerId String                  @map("stripe_customer_id")
-  accessState      OrganizationAccessState @default(GRACE)
-  gracePausedAt    DateTime?
+  stripeCustomerId String?                 @map("stripe_customer_id")
+  accessState      OrganizationAccessState @default(GRACE) @map("access_state")
+  gracePausedAt    DateTime?               @map("grace_paused_at")
   metadata         String?
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -319,4 +319,5 @@ enum OrganizationAccessState {
   ACTIVE
   GRACE
   EXPIRED
+  CANCELED
 }

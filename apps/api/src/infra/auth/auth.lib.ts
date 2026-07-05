@@ -78,6 +78,14 @@ export const auth = betterAuth({
       enabled: true,
       maxAge: 60 * 5, // 5 minutes
     },
+    additionalFields: {
+      activeEstablishmentId: {
+        type: "string",
+        required: false,
+        input: true,
+        defaultValue: null,
+      },
+    },
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
@@ -110,6 +118,9 @@ export const auth = betterAuth({
       create: {
         before: async (session) => {
           const membership = await basePrisma.members.findFirst({
+            select: {
+              organizationId: true,
+            },
             where: {
               userId: session.userId,
             },
@@ -119,10 +130,24 @@ export const auth = betterAuth({
             return { data: session };
           }
 
+          const establishment = await basePrisma.establishments.findFirst({
+            select: {
+              id: true,
+            },
+            where: {
+              organizationId: membership.organizationId,
+            },
+          });
+
+          if (!establishment) {
+            return { data: session };
+          }
+
           return {
             data: {
               ...session,
               activeOrganizationId: membership.organizationId,
+              activeEstablishmentId: establishment.id,
             },
           };
         },

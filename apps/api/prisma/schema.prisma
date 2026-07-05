@@ -30,13 +30,14 @@ model Users {
 }
 
 model Sessions {
-  id                   String   @id @default(cuid())
-  expiresAt            DateTime @map("expires_at")
-  token                String   @unique
-  ipAddress            String?  @map("ip_address")
-  userAgent            String?  @map("user_agent")
-  userId               String   @map("user_id")
-  activeOrganizationId String?  @map("active_organization_id")
+  id                    String   @id @default(cuid())
+  expiresAt             DateTime @map("expires_at")
+  token                 String   @unique
+  ipAddress             String?  @map("ip_address")
+  userAgent             String?  @map("user_agent")
+  userId                String   @map("user_id")
+  activeOrganizationId  String?  @map("active_organization_id")
+  activeEstablishmentId String?  @map("active_establishment_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -285,6 +286,23 @@ model Appointments {
   services       Services       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@map("appointments")
+}
+
+// ---- AUDIT LOGS -------------------------------
+
+model AuditLogs {
+  id              String @id @default(cuid())
+  entity          String
+  entityId        String @map("entity_id")
+  action          String
+  userId          String @map("user_id")
+  establishmentId String @map("establishment_id")
+  changes         Json?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([entity, entityId])
+  @@map("audit_logs")
 }
 
 // ---- ENUMS ------------------------------------

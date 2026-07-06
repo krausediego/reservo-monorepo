@@ -189,10 +189,12 @@ model Establishments {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organizations Organizations   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  professionals Professionals[]
-  services      Services[]
-  appointments  Appointments[]
+  organizations              Organizations                @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  professionals              Professionals[]
+  services                   Services[]
+  appointments               Appointments[]
+  professionalAvailabilities ProfessionalAvailabilities[]
+  professionalServices       ProfessionalServices[]
 
   @@map("establishments")
 }
@@ -238,30 +240,34 @@ model Services {
 }
 
 model ProfessionalServices {
-  id             String @id @default(cuid())
-  professionalId String @map("professional_id")
-  serviceId      String @map("service_id")
+  id              String @id @default(cuid())
+  professionalId  String @map("professional_id")
+  establishmentId String @map("establishment_id")
+  serviceId       String @map("service_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
-  services      Services      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  professionals  Professionals  @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  services       Services       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  establishments Establishments @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
 
   @@map("professional_services")
 }
 
 model ProfessionalAvailabilities {
-  id             String @id @default(cuid())
-  professionalId String @map("professional_id")
-  dayOfWeek      Int    @map("day_of_week")
-  startTime      String @map("start_time")
-  endTime        String @map("end_time")
+  id              String @id @default(cuid())
+  professionalId  String @map("professional_id")
+  establishmentId String @map("establishment_id")
+  dayOfWeek       Int    @map("day_of_week")
+  startTime       String @map("start_time")
+  endTime         String @map("end_time")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  professionals  Professionals  @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  establishments Establishments @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
 
   @@map("professional_availabilities")
 }

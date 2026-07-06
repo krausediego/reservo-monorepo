@@ -19,6 +19,7 @@ export const makeDatabase = (): IDatabase => {
       "Users",
       "Organizations",
       "Establishments",
+      "Members",
     ]),
     skipAudit: new Set(["AuditLogs"]),
   });

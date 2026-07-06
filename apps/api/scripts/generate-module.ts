@@ -137,12 +137,12 @@ export const make${pascal}Controller = (): IController => {
 
   // service.factory.ts
   [`${kebab}-service.factory.ts`]: `\
-import { makeLogging } from "@/infra";
+import { makeLogging, makeDatabase } from "@/infra";
 
 import { ${pascal}Service, type I${pascal} } from ".";
 
 export const make${pascal}Service = (): I${pascal} => {
-  return new ${pascal}Service(makeLogging());
+  return new ${pascal}Service(makeLogging(), makeDatabase());
 };
 `,
 
@@ -163,6 +163,8 @@ export class ${pascal}Controller implements IController {
     try {
       const content = await this.${camel}Service().run({
         ...data,
+        userId: locals.user.id,
+        establishmentId: locals.session.activeEstablishmentId!,
         traceId: locals.traceId,
       });
 
@@ -185,7 +187,7 @@ export interface I${pascal} {
 export namespace ${pascal} {
   export type Params = I${pascal}Schema.GetParams & {
     userId: string;
-    organizationId: string;
+    establishmentId: string;
     traceId: string;
   };
 
@@ -195,18 +197,22 @@ export namespace ${pascal} {
 
   // service.ts
   [`${kebab}.service.ts`]: `\
-import { setTraceId } from "@/helpers";
-import type { ILoggingManager } from "@/infra";
-import { BaseService } from "@/modules/shared";
+import { setTraceId, setDatabaseContext } from "@/helpers";
+import type { ILoggingManager, IDatabase } from "@/infra";
+import { BaseDatabaseService } from "@/modules/shared";
 
 import type { ${pascal}, I${pascal} } from ".";
 
-export class ${pascal}Service extends BaseService implements I${pascal} {
-  constructor(protected readonly logger: ILoggingManager) {
-    super(logger);
+export class ${pascal}Service extends BaseDatabaseService implements I${pascal} {
+  constructor(
+    protected readonly logger: ILoggingManager,
+    protected readonly database: IDatabase
+  ) {
+    super(logger, database);
   }
 
   @setTraceId
+  @setDatabaseContext
   async run(params: ${pascal}.Params): Promise<${pascal}.Response> {
     this.log("info", "Starting process ${kebab}");
 

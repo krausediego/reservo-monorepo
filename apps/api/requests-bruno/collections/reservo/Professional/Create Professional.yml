@@ -1,0 +1,35 @@
+info:
+  name: Create Professional
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/professional"
+  body:
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: Diego Krause
+      - name: memberId
+        type: text
+        value: cmr59esxy0003et7s53xunuvc
+      - name: bio
+        type: text
+        value: DIASHDIUASIAU
+      - name: servicesIds
+        type: text
+        value: "[]"
+        disabled: true
+      - name: avatar
+        type: file
+        value:
+          - /Users/diegokrause/Downloads/LEGO Logo.webp
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -35,16 +35,23 @@ export class PrismaService extends BaseService implements IDatabase {
   }
 
   create({ userId, establishmentId }: Database.Params): Database.Response {
-    const extended = this.basePrisma.$extends({
+    const base = this.basePrisma;
+
+    const extended = base.$extends({
       query: {
         $allModels: {
-          $allOperations: async ({ model, operation, args, query }) => {
+          $allOperations: async ({
+            model,
+            operation,
+            args,
+            query,
+            ...rest
+          }) => {
             const isWrite = PrismaService.WRITE_OPS.has(operation);
 
             if (!this.skipTenant.has(model)) {
               this.injectTenant({ operation, args, establishmentId });
             }
-            // this.injectActor({ operation, args, userId });
 
             const isSoftDelete =
               (operation === "update" || operation === "updateMany") &&
@@ -53,8 +60,16 @@ export class PrismaService extends BaseService implements IDatabase {
             const action = isSoftDelete
               ? "delete"
               : this.actionFor({ operation });
+
             if (this.skipAudit.has(model) || !isWrite || !action) {
               return query(args);
+            }
+
+            // tenta obter o cliente amarrado à transaction interativa atual
+            const txInfo = (rest as any)?.__internalParams?.transaction;
+            let client: any = base;
+            if (txInfo?.kind === "itx") {
+              client = (base as any)._createItxClient(txInfo);
             }
 
             return this.runAudited({
@@ -65,6 +80,7 @@ export class PrismaService extends BaseService implements IDatabase {
               query,
               userId,
               establishmentId,
+              client,
             });
           },
         },
@@ -82,6 +98,7 @@ export class PrismaService extends BaseService implements IDatabase {
     query,
     userId,
     establishmentId,
+    client,
   }: Database.RunAuditedParams): Promise<unknown> {
     const isSingle =
       operation === "update" ||
@@ -92,39 +109,33 @@ export class PrismaService extends BaseService implements IDatabase {
     let before: Record<string, any> | null = null;
 
     if (isSingle && recordId) {
-      before = await (this.basePrisma as any)[
-        this.lowerFirst(model)
-      ].findUnique({
+      before = await client[this.lowerFirst(model)].findUnique({
         where: { id: recordId },
       });
     }
 
     const result = await query(args);
 
-    try {
-      const after =
-        action === "delete" ? before : (result as Record<string, any>);
+    const after =
+      action === "delete" ? before : (result as Record<string, any>);
 
-      const changes =
-        action === "create"
-          ? { after }
-          : action === "update" && before
-            ? this.diff({ before, after: after! })
-            : { before };
+    const changes =
+      action === "create"
+        ? { after }
+        : action === "update" && before
+          ? this.diff({ before, after: after! })
+          : { before };
 
-      await this.basePrisma.auditLogs.create({
-        data: {
-          entity: model,
-          entityId: (after as any)?.id ?? recordId ?? "(bulk)",
-          action,
-          userId,
-          establishmentId,
-          changes: changes as Prisma.InputJsonValue,
-        },
-      });
-    } catch {
-      this.log("error", "Failed to write audit log");
-    }
+    await client.auditLogs.create({
+      data: {
+        entity: model,
+        entityId: (after as any)?.id ?? recordId ?? "(bulk)",
+        action,
+        userId,
+        establishmentId,
+        changes: changes as Prisma.InputJsonValue,
+      },
+    });
 
     return result;
   }

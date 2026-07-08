@@ -1,9 +1,7 @@
 import type { ICreateProfessionalSchema } from "@reservo/types";
 
 export interface ICreateProfessional {
-  run(
-    params: CreateProfessional.Params,
-  ): Promise<CreateProfessional.Response | undefined>;
+  run(params: CreateProfessional.Params): Promise<CreateProfessional.Response>;
 }
 
 export namespace CreateProfessional {

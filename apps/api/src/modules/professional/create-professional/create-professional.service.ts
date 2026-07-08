@@ -28,7 +28,7 @@ export class CreateProfessionalService
   @setDatabaseContext
   async run(
     params: CreateProfessional.Params,
-  ): Promise<CreateProfessional.Response | undefined> {
+  ): Promise<CreateProfessional.Response> {
     this.log("info", "Starting process create-professional");
 
     const hasMember = await this.db.members.findFirst({
@@ -90,83 +90,94 @@ export class CreateProfessionalService
       image: params.avatar,
     });
 
-    try {
-      await this.db.$transaction(async (tx) => {
-        await tx.professionals.create({
-          data: {
-            id: professionalId,
-            name: params.name,
-            memberId: hasMember.id,
-            bio: params.bio,
-            avatarStorageKey,
-          },
-        });
-
-        await tx.professionalAvailabilities.createMany({
-          data: this.getDefaultProfessionalAvailabilities(professionalId),
-          skipDuplicates: true,
-        });
-
-        if (params.servicesIds?.length) {
-          await tx.professionalServices.createMany({
-            data: params.servicesIds.map((service) => {
-              return {
-                professionalId,
-                serviceId: service,
-              };
-            }),
-          });
-        }
-      });
-
-      const services = await this.db.services.findMany({
-        select: {
-          id: true,
-          name: true,
-        },
-        where: {
-          id: { in: params.servicesIds },
-        },
-      });
-
-      const userMember = await this.db.users.findFirst({
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-        where: {
-          id: hasMember.userId,
-        },
-      });
-
-      const avatarUrl = await this.getSignedUrl({ key: avatarStorageKey });
-
-      return {
-        name: params.name,
-        bio: params.bio,
-        member: {
-          user: userMember!,
-        },
-        services,
-        avatarUrl,
-      };
-    } catch (error: any) {
+    await this.createProfessional({
+      ...params,
+      professionalId,
+      avatarStorageKey,
+      userId: hasMember.userId,
+    }).catch(async (error: any) => {
       if (avatarStorageKey) {
-        await this.removeImage({
+        await this.storage.deleteByKey({
           key: avatarStorageKey,
         });
       }
 
-      if (error?.message) {
-        this.log("warn", "An error occurred while creating the professional.", {
-          message: error?.message,
-        });
-        throw new BadRequestError(error?.message);
-      }
-    }
+      this.log("warn", "Error occurred in create professional.");
+      throw new BadRequestError(
+        error?.message ?? "Error occurred in create professional.",
+      );
+    });
 
-    return undefined;
+    const services = await this.db.services.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+      where: {
+        id: { in: params.servicesIds },
+      },
+    });
+
+    const userMember = await this.db.users.findFirst({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+      where: {
+        id: params.userId,
+      },
+    });
+
+    const avatarUrl = await this.getSignedUrl({
+      key: avatarStorageKey,
+    });
+
+    return {
+      name: params.name,
+      bio: params.bio,
+      member: {
+        user: userMember!,
+      },
+      services,
+      avatarUrl,
+    };
+  }
+
+  private async createProfessional(
+    params: CreateProfessional.Params & {
+      professionalId: string;
+      avatarStorageKey: string | null;
+      userId: string;
+    },
+  ): Promise<void> {
+    await this.db.$transaction(async (tx) => {
+      await tx.professionals.create({
+        data: {
+          id: params.professionalId,
+          name: params.name,
+          memberId: params.memberId,
+          bio: params.bio,
+          avatarStorageKey: params.avatarStorageKey,
+        },
+      });
+
+      await tx.professionalAvailabilities.createMany({
+        data: this.getDefaultProfessionalAvailabilities(params.professionalId),
+        skipDuplicates: true,
+      });
+
+      if (params.servicesIds?.length) {
+        await tx.professionalServices.createMany({
+          data: params.servicesIds.map((service) => {
+            return {
+              professionalId: params.professionalId,
+              serviceId: service,
+            };
+          }),
+        });
+      }
+    });
   }
 
   private async uploadAvatar(
@@ -196,12 +207,6 @@ export class CreateProfessionalService
     }
 
     return this.storage.getSignedUrl({ key: params.key });
-  }
-
-  private async removeImage(
-    params: CreateProfessional.RemoveImageParams,
-  ): Promise<void> {
-    await this.storage.deleteByKey({ key: params.key });
   }
 
   private getDefaultProfessionalAvailabilities(professionalId: string) {

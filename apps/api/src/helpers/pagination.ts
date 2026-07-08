@@ -4,10 +4,12 @@ export const paginationQuerySchema = z.object({
   page: z.coerce
     .number({ error: "A página deve ser um número" })
     .min(1, { error: "Número de página inválido" })
+    .int({ error: "A página deve ser um número inteiro" })
     .default(1),
   limit: z.coerce
     .number({ error: "A quantidade por página deve ser um número" })
     .min(1, { error: "Quantidade inválida" })
+    .int({ error: "A quantidade por página deve ser um número inteiro" })
     .default(10),
 });
 
@@ -59,7 +61,7 @@ export const buildPaginationMeta = ({
   page = 1,
   limit = 10,
 }: BuildPaginationMetaParams): PaginationMetaSchema => {
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = limit > 0 ? Math.ceil(total / limit) : 0;
 
   return {
     total,

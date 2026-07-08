@@ -125,7 +125,7 @@ export class CreateProfessionalService
         email: true,
       },
       where: {
-        id: params.userId,
+        id: hasMember.userId,
       },
     });
 

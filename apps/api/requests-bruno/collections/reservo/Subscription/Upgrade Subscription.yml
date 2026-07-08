@@ -1,0 +1,26 @@
+info:
+  name: Upgrade Subscription
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/auth/subscription/upgrade"
+  body:
+    type: json
+    data: |-
+      {
+        "plan": "pro",
+        "referenceId": "cmrcekxax0000kx7s5d6vlcfv",
+        "customerType": "organization",
+        "successUrl": "",
+        "cancelUrl": "",
+        "returnUrl": ""
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

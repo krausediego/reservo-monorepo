@@ -26,10 +26,7 @@ export class AuthAdminMiddleware implements IMiddleware {
       return getHttpError(new UnauthorizedError(UNAUTHORIZED));
     }
 
-    if (
-      session.user.role !== "ADMIN" ||
-      !session.session.activeOrganizationId
-    ) {
+    if (session.user.role !== "ADMIN") {
       this.logger.warn({ traceId }, UNAUTHORIZED_REDIRECT);
       return getHttpError(new UnauthorizedError(UNAUTHORIZED_REDIRECT, 555));
     }

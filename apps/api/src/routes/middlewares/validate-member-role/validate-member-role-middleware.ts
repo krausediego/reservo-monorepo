@@ -28,7 +28,7 @@ export class ValidateMemberRoleMiddleware implements IMiddleware {
   async handle({ locals }: Http.IRequest): Promise<Http.IResponse> {
     const { traceId } = locals;
 
-    const session = locals.session as AppSession["session"];
+    const session = locals.session as unknown as AppSession["session"];
 
     const memberRole = session?.memberRole as MemberRole | null;
 

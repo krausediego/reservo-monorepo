@@ -8,8 +8,8 @@ export const listProfessionalsSchema = z.object({
     name: z.string().optional(),
     orderBy: z
       .union([z.literal("asc"), z.literal("desc")])
-      .default("asc")
-      .optional(),
+      .optional()
+      .default("asc"),
   }),
 });
 

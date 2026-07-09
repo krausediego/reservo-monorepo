@@ -76,9 +76,11 @@ export class ListProfessionalsService
               ...professional,
               avatarUrl:
                 professional.avatarStorageKey &&
-                (await this.storage.getSignedUrl({
-                  key: professional.avatarStorageKey,
-                })),
+                (await this.storage
+                  .getSignedUrl({
+                    key: professional.avatarStorageKey,
+                  })
+                  .catch(() => null)),
             },
             availabilities: professionalAvailabilities,
             services: professionalServices.map((ps) => ps.services),

@@ -48,7 +48,7 @@ export const createProfessionalSchema = z.object({
         error: "Serviços em formato inválido",
       })
       .refine((services) => {
-        return new Set(services);
+        return [...new Set(services)];
       })
       .optional(),
 

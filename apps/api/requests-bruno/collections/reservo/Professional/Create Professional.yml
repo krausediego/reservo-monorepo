@@ -11,13 +11,13 @@ http:
     data:
       - name: name
         type: text
-        value: Diego Krause
+        value: Josefino
       - name: memberId
         type: text
-        value: cmr59esxy0003et7s53xunuvc
+        value: cmrcekxb00001kx7suyoyyrhs
       - name: bio
         type: text
-        value: DIASHDIUASIAU
+        value: qiueiqooqooqowiwiqw
       - name: servicesIds
         type: text
         value: "[]"
@@ -26,6 +26,7 @@ http:
         type: file
         value:
           - /Users/diegokrause/Downloads/LEGO Logo.webp
+        disabled: true
   auth: inherit
 
 settings:

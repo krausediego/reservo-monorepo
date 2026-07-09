@@ -11,16 +11,16 @@ http:
     data:
       - name: name
         type: text
-        value: Barbearia do seu zé
+        value: Aqui vai outro
       - name: cnpj
         type: text
-        value: "50420633000121"
+        value: "50420633000999"
       - name: description
         type: text
-        value: Uma barbearia top
+        value: tudo isso e mais um pouco
       - name: address
         type: text
-        value: Rua adolfo antonio emmendoerfer
+        value: Rua do padre
       - name: city
         type: text
         value: Jaraguá do sul
@@ -29,7 +29,7 @@ http:
         value: SC
       - name: zipCode
         type: text
-        value: "89259695"
+        value: "89251100"
       - name: latitude
         type: text
         value: "-26.516763304460536"

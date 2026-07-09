@@ -14,11 +14,29 @@ import { stripePlugin } from "./plugins";
 
 const options = {
   plugins: [organization()],
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        input: true,
+        defaultValue: "CLIENT",
+      },
+    },
+  },
 } satisfies BetterAuthOptions;
 
 const sessionMiddleware = customSession(async ({ user, session }) => {
+  const dbUser = await basePrisma.users.findUnique({
+    select: { role: true },
+    where: { id: user.id },
+  });
+
   if (!session.activeOrganizationId) {
-    return { user, session: { ...session, memberRole: null } };
+    return {
+      user: { ...user, role: dbUser?.role },
+      session: { ...session, memberRole: null },
+    };
   }
 
   const member = await basePrisma.members.findFirst({
@@ -30,7 +48,10 @@ const sessionMiddleware = customSession(async ({ user, session }) => {
   });
 
   return {
-    user,
+    user: {
+      ...user,
+      role: dbUser?.role,
+    },
     session: { ...session, memberRole: member?.role ?? null },
   };
 }, options);
@@ -54,16 +75,6 @@ export const auth = betterAuth({
       generateId: false,
     },
     disableCSRFCheck: true,
-  },
-  user: {
-    additionalFields: {
-      role: {
-        type: "string",
-        required: false,
-        input: true,
-        defaultValue: "CLIENT",
-      },
-    },
   },
   emailAndPassword: {
     enabled: true,

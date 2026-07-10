@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { makeCreateProfessionalController } from "@/modules/professional/create-professional";
+import { makeGetProfessionalController } from "@/modules/professional/get-professional";
 import { makeListProfessionalsController } from "@/modules/professional/list-professionals";
 import { adaptRoute, upload } from "@/routes/handlers";
 import {
@@ -11,6 +12,7 @@ import {
 } from "@/routes/middlewares";
 import {
   createProfessionalSchema,
+  getProfessionalSchema,
   listProfessionalsSchema,
 } from "@reservo/schemas";
 
@@ -31,5 +33,13 @@ export default (router: Router) => {
     enforceAccess("READ"),
     validateRequest(listProfessionalsSchema),
     adaptRoute(makeListProfessionalsController()),
+  );
+
+  router.get(
+    "/professional/:id",
+    authAdmin,
+    enforceAccess("READ"),
+    validateRequest(getProfessionalSchema),
+    adaptRoute(makeGetProfessionalController()),
   );
 };

@@ -41,6 +41,8 @@ export class CreateProfessionalService
       },
     });
 
+    console.log("member", hasMember);
+
     if (!hasMember) {
       this.log("warn", "Member not found", {
         memberId: params.memberId,
@@ -54,7 +56,7 @@ export class CreateProfessionalService
           id: true,
         },
         where: {
-          memberId: hasMember.id,
+          memberId: hasMember.userId,
           isActive: true,
         },
       },

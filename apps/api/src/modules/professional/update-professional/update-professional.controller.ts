@@ -1,6 +1,5 @@
 import { getHttpError, type Http, ok } from "@/infra";
 import type { IController } from "@/modules/shared";
-import { updateProfessionalSchema } from "@reservo/schemas";
 import type { IUpdateProfessionalSchema } from "@reservo/types";
 
 import type { IUpdateProfessional } from ".";
@@ -18,10 +17,9 @@ export class UpdateProfessionalController implements IController {
   }: Http.IRequest<IUpdateProfessionalSchema.GetParams>): Promise<Http.IResponse> {
     try {
       const content = await this.updateProfessionalService().run({
-        ...updateProfessionalSchema.parse({ body: data }).body,
-        ...updateProfessionalSchema.parse({ params: data.id }).params,
+        ...data,
         userId: locals.user.id,
-        establishmentId: locals.session.activeEstablishmentId!,
+        organizationId: locals.session.activeOrganizationId!,
         traceId: locals.traceId,
       });
 

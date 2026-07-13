@@ -7,14 +7,14 @@ export interface ICreateProfessional {
 export namespace CreateProfessional {
   export type Params = ICreateProfessionalSchema.GetParams & {
     userId: string;
-    establishmentId: string;
+    organizationId: string;
     traceId: string;
   };
 
   export type Response = ICreateProfessionalSchema.GetResponse;
 
   export type UploadImageParams = {
-    establishmentId: string;
+    organizationId: string;
     professionalId: string;
     image?: File;
   };

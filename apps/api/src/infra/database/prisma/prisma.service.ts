@@ -34,7 +34,7 @@ export class PrismaService extends BaseService implements IDatabase {
     this.skipAudit = options.skipAudit ?? new Set(["AuditLog"]);
   }
 
-  create({ userId, establishmentId }: Database.Params): Database.Response {
+  create({ userId, organizationId }: Database.Params): Database.Response {
     const base = this.basePrisma;
 
     const extended = base.$extends({
@@ -50,7 +50,7 @@ export class PrismaService extends BaseService implements IDatabase {
             const isWrite = PrismaService.WRITE_OPS.has(operation);
 
             if (!this.skipTenant.has(model)) {
-              this.injectTenant({ operation, args, establishmentId });
+              this.injectTenant({ operation, args, organizationId });
             }
 
             const isSoftDelete =
@@ -79,7 +79,7 @@ export class PrismaService extends BaseService implements IDatabase {
               args,
               query,
               userId,
-              establishmentId,
+              organizationId,
               client,
             });
           },
@@ -97,7 +97,7 @@ export class PrismaService extends BaseService implements IDatabase {
     args,
     query,
     userId,
-    establishmentId,
+    organizationId,
     client,
   }: Database.RunAuditedParams): Promise<unknown> {
     const isSingle =
@@ -132,7 +132,7 @@ export class PrismaService extends BaseService implements IDatabase {
         entityId: (after as any)?.id ?? recordId ?? "(bulk)",
         action,
         userId,
-        establishmentId,
+        organizationId,
         changes: changes as Prisma.InputJsonValue,
       },
     });
@@ -181,7 +181,7 @@ export class PrismaService extends BaseService implements IDatabase {
   private injectTenant({
     operation,
     args,
-    establishmentId,
+    organizationId,
   }: Database.InjectTenantParams): void {
     switch (operation) {
       case "findUnique":
@@ -196,22 +196,22 @@ export class PrismaService extends BaseService implements IDatabase {
       case "updateMany":
       case "delete":
       case "deleteMany":
-        args.where = { ...(args.where ?? {}), establishmentId };
+        args.where = { ...(args.where ?? {}), organizationId };
         break;
       case "create":
-        args.data = { ...(args.data ?? {}), establishmentId };
+        args.data = { ...(args.data ?? {}), organizationId };
         break;
       case "createMany":
         if (Array.isArray(args.data)) {
           args.data = args.data.map((d: any) => ({
             ...d,
-            establishmentId,
+            organizationId,
           }));
         }
         break;
       case "upsert":
-        args.where = { ...(args.where ?? {}), establishmentId };
-        args.create = { ...(args.create ?? {}), establishmentId };
+        args.where = { ...(args.where ?? {}), organizationId };
+        args.create = { ...(args.create ?? {}), organizationId };
         break;
     }
   }

@@ -19,7 +19,7 @@ export class GetProfessionalController implements IController {
       const content = await this.getProfessionalService().run({
         ...data,
         userId: locals.user.id,
-        establishmentId: locals.session.activeEstablishmentId!,
+        organizationId: locals.session.activeOrganizationId!,
         traceId: locals.traceId,
       });
 

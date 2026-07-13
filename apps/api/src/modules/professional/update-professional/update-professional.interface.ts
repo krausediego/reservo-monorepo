@@ -7,7 +7,7 @@ export interface IUpdateProfessional {
 export namespace UpdateProfessional {
   export type Params = IUpdateProfessionalSchema.GetParams & {
     userId: string;
-    establishmentId: string;
+    organizationId: string;
     traceId: string;
   };
 
@@ -18,7 +18,7 @@ export namespace UpdateProfessional {
   };
 
   export type UploadImageParams = {
-    establishmentId: string;
+    organizationId: string;
     professionalId: string;
     image?: File;
   };

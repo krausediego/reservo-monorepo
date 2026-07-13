@@ -27,7 +27,7 @@ export namespace Storage {
   };
 
   export type BuildKeyParams = {
-    establishmentId: string;
+    organizationId: string;
     context: StorageContext;
     entityId: string;
     fileName: string;
@@ -45,7 +45,7 @@ export namespace Storage {
   };
 
   export type GetUploadSignedUrlParams = {
-    establishmentId: string;
+    organizationId: string;
     context: StorageContext;
     entityId: string;
     fileName: string;
@@ -71,7 +71,7 @@ export namespace Storage {
   };
 
   export type ListFilesParams = {
-    establishmentId: string;
+    organizationId: string;
     context: StorageContext;
     entityId: string;
   };

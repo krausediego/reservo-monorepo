@@ -20,7 +20,7 @@ export class CreateProfessionalController implements IController {
       const content = await this.createProfessionalService().run({
         ...createProfessionalSchema.parse({ body: data }).body,
         userId: locals.user.id,
-        establishmentId: locals.session.activeEstablishmentId!,
+        organizationId: locals.session.activeOrganizationId!,
         traceId: locals.traceId,
       });
 

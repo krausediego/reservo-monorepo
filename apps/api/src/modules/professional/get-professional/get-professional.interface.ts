@@ -7,7 +7,7 @@ export interface IGetProfessional {
 export namespace GetProfessional {
   export type Params = IGetProfessionalSchema.GetParams & {
     userId: string;
-    establishmentId: string;
+    organizationId: string;
     traceId: string;
   };
 

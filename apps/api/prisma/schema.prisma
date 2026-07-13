@@ -30,14 +30,13 @@ model Users {
 }
 
 model Sessions {
-  id                    String   @id @default(cuid())
-  expiresAt             DateTime @map("expires_at")
-  token                 String   @unique
-  ipAddress             String?  @map("ip_address")
-  userAgent             String?  @map("user_agent")
-  userId                String   @map("user_id")
-  activeOrganizationId  String?  @map("active_organization_id")
-  activeEstablishmentId String?  @map("active_establishment_id")
+  id                   String   @id @default(cuid())
+  expiresAt            DateTime @map("expires_at")
+  token                String   @unique
+  ipAddress            String?  @map("ip_address")
+  userAgent            String?  @map("user_agent")
+  userId               String   @map("user_id")
+  activeOrganizationId String?  @map("active_organization_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -83,6 +82,8 @@ model Verifications {
   @@map("verifications")
 }
 
+// ---- WITH ORGANIZATION -------------------------------------------------------------------------------
+
 model Organizations {
   id               String                  @id @default(cuid())
   name             String
@@ -95,9 +96,18 @@ model Organizations {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  members        Members[]
-  invitations    Invitations[]
-  establishments Establishments?
+  members                         Members[]
+  invitations                     Invitations[]
+  establishments                  Establishments?
+  professionals                   Professionals[]
+  services                        Services[]
+  professionalServices            ProfessionalServices[]
+  professionalAvailabilities      ProfessionalAvailabilities[]
+  appointments                    Appointments[]
+  establishmentCommissionDefaults EstablishmentCommissionDefault[]
+  professionalCommissionRules     ProfessionalCommissionRule[]
+  commissionEntries               CommissionEntry[]
+  auditLogs                       AuditLogs[]
 
   @@map("organizations")
 }
@@ -165,8 +175,6 @@ model Subscriptions {
   @@map("subscriptions")
 }
 
-// ---- WITHOUT BETTER_AUTH -------------------------------------------------------------------------------
-
 model Establishments {
   id              String  @id @default(cuid())
   organizationId  String  @unique @map("organization_id")
@@ -189,22 +197,14 @@ model Establishments {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organizations                   Organizations                    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  professionals                   Professionals[]
-  services                        Services[]
-  appointments                    Appointments[]
-  professionalAvailabilities      ProfessionalAvailabilities[]
-  professionalServices            ProfessionalServices[]
-  establishmentCommissionDefaults EstablishmentCommissionDefault[]
-  professionalCommissionRules     ProfessionalCommissionRule[]
-  commissionEntries               CommissionEntry[]
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("establishments")
 }
 
 model Professionals {
   id               String  @id @default(cuid())
-  establishmentId  String  @map("establishment_id")
+  organizationId   String  @map("organizationId")
   memberId         String  @unique @map("member_id")
   name             String
   bio              String
@@ -214,7 +214,7 @@ model Professionals {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  establishments              Establishments               @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  organizations               Organizations                @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   members                     Members                      @relation(fields: [memberId], references: [id], onDelete: Cascade)
   professionalServices        ProfessionalServices[]
   professionalAvailabilities  ProfessionalAvailabilities[]
@@ -227,7 +227,7 @@ model Professionals {
 
 model Services {
   id              String  @id @default(cuid())
-  establishmentId String  @map("establishment_id")
+  organizationId  String  @map("organization_id")
   name            String
   description     String
   durationMinutes Int     @map("duration_minutes")
@@ -237,7 +237,7 @@ model Services {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  establishments              Establishments               @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  organizations               Organizations                @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   professionalServices        ProfessionalServices[]
   appointments                Appointments[]
   professionalCommissionRules ProfessionalCommissionRule[]
@@ -247,54 +247,54 @@ model Services {
 }
 
 model ProfessionalServices {
-  id              String @id @default(cuid())
-  professionalId  String @map("professional_id")
-  establishmentId String @map("establishment_id")
-  serviceId       String @map("service_id")
+  id             String @id @default(cuid())
+  professionalId String @map("professional_id")
+  organizationId String @map("organization_id")
+  serviceId      String @map("service_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  professionals  Professionals  @relation(fields: [professionalId], references: [id], onDelete: Cascade)
-  services       Services       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  establishments Establishments @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  services      Services      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("professional_services")
 }
 
 model ProfessionalAvailabilities {
-  id              String @id @default(cuid())
-  professionalId  String @map("professional_id")
-  establishmentId String @map("establishment_id")
-  dayOfWeek       Int    @map("day_of_week")
-  startTime       String @map("start_time")
-  endTime         String @map("end_time")
+  id             String @id @default(cuid())
+  professionalId String @map("professional_id")
+  organizationId String @map("organization_id")
+  dayOfWeek      Int    @map("day_of_week")
+  startTime      String @map("start_time")
+  endTime        String @map("end_time")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  professionals  Professionals  @relation(fields: [professionalId], references: [id], onDelete: Cascade)
-  establishments Establishments @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("professional_availabilities")
 }
 
 model Appointments {
-  id              String            @id @default(cuid())
-  userId          String            @map("user_id")
-  establishmentId String            @map("establishment_id")
-  professionalId  String            @map("professional_id")
-  serviceId       String            @map("service_id")
-  startsAt        DateTime          @map("starts_at")
-  endsAt          DateTime          @map("ends_at")
-  status          AppointmentStatus @default(PENDING)
-  notes           String?
+  id             String            @id @default(cuid())
+  userId         String            @map("user_id")
+  organizationId String            @map("organization_id")
+  professionalId String            @map("professional_id")
+  serviceId      String            @map("service_id")
+  startsAt       DateTime          @map("starts_at")
+  endsAt         DateTime          @map("ends_at")
+  status         AppointmentStatus @default(PENDING)
+  notes          String?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   users             Users             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  establishments    Establishments    @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  organizations     Organizations     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   professionals     Professionals     @relation(fields: [professionalId], references: [id], onDelete: Cascade)
   services          Services          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   commissionEntries CommissionEntry[]
@@ -303,48 +303,48 @@ model Appointments {
 }
 
 model EstablishmentCommissionDefault {
-  id              String           @id @default(cuid())
-  establishmentId String           @map("establishment_id")
-  domain          CommissionDomain
-  type            CommissionType
-  value           Int
+  id             String           @id @default(cuid())
+  organizationId String           @map("organization_id")
+  domain         CommissionDomain
+  type           CommissionType
+  value          Int
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  establishments Establishments @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  @@unique([establishmentId, domain])
+  @@unique([organizationId, domain])
   @@map("establishment_commission_default")
 }
 
 model ProfessionalCommissionRule {
-  id              String           @id @default(cuid())
-  establishmentId String           @map("establishment_id")
-  professionalId  String           @map("professional_id")
-  domain          CommissionDomain
-  type            CommissionType
-  value           Int
+  id             String           @id @default(cuid())
+  organizationId String           @map("organization_id")
+  professionalId String           @map("professional_id")
+  domain         CommissionDomain
+  type           CommissionType
+  value          Int
   // TODO: Add productId
-  serviceId       String?          @map("service_id")
+  serviceId      String?          @map("service_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  establishments Establishments @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
-  professionals  Professionals  @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
   // TODO: Add product relation
-  services       Services?      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  services      Services?     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   // TODO: Add productId
   @@unique([professionalId, domain, serviceId])
-  @@index([establishmentId, professionalId])
+  @@index([organizationId, professionalId])
   @@map("professional_commission_rule")
 }
 
 model CommissionEntry {
   id              String                @id @default(cuid())
-  establishmentId String                @map("establishment_id")
+  organizationId  String                @map("organization_id")
   professionalId  String                @map("professional_id")
   domain          CommissionDomain
   baseAmount      Int                   @map("base_amount") // Preço praticado do item, em centavos
@@ -360,12 +360,12 @@ model CommissionEntry {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  establishments Establishments @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
-  professionals  Professionals  @relation(fields: [professionalId], references: [id], onDelete: Cascade)
-  appointments   Appointments?  @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
-  services       Services?      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  appointments  Appointments? @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  services      Services?     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
-  @@index([establishmentId, professionalId, createdAt])
+  @@index([organizationId, professionalId, createdAt])
   @@index([appointmentId])
   @@map("commission_entry")
 }
@@ -373,15 +373,17 @@ model CommissionEntry {
 // ---- AUDIT LOGS -------------------------------
 
 model AuditLogs {
-  id              String @id @default(cuid())
-  entity          String
-  entityId        String @map("entity_id")
-  action          String
-  userId          String @map("user_id")
-  establishmentId String @map("establishment_id")
-  changes         Json?
+  id             String @id @default(cuid())
+  entity         String
+  entityId       String @map("entity_id")
+  action         String
+  userId         String @map("user_id")
+  organizationId String @map("organization_id")
+  changes        Json?
 
   createdAt DateTime @default(now()) @map("created_at")
+
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([entity, entityId])
   @@map("audit_logs")

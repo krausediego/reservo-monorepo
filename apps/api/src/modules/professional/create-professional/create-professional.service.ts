@@ -56,11 +56,13 @@ export class CreateProfessionalService
           id: true,
         },
         where: {
-          memberId: hasMember.userId,
+          memberId: hasMember.id,
           isActive: true,
         },
       },
     );
+
+    console.log("hasProfessionalWithSameMember", hasProfessionalWithSameMember);
 
     if (hasProfessionalWithSameMember) {
       this.log("warn", "Member already linked");
@@ -87,7 +89,7 @@ export class CreateProfessionalService
 
     const professionalId = createId();
     const avatarStorageKey = await this.uploadAvatar({
-      establishmentId: params.establishmentId,
+      organizationId: params.organizationId,
       professionalId,
       image: params.avatar,
     });
@@ -190,7 +192,7 @@ export class CreateProfessionalService
     }
 
     const { key } = await this.storage.upload({
-      establishmentId: params.establishmentId,
+      organizationId: params.organizationId,
       context: "professionals",
       entityId: params.professionalId,
       fileName: `avatar_${Date.now()}.webp`,

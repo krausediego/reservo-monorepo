@@ -9,6 +9,7 @@ export interface ICreateEstablishment {
 export namespace CreateEstablishment {
   export type Params = ICreateEstablishmentSchema.GetParams & {
     userId: string;
+    organizationId: string;
     traceId: string;
   };
 
@@ -16,6 +17,7 @@ export namespace CreateEstablishment {
 
   export type UploadImageParams = {
     establishmentId: string;
+    organizationId: string;
     context: string;
     image?: File;
   };

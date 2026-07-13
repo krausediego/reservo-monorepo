@@ -19,7 +19,7 @@ export class ListProfessionalsController implements IController {
       const content = await this.listProfessionalsService().run({
         ...data,
         userId: locals.user.id,
-        establishmentId: locals.session.activeEstablishmentId!,
+        organizationId: locals.session.activeOrganizationId!,
         traceId: locals.traceId,
       });
 

@@ -50,7 +50,7 @@ export class UpdateProfessionalService
     const avatarStorageKey = await this.uploadAvatar({
       image: params.avatar,
       professionalId: hasProfessional.id,
-      establishmentId: params.establishmentId,
+      organizationId: params.organizationId,
     });
 
     let updatedProfessional = null;
@@ -123,7 +123,7 @@ export class UpdateProfessionalService
     }
 
     const { key } = await this.storage.upload({
-      establishmentId: params.establishmentId,
+      organizationId: params.organizationId,
       context: "professionals",
       entityId: params.professionalId,
       fileName: `avatar_${Date.now()}.webp`,

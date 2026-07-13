@@ -17,13 +17,17 @@ const UNAUTHORIZED = "Unauthorized";
 
 const usageCounters: Record<
   LimitMiddleware.LimitKey,
-  (establishmentId: string, organizationId: string) => Promise<number>
+  (organizationId: string) => Promise<number>
 > = {
-  professionals: (establishmentId) =>
-    basePrisma.professionals.count({ where: { establishmentId } }),
-  services: (establishmentId) =>
-    basePrisma.services.count({ where: { establishmentId } }),
-  // products: (establishmentId) => ,
+  professionals: (organizationId) =>
+    basePrisma.professionals.count({
+      where: { organizationId, isActive: true },
+    }),
+  services: (organizationId) =>
+    basePrisma.services.count({
+      where: { organizationId, isActive: true },
+    }),
+  // products: (organizationId) => ,
   members: (organizationId) =>
     basePrisma.members.count({ where: { organizationId } }),
 };
@@ -82,10 +86,7 @@ export class EnforceLimitMiddleware implements IMiddleware {
         return getHttpError(new UnauthorizedError(UNAUTHORIZED));
       }
 
-      const current = await usageCounters[this.key](
-        establishment.id,
-        organizationId,
-      );
+      const current = await usageCounters[this.key](organizationId);
 
       if (current >= limit) {
         this.logger.warn(

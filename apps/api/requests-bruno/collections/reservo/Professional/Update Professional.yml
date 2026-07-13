@@ -5,7 +5,7 @@ info:
 
 http:
   method: PUT
-  url: "{{baseURL}}/professional/we8hd2ssmjkz61amaaijuec1"
+  url: "{{baseURL}}/professional/s15hki1ddzkqi14vv521mffa"
   body:
     type: multipart-form
     data:
@@ -15,6 +15,9 @@ http:
       - name: bio
         type: text
         value: DIASHDIUASIAU
+      - name: ""
+        type: file
+        value: []
   auth: inherit
 
 settings:

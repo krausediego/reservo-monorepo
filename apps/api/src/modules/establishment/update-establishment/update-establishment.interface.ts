@@ -16,6 +16,7 @@ export namespace UpdateEstablishment {
   export type Response = IUpdateEstablishmentSchema.GetResponse;
 
   export type UploadImageParams = {
+    organizationId: string;
     establishmentId: string;
     context: string;
     image?: File;

@@ -7,7 +7,7 @@ export interface IDatabase {
 export namespace Database {
   export type Params = {
     userId: string;
-    establishmentId: string;
+    organizationId: string;
   };
 
   export type Response = {
@@ -40,7 +40,7 @@ export namespace Database {
   };
 
   export type AutoInjectedField =
-    | "establishmentId"
+    | "organizationId"
     | "createdBy"
     | "updatedBy"
     | "deletedBy";
@@ -110,7 +110,7 @@ export namespace Database {
     args: any;
     query: (args: any) => Promise<unknown>;
     userId: string;
-    establishmentId: string;
+    organizationId: string;
     client: any;
   };
 
@@ -128,7 +128,7 @@ export namespace Database {
   export type InjectTenantParams = {
     operation: string;
     args: any;
-    establishmentId: string;
+    organizationId: string;
   };
 
   export type InjectActorParams = {

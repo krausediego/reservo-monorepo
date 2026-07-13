@@ -7,7 +7,7 @@ export interface IListProfessionals {
 export namespace ListProfessionals {
   export type Params = IListProfessionalsSchema.GetParams & {
     userId: string;
-    establishmentId: string;
+    organizationId: string;
     traceId: string;
   };
 

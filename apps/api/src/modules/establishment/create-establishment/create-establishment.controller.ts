@@ -20,6 +20,7 @@ export class CreateEstablishmentController implements IController {
       const content = await this.createEstablishmentService().run({
         ...createEstablishmentSchema.parse({ body: data }).body,
         userId: locals.user.id,
+        organizationId: locals.session.activeOrganizationId!,
         traceId: locals.traceId,
       });
 

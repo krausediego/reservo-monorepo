@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { makeCreateProfessionalController } from "@/modules/professional/create-professional";
+import { makeDeleteProfessionalController } from "@/modules/professional/delete-professional";
 import { makeGetProfessionalController } from "@/modules/professional/get-professional";
 import { makeListProfessionalsController } from "@/modules/professional/list-professionals";
 import { makeUpdateProfessionalController } from "@/modules/professional/update-professional";
@@ -10,9 +11,11 @@ import {
   enforceAccess,
   enforceLimit,
   validateRequest,
+  validateRole,
 } from "@/routes/middlewares";
 import {
   createProfessionalSchema,
+  deleteProfessionalSchema,
   getProfessionalSchema,
   listProfessionalsSchema,
   updateProfessionalSchema,
@@ -22,6 +25,7 @@ export default (router: Router) => {
   router.post(
     "/professional",
     authAdmin,
+    validateRole("MANAGER"),
     upload.single("avatar"),
     enforceAccess("WRITE"),
     enforceLimit("professionals"),
@@ -48,8 +52,19 @@ export default (router: Router) => {
   router.put(
     "/professional/:id",
     authAdmin,
+    validateRole("MANAGER"),
+    upload.single("avatar"),
     enforceAccess("WRITE"),
     validateRequest(updateProfessionalSchema),
     adaptRoute(makeUpdateProfessionalController()),
+  );
+
+  router.delete(
+    "/professional/:id",
+    authAdmin,
+    validateRole("MANAGER"),
+    enforceAccess("WRITE"),
+    validateRequest(deleteProfessionalSchema),
+    adaptRoute(makeDeleteProfessionalController()),
   );
 };

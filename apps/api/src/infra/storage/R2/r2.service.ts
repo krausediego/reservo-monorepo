@@ -34,7 +34,7 @@ export class R2Service extends BaseService implements IStorage {
   }
 
   async upload({
-    establishmentId,
+    organizationId,
     context,
     entityId,
     fileName,
@@ -42,7 +42,7 @@ export class R2Service extends BaseService implements IStorage {
     contentType,
     metadata,
   }: Storage.UploadParams): Promise<Storage.UploadResponse> {
-    const key = this.buildKey({ establishmentId, context, entityId, fileName });
+    const key = this.buildKey({ organizationId, context, entityId, fileName });
 
     await this.client.send(
       new PutObjectCommand({
@@ -58,12 +58,12 @@ export class R2Service extends BaseService implements IStorage {
   }
 
   async delete({
-    establishmentId,
+    organizationId,
     context,
     entityId,
     fileName,
   }: Storage.DeleteParams): Promise<void> {
-    const key = this.buildKey({ establishmentId, context, entityId, fileName });
+    const key = this.buildKey({ organizationId, context, entityId, fileName });
 
     await this.deleteByKey({ key });
   }
@@ -90,14 +90,14 @@ export class R2Service extends BaseService implements IStorage {
   }
 
   async getUploadSignedUrl({
-    establishmentId,
+    organizationId,
     context,
     entityId,
     fileName,
     contentType,
     expiresInSeconds,
   }: Storage.GetUploadSignedUrlParams): Promise<Storage.GetUploadSignedUrlResponse> {
-    const key = this.buildKey({ establishmentId, context, entityId, fileName });
+    const key = this.buildKey({ organizationId, context, entityId, fileName });
 
     const command = new PutObjectCommand({
       Bucket: this.bucket,
@@ -133,11 +133,11 @@ export class R2Service extends BaseService implements IStorage {
   }
 
   async listFiles({
-    establishmentId,
+    organizationId,
     context,
     entityId,
   }: Storage.ListFilesParams): Promise<Storage.ListFilesResponse[]> {
-    const prefix = `${establishmentId}/${context}/${entityId}/`;
+    const prefix = `${organizationId}/${context}/${entityId}/`;
 
     const { Contents } = await this.client.send(
       new ListObjectsV2Command({
@@ -166,11 +166,11 @@ export class R2Service extends BaseService implements IStorage {
   }
 
   private buildKey({
-    establishmentId,
+    organizationId,
     context,
     entityId,
     fileName,
   }: Storage.BuildKeyParams): string {
-    return `${establishmentId}/${context}/${entityId}/${fileName}`;
+    return `${organizationId}/${context}/${entityId}/${fileName}`;
   }
 }

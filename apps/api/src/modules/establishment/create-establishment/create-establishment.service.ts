@@ -71,12 +71,14 @@ export class CreateEstablishmentService
 
     const logoStorageKey = await this.uploadImage({
       establishmentId,
+      organizationId: params.organizationId,
       context: "logo",
       image: params.logo,
     });
 
     const coverStorageKey = await this.uploadImage({
       establishmentId,
+      organizationId: params.organizationId,
       context: "cover",
       image: params.cover,
     });
@@ -167,7 +169,7 @@ export class CreateEstablishmentService
     }
 
     const { key } = await this.storage.upload({
-      establishmentId: params.establishmentId,
+      organizationId: params.organizationId,
       context: "establishments",
       entityId: params.establishmentId,
       fileName: `${params.context}_${Date.now()}.webp`,

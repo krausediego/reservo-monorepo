@@ -164,7 +164,7 @@ export class ${pascal}Controller implements IController {
       const content = await this.${camel}Service().run({
         ...data,
         userId: locals.user.id,
-        establishmentId: locals.session.activeEstablishmentId!,
+        organizationId: locals.session.activeOrganizationId!,
         traceId: locals.traceId,
       });
 
@@ -187,7 +187,7 @@ export interface I${pascal} {
 export namespace ${pascal} {
   export type Params = I${pascal}Schema.GetParams & {
     userId: string;
-    establishmentId: string;
+    organizationId: string;
     traceId: string;
   };
 

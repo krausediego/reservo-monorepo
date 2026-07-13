@@ -2,7 +2,7 @@ import z from "zod";
 
 export const professionalSchema = z.object({
   id: z.cuid2(),
-  establishmentId: z.cuid2(),
+  organizationId: z.cuid2(),
   memberId: z.cuid2(),
   name: z.string(),
   bio: z.string(),
@@ -15,7 +15,7 @@ export const professionalSchema = z.object({
 export const professionalAvailabilitiesSchema = z.object({
   id: z.cuid2(),
   professionalId: z.cuid2(),
-  establishmentId: z.cuid2(),
+  organizationId: z.cuid2(),
   dayOfWeek: z.number().int(),
   startTime: z.string(),
   endTime: z.string(),

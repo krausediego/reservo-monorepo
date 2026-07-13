@@ -3,7 +3,7 @@ import { Database, IDatabase, ILoggingManager } from "@/infra";
 import { BaseService } from ".";
 
 export abstract class BaseDatabaseService extends BaseService {
-  protected establishmentId: string;
+  protected organizationId: string;
 
   protected userId: string;
 
@@ -16,7 +16,7 @@ export abstract class BaseDatabaseService extends BaseService {
 
   protected get db(): Database.Response {
     return this.database.create({
-      establishmentId: this.establishmentId,
+      organizationId: this.organizationId,
       userId: this.userId,
     });
   }

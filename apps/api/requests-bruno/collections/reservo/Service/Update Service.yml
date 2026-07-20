@@ -1,0 +1,24 @@
+info:
+  name: Update Service
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseURL}}/service/cmrt6fx240000087sg5bs1h3q"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Serviço 3",
+        "description": "Descrição bem elaborada",
+        "durationInMinutes": 60,
+        "priceCents": 5000
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

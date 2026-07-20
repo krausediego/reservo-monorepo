@@ -231,7 +231,7 @@ model Services {
   name            String
   description     String
   durationMinutes Int     @map("duration_minutes")
-  price           Int
+  priceCents      Int     @map("price_cents")
   isActive        Boolean @default(true) @map("is_active")
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -289,6 +289,11 @@ model Appointments {
   endsAt         DateTime          @map("ends_at")
   status         AppointmentStatus @default(PENDING)
   notes          String?
+
+  // SNAPSHOT
+  serviceName            String @map("service_name")
+  serviceDurationMinutes Int    @map("service_duration_minutes")
+  servicePriceCents      Int    @map("service_price_cents")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

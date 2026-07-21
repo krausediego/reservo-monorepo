@@ -26,14 +26,27 @@ export class GetProfessionalService
   async run(params: GetProfessional.Params): Promise<GetProfessional.Response> {
     this.log("info", "Starting process get-professional");
 
-    const professional = await this.db.professionals.findFirst({
+    const hasProfessional = await this.db.professionals.findFirst({
       where: {
         id: params.id,
         isActive: true,
       },
+      include: {
+        professionalAvailabilities: true,
+        professionalServices: {
+          select: {
+            services: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    if (!professional) {
+    if (!hasProfessional) {
       this.log("warn", "Professional not found", {
         id: params.id,
       });
@@ -41,14 +54,24 @@ export class GetProfessionalService
     }
 
     const avatarUrl =
-      professional?.avatarStorageKey &&
-      (await this.storage.getSignedUrl({ key: professional.avatarStorageKey }));
+      hasProfessional?.avatarStorageKey &&
+      (await this.storage.getSignedUrl({
+        key: hasProfessional.avatarStorageKey,
+      }));
+
+    const {
+      professionalAvailabilities,
+      professionalServices,
+      ...professional
+    } = hasProfessional;
 
     return {
       professional: {
         ...professional,
         avatarUrl,
       },
+      availabilities: professionalAvailabilities,
+      services: professionalServices.map((ps) => ps.services),
     };
   }
 }

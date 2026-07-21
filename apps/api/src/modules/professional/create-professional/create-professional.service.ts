@@ -62,8 +62,6 @@ export class CreateProfessionalService
       },
     );
 
-    console.log("hasProfessionalWithSameMember", hasProfessionalWithSameMember);
-
     if (hasProfessionalWithSameMember) {
       this.log("warn", "Member already linked");
       throw new ConflictError("Member already linked");

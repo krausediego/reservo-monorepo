@@ -5,7 +5,11 @@ info:
 
 http:
   method: PUT
-  url: "{{baseURL}}/professional/s15hki1ddzkqi14vv521mffa"
+  url: "{{baseURL}}/professional/:id"
+  params:
+    - name: id
+      value: s15hki1ddzkqi14vv521mffa
+      type: path
   body:
     type: multipart-form
     data:

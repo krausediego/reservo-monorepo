@@ -45,6 +45,9 @@ export class GetEstablishmentService
       where: {
         organizationId: hasMember.organizationId,
       },
+      include: {
+        establishmentAvailabilities: true,
+      },
     });
 
     if (!establishment) {
@@ -59,7 +62,6 @@ export class GetEstablishmentService
       coverStorageKey,
       latitude,
       longitude,
-      businessHours,
       ...restEstablishment
     } = establishment;
 
@@ -71,10 +73,10 @@ export class GetEstablishmentService
         ...restEstablishment,
         latitude: latitude.toNumber(),
         longitude: longitude.toNumber(),
-        businessHours: JSON.parse(businessHours!.toString()),
         logoUrl: logoSignedUrl,
         coverUrl: coverSignedUrl,
       },
+      availabilities: establishment.establishmentAvailabilities,
     };
   }
 

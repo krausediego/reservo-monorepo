@@ -108,6 +108,7 @@ model Organizations {
   professionalCommissionRules     ProfessionalCommissionRule[]
   commissionEntries               CommissionEntry[]
   auditLogs                       AuditLogs[]
+  establishmentAvailabilities     EstablishmentAvailabilities[]
 
   @@map("organizations")
 }
@@ -188,7 +189,6 @@ model Establishments {
   zipCode         String  @map("zip_code")
   latitude        Decimal
   longitude       Decimal
-  businessHours   Json    @map("business_hours")
   isActive        Boolean @default(true) @map("is_active")
   phone           String?
   logoStorageKey  String? @map("logo_storage_key")
@@ -197,9 +197,30 @@ model Establishments {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizations               Organizations                 @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  establishmentAvailabilities EstablishmentAvailabilities[]
 
   @@map("establishments")
+}
+
+model EstablishmentAvailabilities {
+  id              String  @id @default(cuid())
+  establishmentId String  @map("establishment_id")
+  organizationId  String  @map("organization_id")
+  dayOfWeek       Int     @map("day_of_week")
+  startMinutes    Int     @map("start_minutes")
+  endMinutes      Int     @map("end_minutes")
+  closed          Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  establishments Establishments @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  organizations  Organizations  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([establishmentId, dayOfWeek])
+  @@index([establishmentId, dayOfWeek])
+  @@map("establishment_availabilities")
 }
 
 model Professionals {
@@ -263,12 +284,13 @@ model ProfessionalServices {
 }
 
 model ProfessionalAvailabilities {
-  id             String @id @default(cuid())
-  professionalId String @map("professional_id")
-  organizationId String @map("organization_id")
-  dayOfWeek      Int    @map("day_of_week")
-  startTime      String @map("start_time")
-  endTime        String @map("end_time")
+  id             String  @id @default(cuid())
+  professionalId String  @map("professional_id")
+  organizationId String  @map("organization_id")
+  dayOfWeek      Int     @map("day_of_week")
+  startMinutes   Int     @map("start_minutes")
+  endMinutes     Int     @map("end_minutes")
+  closed         Boolean @default(false)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -276,6 +298,8 @@ model ProfessionalAvailabilities {
   professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
   organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  @@unique([professionalId, dayOfWeek])
+  @@index([professionalId, dayOfWeek])
   @@map("professional_availabilities")
 }
 

@@ -10,8 +10,8 @@ http:
     type: json
     data: |-
       {
-        "name": "Roberto",
-        "email": "roberto@gmail.com",
+        "name": "Diego",
+        "email": "diegoemanuelk@gmail.com",
         "password": "diego0123",
         "image": "",
         "callbackURL": "",

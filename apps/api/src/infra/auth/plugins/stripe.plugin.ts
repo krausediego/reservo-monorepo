@@ -9,6 +9,16 @@ const stripeClient = new Stripe(StripeEnv.secretKey, {
   apiVersion: "2026-06-24.dahlia",
 });
 
+function resolveAccessState(status: string) {
+  if (status === "active" || status === "trialing") {
+    return { accessState: "ACTIVE" as const, gracePausedAt: null };
+  }
+  if (status === "paused") {
+    return { accessState: "GRACE" as const, gracePausedAt: new Date() };
+  }
+  return null; // outros status: não mexe
+}
+
 export const stripePlugin = {
   plugins: [
     stripe({
@@ -76,31 +86,29 @@ export const stripePlugin = {
           };
         },
         onSubscriptionUpdate: async ({ subscription, stripeSubscription }) => {
-          const { status } = stripeSubscription;
-
-          if (status === "paused") {
-            await basePrisma.organizations.update({
-              data: {
-                accessState: "GRACE",
-                gracePausedAt: new Date(),
-              },
-              where: {
-                id: subscription.referenceId,
-              },
-            });
+          const resolved = resolveAccessState(stripeSubscription.status);
+          if (!resolved) {
+            return;
           }
 
-          if (status === "active") {
-            await basePrisma.organizations.update({
-              data: {
-                accessState: "ACTIVE",
-                gracePausedAt: null,
-              },
-              where: {
-                id: subscription.referenceId,
-              },
-            });
+          await basePrisma.organizations.update({
+            data: resolved,
+            where: { id: subscription.referenceId },
+          });
+        },
+        onSubscriptionComplete: async ({
+          subscription,
+          stripeSubscription,
+        }) => {
+          const resolved = resolveAccessState(stripeSubscription.status);
+          if (!resolved) {
+            return;
           }
+
+          await basePrisma.organizations.update({
+            data: resolved,
+            where: { id: subscription.referenceId },
+          });
         },
         onSubscriptionCancel: async ({ subscription }) => {
           await basePrisma.organizations.update({

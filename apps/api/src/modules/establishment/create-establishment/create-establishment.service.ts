@@ -114,11 +114,20 @@ export class CreateEstablishmentService
             zipCode: params.zipCode,
             latitude: params.latitude,
             longitude: params.longitude,
-            businessHours: JSON.stringify(params.businessHours),
             phone: params.phone,
             logoStorageKey,
             coverStorageKey,
           },
+        });
+
+        await tx.establishmentAvailabilities.createMany({
+          data: params.establishmentAvailabilities.map((availability) => {
+            return {
+              ...availability,
+              establishmentId,
+              organizationId: id,
+            };
+          }),
         });
 
         return { establishment: establishmentCreated };
@@ -130,7 +139,6 @@ export class CreateEstablishmentService
       return {
         establishment: {
           ...establishment,
-          businessHours: JSON.parse(establishment.businessHours!.toString()),
           latitude: establishment.latitude.toNumber(),
           longitude: establishment.longitude.toNumber(),
           logoUrl: logoSignedUrl,

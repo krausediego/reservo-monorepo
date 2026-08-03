@@ -112,7 +112,6 @@ export class UpdateEstablishmentService
             zipCode: params.zipCode,
             latitude: params.latitude,
             longitude: params.longitude,
-            businessHours: JSON.stringify(params.businessHours),
             phone: params.phone,
             logoStorageKey: logoStorageKey ?? hasEstablishment.logoStorageKey,
             coverStorageKey:
@@ -122,6 +121,20 @@ export class UpdateEstablishmentService
             id: params.id,
           },
         });
+
+        for (const availability of params.establishmentAvailabilities) {
+          await tx.establishmentAvailabilities.update({
+            data: {
+              ...availability,
+            },
+            where: {
+              establishmentId_dayOfWeek: {
+                dayOfWeek: availability.dayOfWeek,
+                establishmentId: params.id,
+              },
+            },
+          });
+        }
 
         if (establishmentSlug !== hasEstablishment.slug) {
           await tx.organizations.update({
@@ -158,7 +171,6 @@ export class UpdateEstablishmentService
       return {
         establishment: {
           ...establishment,
-          businessHours: JSON.parse(establishment.businessHours!.toString()),
           latitude: establishment.latitude.toNumber(),
           longitude: establishment.longitude.toNumber(),
           logoUrl: null,

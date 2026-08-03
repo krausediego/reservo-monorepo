@@ -17,8 +17,9 @@ export const professionalAvailabilitiesSchema = z.object({
   professionalId: z.cuid2(),
   organizationId: z.cuid2(),
   dayOfWeek: z.number().int(),
-  startTime: z.string(),
-  endTime: z.string(),
+  startMinutes: z.number(),
+  endMinutes: z.number(),
+  closed: z.boolean(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

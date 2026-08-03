@@ -4,3 +4,5 @@ export * from "./get-professional.types";
 export * from "./update-professional.types";
 export * from "./professional.types";
 export * from "./delete-professional.types";
+export * from "./list-professional-services.types";
+export * from "./update-professional-services.types";

@@ -41,8 +41,6 @@ export class CreateProfessionalService
       },
     });
 
-    console.log("member", hasMember);
-
     if (!hasMember) {
       this.log("warn", "Member not found", {
         memberId: params.memberId,
@@ -164,8 +162,18 @@ export class CreateProfessionalService
         },
       });
 
+      const establishmentAvailabilities =
+        await tx.establishmentAvailabilities.findMany();
+
       await tx.professionalAvailabilities.createMany({
-        data: this.getDefaultProfessionalAvailabilities(params.professionalId),
+        data: establishmentAvailabilities.map(
+          ({ establishmentId: _, ...availability }) => {
+            return {
+              ...availability,
+              professionalId: params.professionalId,
+            };
+          },
+        ),
         skipDuplicates: true,
       });
 
@@ -209,17 +217,5 @@ export class CreateProfessionalService
     }
 
     return this.storage.getSignedUrl({ key: params.key });
-  }
-
-  private getDefaultProfessionalAvailabilities(professionalId: string) {
-    return [
-      { professionalId, dayOfWeek: 0, startTime: "08:00", endTime: "18:00" },
-      { professionalId, dayOfWeek: 1, startTime: "08:00", endTime: "18:00" },
-      { professionalId, dayOfWeek: 2, startTime: "08:00", endTime: "18:00" },
-      { professionalId, dayOfWeek: 3, startTime: "08:00", endTime: "18:00" },
-      { professionalId, dayOfWeek: 4, startTime: "08:00", endTime: "18:00" },
-      { professionalId, dayOfWeek: 5, startTime: "08:00", endTime: "18:00" },
-      { professionalId, dayOfWeek: 6, startTime: "08:00", endTime: "18:00" },
-    ];
   }
 }

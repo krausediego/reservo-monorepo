@@ -2,3 +2,5 @@ export * from "./establishment";
 export * from "./professional";
 export * from "./service";
 export * from "./helpers";
+export * from "./member";
+export * from "./user";

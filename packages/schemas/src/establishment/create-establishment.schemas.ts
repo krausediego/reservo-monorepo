@@ -1,21 +1,21 @@
 import { z } from "zod";
 import { establishmentSchema } from ".";
 
+const timeMinutesSchema = z
+  .number()
+  .int("Deve ser minutos inteiros")
+  .min(0, "Fora do range do dia")
+  .max(1439, "Fora do range do dia") // 23:59 = 1439
+  .refine((m) => m % 15 === 0, "Deve ser múltiplo de 15 minutos");
+
 const businessHourSchema = z.object(
   {
-    day: z
+    dayOfWeek: z
       .int({ error: "O dia da semana é obrigatório" })
       .min(0, { error: "O dia deve estar entre 0 e 6" })
       .max(6, { error: "O dia deve estar entre 0 e 6" }),
-
-    open: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, {
-      error: "Horário de abertura inválido",
-    }),
-
-    close: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, {
-      error: "Horário de fechamento inválido",
-    }),
-
+    startMinutes: timeMinutesSchema,
+    endMinutes: timeMinutesSchema,
     closed: z.boolean(),
   },
   { error: "O horário de funcionamento é obrigatório" },
@@ -27,20 +27,21 @@ const businessHoursArraySchema = z
   .max(7, { error: "Horário de funcionamento em quantidade inválida" })
   .refine(
     (hours) => {
-      const days = hours.map((h) => h.day);
+      const days = hours.map((h) => h.dayOfWeek);
       return new Set(days).size === days.length;
     },
     { error: "Existem dias da semana duplicados" },
+  )
+  .refine(
+    (hours) => {
+      return hours.every((h) => {
+        if (h.closed) return true;
+
+        return h.startMinutes < h.endMinutes;
+      });
+    },
+    { error: "O horário de abertura deve ser anterior ao de fechamento" },
   );
-// .refine(
-//   (hours) => {
-//     hours.every((h) => {
-//       if (h.closed) return true;
-//       return h.open < h.close;
-//     });
-//   },
-//   { error: "O horário de abertura deve ser anterior ao de fechamento" },
-// );
 
 const singleFileSchema = (maxSizeMb: number, fieldLabel: string) =>
   z
@@ -77,51 +78,42 @@ export const createEstablishmentSchema = z.object({
       .regex(/^[a-zA-Z0-9À-ÿ\s]*$/, {
         error: "O nome não pode conter caracteres especiais",
       }),
-
     cnpj: z
       .string({ error: "O CNPJ é obrigatório" })
       .min(14, "CNPJ deve ter pelo menos 14 caracteres")
       .max(18, "CNPJ deve ter no máximo 18 caracteres"),
-
     description: z
       .string({ error: "A descrição é obrigatória" })
       .min(10, { error: "A descrição deve conter ao menos 10 caracteres" })
       .max(1800, { error: "A descrição está muito longa" }),
-
     address: z
       .string({ error: "O endereço é obrigatório" })
       .min(5, { error: "O endereço deve conter ao menos 5 caracteres" })
       .max(255, { error: "O endereço deve conter no máximo 255 caracteres" }),
-
     city: z
       .string({ error: "A cidade é obrigatória" })
       .min(2, { error: "A cidade deve conter ao menos 2 caracteres" })
       .max(100, { error: "A cidade deve conter no máximo 100 caracteres" }),
-
     state: z
       .string({ error: "O estado é obrigatório" })
       .length(2, { error: "O estado deve ser informado com a sigla (UF)" })
       .regex(/^[A-Z]{2}$/, {
         error: "A UF deve conter duas letras maiúsculas",
       }),
-
     zipCode: z
       .string({ error: "O CEP é obrigatório" })
       .regex(/^\d{5}-?\d{3}$/, {
         error: "CEP inválido",
       }),
-
     latitude: z.coerce
       .number({ error: "A latitude é obrigatória" })
       .min(-90, { error: "Latitude inválida" })
       .max(90, { error: "Latitude inválida" }),
-
     longitude: z.coerce
       .number({ error: "A longitude é obrigatória" })
       .min(-180, { error: "Longitude inválida" })
       .max(180, { error: "Longitude inválida" }),
-
-    businessHours: z
+    establishmentAvailabilities: z
       .string({
         error: "O horário de funcionamento é obrigatório",
       })
@@ -137,16 +129,13 @@ export const createEstablishmentSchema = z.object({
         }
       })
       .pipe(businessHoursArraySchema),
-
     phone: z
       .string()
       .regex(/^(\+55\s?)?(\(?\d{2}\)?\s?)?\d{4,5}-?\d{4}$/, {
         error: "Telefone inválido",
       })
       .optional(),
-
     logo: singleFileSchema(5, "logo"),
-
     cover: singleFileSchema(10, "cover"),
   }),
 });

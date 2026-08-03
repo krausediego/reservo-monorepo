@@ -4,3 +4,5 @@ export * from "./professional.schemas";
 export * from "./get-professional.schemas";
 export * from "./update-professional.schemas";
 export * from "./delete-professional.schemas";
+export * from "./list-professional-services.schemas";
+export * from "./update-professional-services.schemas";

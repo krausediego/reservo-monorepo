@@ -7,8 +7,6 @@ export class ValidateRequestMiddleware implements IMiddleware {
   async handle(request: Http.IRequest<ValidateMiddleware.IData>) {
     const { body, params, query, schema } = request.data;
 
-    console.log("params", params);
-
     try {
       await schema.parseAsync({
         body,

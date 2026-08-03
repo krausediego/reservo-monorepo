@@ -14,16 +14,6 @@ import { stripePlugin } from "./plugins";
 
 const options = {
   plugins: [organization()],
-  user: {
-    additionalFields: {
-      role: {
-        type: "string",
-        required: false,
-        input: true,
-        defaultValue: "CLIENT",
-      },
-    },
-  },
 } satisfies BetterAuthOptions;
 
 const sessionMiddleware = customSession(async ({ user, session }) => {
@@ -66,6 +56,16 @@ export const auth = betterAuth({
     openAPI(),
     sessionMiddleware,
   ],
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        input: true,
+        defaultValue: "CLIENT",
+      },
+    },
+  },
   database: prismaAdapter(basePrisma, {
     provider: "postgresql",
     usePlural: true,
@@ -99,7 +99,14 @@ export const auth = betterAuth({
       const role = ctx.body?.role as string;
 
       if (role && ["CLIENT", "ADMIN"].includes(role)) {
-        ctx.body.role = role;
+        // eslint-disable-next-line consistent-return
+        return {
+          ...ctx,
+          body: {
+            ...ctx.body,
+            role,
+          },
+        };
       }
     }),
   },
@@ -113,7 +120,11 @@ export const auth = betterAuth({
             throw new APIError("BAD_REQUEST", { message: "Invalid role" });
           }
 
-          return { data: user };
+          return {
+            data: {
+              ...user,
+            },
+          };
         },
       },
     },

@@ -36,9 +36,9 @@ http:
       - name: longitude
         type: text
         value: "-49.081062293762926"
-      - name: businessHours
+      - name: establishmentAvailabilities
         type: text
-        value: '[{"day":0,"open":"08:00","close":"18:00","closed":true},{"day":1,"open":"08:00","close":"18:00","closed":false},{"day":2,"open":"08:00","close":"18:00","closed":false},{"day":3,"open":"08:00","close":"18:00","closed":false},{"day":4,"open":"08:00","close":"18:00","closed":false},{"day":5,"open":"08:00","close":"18:00","closed":false},{"day":6,"open":"08:00","close":"18:00","closed":true}]'
+        value: '[{"dayOfWeek":0,"startMinutes":480,"endMinutes":1080,"closed":true},{"dayOfWeek":1,"startMinutes":480,"endMinutes":1080,"closed":false},{"dayOfWeek":2,"startMinutes":480,"endMinutes":1080,"closed":false},{"dayOfWeek":3,"startMinutes":480,"endMinutes":1080,"closed":false},{"dayOfWeek":4,"startMinutes":480,"endMinutes":1080,"closed":false},{"dayOfWeek":5,"startMinutes":480,"endMinutes":1080,"closed":false},{"dayOfWeek":6,"startMinutes":480,"endMinutes":1080,"closed":true}]'
       - name: logo
         type: file
         value:

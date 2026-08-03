@@ -11,7 +11,6 @@ export const establishmentSchema = z.object({
   zipCode: z.string(),
   latitude: z.number(),
   longitude: z.number(),
-  businessHours: z.object(),
   phone: z.string().nullable(),
   organizationId: z.string(),
   createdAt: z.date(),

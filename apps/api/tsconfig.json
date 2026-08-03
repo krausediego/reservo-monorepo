@@ -2,9 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "commonjs",
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022"],
     "allowJs": true,
     "outDir": "dist",
     "rootDir": "../../",
@@ -16,28 +14,17 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*",
-      ],
-      "@reservo/schemas": [
-        "../../packages/schemas/src/index.ts"
-      ],
-      "@reservo/types": [
-        "../../packages/types/src/index.ts"
-      ]
+      "@/*": ["./src/*"],
+      "@reservo/schemas": ["../../packages/schemas/src/index.ts"],
+      "@reservo/types": ["../../packages/types/src/index.ts"]
     },
     "ignoreDeprecations": "6.0",
-    "typeRoots": [
-      "./node_modules/@types",
-      "./typings"
-    ],
+    "typeRoots": ["./node_modules/@types", "./typings"],
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "./src"
-  ]
+  "include": ["./src"]
 }

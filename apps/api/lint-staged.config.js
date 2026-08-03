@@ -1,0 +1,8 @@
+module.exports = {
+  "src/**/*.{ts,js}": ["eslint --fix", "prettier --write"],
+  "src/**/*.{spec,test}.{ts,js}": [
+    "eslint --fix",
+    "prettier --write",
+    "cross-env NODE_ENV=test jest --bail --passWithNoTests",
+  ],
+};

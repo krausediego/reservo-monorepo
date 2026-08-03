@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { Prisma, PrismaClient } from "generated/prisma/client";
 
 export interface IDatabase {

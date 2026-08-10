@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:http": "tsx watch --tsconfig tsconfig.json src/server.ts | pino-pretty --messageKey message --ignore severity",
+    "dev": "tsx watch --tsconfig tsconfig.json src/server.ts | pino-pretty --messageKey message --ignore severity",
     "generate": "tsx scripts/generate-module.ts",
     "lint": "eslint src",
     "lint:fix": "eslint . --fix",

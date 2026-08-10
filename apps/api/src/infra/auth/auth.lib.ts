@@ -48,7 +48,8 @@ const sessionMiddleware = customSession(async ({ user, session }) => {
 
 export const auth = betterAuth({
   basePath: "/api/v1/auth",
-  baseURL: "http://localhost:5173",
+  baseURL: "http://localhost:3000",
+  trustedOrigins: ["http://localhost:5173"],
   plugins: [
     ...(options.plugins ?? []),
     ...(stripePlugin.plugins ?? []),

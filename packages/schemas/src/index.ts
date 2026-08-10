@@ -4,3 +4,4 @@ export * from "./service";
 export * from "./helpers";
 export * from "./member";
 export * from "./user";
+export * from "./auth";

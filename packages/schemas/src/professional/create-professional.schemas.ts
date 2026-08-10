@@ -2,27 +2,13 @@ import { z } from "zod";
 
 const singleFileSchema = (maxSizeMb: number, fieldLabel: string) =>
   z
-    .array(
-      z.object({
-        fieldname: z.string(),
-        originalname: z.string(),
-        mimetype: z.enum(["image/jpeg", "image/png", "image/webp"], {
-          error: `Formato de ${fieldLabel} inválido`,
-        }),
-        buffer: z.instanceof(Buffer),
-        size: z.number().max(maxSizeMb * 1024 * 1024, {
-          error: `${fieldLabel} deve ter no máximo ${maxSizeMb}MB`,
-        }),
+    .object({
+      mimetype: z.enum(["image/jpeg", "image/png", "image/webp"], {
+        error: `Formato de ${fieldLabel} inválido`,
       }),
-    )
-    .max(1, { error: `Apenas um arquivo de ${fieldLabel} é permitido` })
-    .transform((files) => {
-      const file = files[0];
-      if (!file) return undefined;
-
-      return new File([file.buffer as BlobPart], file.originalname, {
-        type: file.mimetype,
-      });
+      size: z.number().max(maxSizeMb * 1024 * 1024, {
+        error: `${fieldLabel} deve ter no máximo ${maxSizeMb}MB`,
+      }),
     })
     .optional();
 

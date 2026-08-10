@@ -27,14 +27,15 @@ export class App {
   }
 
   setupEnvironment(): this {
-    this.app.all("/api/v1/auth/*path", toNodeHandler(auth));
     this.app.use(
       cors({
-        origin: "http:localhost:5173",
-        methods: ["GET", "POST", "PUT", "DELETE"],
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
       }),
     );
+    this.app.all("/api/v1/auth/*path", toNodeHandler(auth));
     this.app.use(express.json());
     return this;
   }

@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { paginatedResponse, paginationQuerySchema } from "../helpers";
-import { professionalAvailabilitiesSchema, professionalSchema } from ".";
+import {
+  professionalAvailabilitiesSchema,
+  professionalSchema,
+} from "./professional.schemas";
 import { serviceSchema } from "../service";
 
 export const listProfessionalsSchema = z.object({

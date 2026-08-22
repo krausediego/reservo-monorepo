@@ -1,0 +1,19 @@
+info:
+  name: Accept Invitation
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseURL}}/admin/accept-invitation/:id"
+  params:
+    - name: id
+      value: cmsp662uu0000kf7sdke9sjak
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

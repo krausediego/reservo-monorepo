@@ -11,10 +11,10 @@ http:
     data:
       - name: name
         type: text
-        value: Aqui vai outro
+        value: Aqui vai outro2
       - name: cnpj
         type: text
-        value: "50420633000999"
+        value: "50420633010999"
       - name: description
         type: text
         value: tudo isso e mais um pouco
@@ -43,12 +43,10 @@ http:
         type: file
         value:
           - /Users/diegokrause/Downloads/LEGO Logo.webp
-        disabled: true
       - name: cover
         type: file
         value:
           - /Users/diegokrause/Downloads/LinkedIn Cover.jpg
-        disabled: true
   auth: inherit
 
 settings:

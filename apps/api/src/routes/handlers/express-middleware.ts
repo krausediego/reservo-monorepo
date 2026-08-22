@@ -18,6 +18,8 @@ export const adaptMiddleware = (
       body: req.body ?? {},
       params: req.params ?? {},
       query: req.query ?? {},
+      files: req.files,
+      file: req.file,
       schema: schema ?? {},
     };
 

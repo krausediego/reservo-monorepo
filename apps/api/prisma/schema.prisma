@@ -135,7 +135,7 @@ model Invitations {
   id             String           @id @default(cuid())
   organizationId String           @map("organization_id")
   email          String
-  role           String?
+  role           MemberRole       @default(PROFESSIONAL)
   status         InvitationStatus @default(PENDING)
   expiresAt      DateTime         @map("expires_at")
   inviterId      String           @map("inviter_id")
@@ -183,7 +183,9 @@ model Establishments {
   slug            String  @unique
   cnpj            String
   description     String
-  address         String
+  street          String
+  number          Int
+  neighborhood    String
   city            String
   state           String
   zipCode         String  @map("zip_code")

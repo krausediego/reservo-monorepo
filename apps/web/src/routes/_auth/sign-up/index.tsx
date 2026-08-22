@@ -1,12 +1,12 @@
 import {
-  NavigateToSignUp,
-  SignInForm,
-  SignInHeader,
-} from "@/modules/auth/sign-in/components";
+  NavigateToSignIn,
+  SignUpForm,
+  SignUpHeader,
+} from "@/modules/auth/sign-up/components";
 import { createFileRoute } from "@tanstack/react-router";
 import { Zap } from "lucide-react";
 
-export const Route = createFileRoute("/_auth/sign-in")({
+export const Route = createFileRoute("/_auth/sign-up/")({
   component: RouteComponent,
 });
 
@@ -17,9 +17,9 @@ function RouteComponent() {
         <Zap className="size-20" />
       </div>
       <div className="w-full flex flex-col items-center justify-center gap-7 relative">
-        <NavigateToSignUp />
-        <SignInHeader />
-        <SignInForm />
+        <NavigateToSignIn />
+        <SignUpHeader />
+        <SignUpForm />
       </div>
     </div>
   );

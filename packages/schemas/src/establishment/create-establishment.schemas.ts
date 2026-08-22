@@ -92,17 +92,15 @@ export const createEstablishmentSchema = z.object({
         error: "CEP inválido",
       }),
     latitude: z.coerce
-      .number({ error: "A latitude é obrigatória" })
+      .number<number>({ error: "A latitude é obrigatória" })
       .min(-90, { error: "Latitude inválida" })
       .max(90, { error: "Latitude inválida" }),
     longitude: z.coerce
-      .number({ error: "A longitude é obrigatória" })
+      .number<number>({ error: "A longitude é obrigatória" })
       .min(-180, { error: "Longitude inválida" })
       .max(180, { error: "Longitude inválida" }),
     establishmentAvailabilities: z
-      .string({
-        error: "O horário de funcionamento é obrigatório",
-      })
+      .any()
       .transform((val, ctx) => {
         try {
           return JSON.parse(val);
@@ -121,8 +119,8 @@ export const createEstablishmentSchema = z.object({
         error: "Telefone inválido",
       })
       .optional(),
-    logo: singleFileSchema(5, "logo"),
-    cover: singleFileSchema(10, "cover"),
+    logo: z.instanceof(File).optional(),
+    cover: z.instanceof(File).optional(),
   }),
 });
 

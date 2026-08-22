@@ -3,7 +3,7 @@ import { signUpApi } from "../api";
 import { toast } from "@/components/ui/toast";
 import { router } from "@/main";
 
-export function useSignUp() {
+export function useSignUpMutation() {
   return useMutation({
     mutationFn: signUpApi,
     onSuccess: async () => {

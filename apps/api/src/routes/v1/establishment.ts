@@ -9,7 +9,12 @@ import {
 } from "@reservo/schemas";
 
 import { adaptRoute, upload } from "../handlers";
-import { authAdmin, validateRequest, validateRole } from "../middlewares";
+import {
+  authAdmin,
+  normalizeFiles,
+  validateRequest,
+  validateRole,
+} from "../middlewares";
 
 export default (router: Router): void => {
   router.post(
@@ -19,6 +24,7 @@ export default (router: Router): void => {
       { name: "logo", maxCount: 1 },
       { name: "cover", maxCount: 1 },
     ]),
+    normalizeFiles(),
     validateRequest(createEstablishmentSchema),
     adaptRoute(makeCreateEstablishmentController()),
   );

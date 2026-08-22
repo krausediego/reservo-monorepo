@@ -16,7 +16,7 @@ import { signInSchema } from "@reservo/schemas";
 import type { ISignInSchema } from "@reservo/types";
 import { Lock, Mail } from "lucide-react";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
-import { useSignIn } from "../hooks";
+import { useSignInMutation } from "../hooks";
 import { Spinner } from "@/components/ui/spinner";
 
 export function SignInForm() {
@@ -29,7 +29,7 @@ export function SignInForm() {
     },
   });
 
-  const { mutateAsync, isPending } = useSignIn();
+  const { mutateAsync, isPending } = useSignInMutation();
 
   const handleSignIn: SubmitHandler<ISignInSchema.GetParams> = async (
     values,

@@ -5,3 +5,4 @@ export * from "./validate-request";
 export * from "./validate-member-role";
 export * from "./enforce-access";
 export * from "./enforce-limit";
+export * from "./normalize-files";

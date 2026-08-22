@@ -6,10 +6,12 @@ export const adaptRoute = (controller: IController) => {
   return async (req: Request, res: Response): Promise<void> => {
     const data = {
       ...(req?.body ?? {}),
-      ...(req?.files ?? {}),
       ...(req?.params ?? {}),
       ...(req?.query ?? {}),
+      ...(req?.locals?.normalizedFiles ?? {}),
     };
+
+    console.log("data", data);
 
     const httpResponse = await controller.handle({
       data,

@@ -1,20 +1,26 @@
-import { authClient } from "@/lib/better-auth";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { loadAuthContext } from "@/lib/auth-guard";
+import {
+  createFileRoute,
+  isRedirect,
+  Outlet,
+  redirect,
+} from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_app/layout")({
+export const Route = createFileRoute("/_app")({
   beforeLoad: async ({ location }) => {
-    const { data: session } = await authClient.getSession();
+    try {
+      const { session, establishment } = await loadAuthContext(location);
 
-    if (!session) {
+      if (!establishment) throw redirect({ to: "/onboarding" });
+
+      return { ...session };
+    } catch (error) {
+      if (isRedirect(error)) throw error;
+
       throw redirect({
         to: "/sign-in",
-        search: {
-          redirect: location.href,
-        },
       });
     }
-
-    return { ...session };
   },
   component: RouteComponent,
 });

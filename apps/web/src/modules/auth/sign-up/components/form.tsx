@@ -15,7 +15,7 @@ import { Lock, Mail, User } from "lucide-react";
 import { signUpSchema } from "@reservo/schemas";
 import type { ISignUpSchema } from "@reservo/types";
 import { Button } from "@/components/ui/button";
-import { useSignUp } from "../hooks";
+import { useSignUpMutation } from "../hooks";
 import { Spinner } from "@/components/ui/spinner";
 
 export function SignUpForm() {
@@ -30,7 +30,7 @@ export function SignUpForm() {
     },
   });
 
-  const { mutateAsync, isPending } = useSignUp();
+  const { mutateAsync, isPending } = useSignUpMutation();
 
   const handleSignUp: SubmitHandler<ISignUpSchema.GetParams> = async (
     values,

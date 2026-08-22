@@ -155,6 +155,7 @@ export class CreateEstablishmentService
       }
 
       if (error?.message) {
+        console.log("ERROR", error?.message);
         this.log(
           "warn",
           "An error occurred while creating the establishment.",

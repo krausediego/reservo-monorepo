@@ -76,17 +76,57 @@ export function EstablishmentForm() {
       />
 
       <Controller
-        name="address"
+        name="zipCode"
         control={form.control}
         render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid} className="col-span-6">
-            <FieldLabel htmlFor="address">Endereço</FieldLabel>
+          <Field data-invalid={fieldState.invalid} className="col-span-3">
+            <FieldLabel htmlFor="zipCode">CEP</FieldLabel>
             <Input
               {...field}
-              id="address"
+              id="zipCode"
+              aria-invalid={fieldState.invalid}
+              placeholder="00000-000"
+              autoComplete="off"
+              autoCapitalize="off"
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="street"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid} className="col-span-4">
+            <FieldLabel htmlFor="street">Rua</FieldLabel>
+            <Input
+              {...field}
+              id="street"
               aria-invalid={fieldState.invalid}
               placeholder="Rua ..."
               type="text"
+              disabled
+              autoComplete="off"
+              autoCapitalize="off"
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="number"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid} className="col-span-2">
+            <FieldLabel htmlFor="number">Número</FieldLabel>
+            <Input
+              {...field}
+              id="number"
+              aria-invalid={fieldState.invalid}
+              placeholder="000"
+              type="number"
               autoComplete="off"
               autoCapitalize="off"
             />
@@ -99,7 +139,7 @@ export function EstablishmentForm() {
         name="city"
         control={form.control}
         render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid} className="col-span-2">
+          <Field data-invalid={fieldState.invalid} className="col-span-3">
             <FieldLabel htmlFor="city">Cidade</FieldLabel>
             <Input
               {...field}
@@ -107,6 +147,7 @@ export function EstablishmentForm() {
               aria-invalid={fieldState.invalid}
               placeholder="Jaraguá do sul"
               type="text"
+              disabled
               autoComplete="off"
               autoCapitalize="off"
             />
@@ -119,43 +160,28 @@ export function EstablishmentForm() {
         name="state"
         control={form.control}
         render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid} className="col-span-2">
-            <FieldLabel htmlFor="uf">Estado</FieldLabel>
+          <Field data-invalid={fieldState.invalid} className="col-span-3">
+            <FieldLabel htmlFor="state">Estado</FieldLabel>
             <Select
               name={field.name}
               value={field.value}
               onValueChange={field.onChange}
             >
-              <SelectTrigger id="uf" aria-invalid={fieldState.invalid}>
-                <SelectValue placeholder="UF" />
+              <SelectTrigger
+                disabled
+                id="state"
+                aria-invalid={fieldState.invalid}
+              >
+                <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent>
                 {UFS.map((uf) => (
-                  <SelectItem key={uf.acronym} value={uf.acronym}>
-                    {uf.acronym}
+                  <SelectItem key={uf.acronym} value={uf.name}>
+                    {uf.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
-
-      <Controller
-        name="zipCode"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid} className="col-span-2">
-            <FieldLabel htmlFor="zipCode">CEP</FieldLabel>
-            <Input
-              {...field}
-              id="zipCode"
-              aria-invalid={fieldState.invalid}
-              placeholder="00000-000"
-              autoComplete="off"
-              autoCapitalize="off"
-            />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
         )}

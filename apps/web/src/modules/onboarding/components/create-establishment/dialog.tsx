@@ -41,6 +41,8 @@ export function CreateEstablishmentDialog() {
     },
   ];
 
+  console.log(establishmentForm.formState.isValid);
+
   const renderStepForm = () => {
     switch (step) {
       case 1:

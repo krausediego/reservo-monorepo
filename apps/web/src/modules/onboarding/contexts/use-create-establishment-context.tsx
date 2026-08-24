@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 import type {
   IAvailabilitiesForm,
@@ -8,6 +8,7 @@ import type {
   IMapForm,
 } from "../types";
 import { createEstablishmentSchema } from "@reservo/schemas";
+import { checkCepExists, isValidCep } from "@/helpers";
 
 type CreateEstablishmentProviderState = {
   establishmentForm: UseFormReturn<IEstablishmentForm, any, IEstablishmentForm>;
@@ -27,7 +28,7 @@ const CreateEstablishmentProviderContext =
 function CreateEstablishmentProvider({
   children,
 }: {
-  children: React.ReactNode;
+  readonly children: React.ReactNode;
 }) {
   const establishmentForm = useForm<IEstablishmentForm>({
     resolver: zodResolver(
@@ -57,10 +58,37 @@ function CreateEstablishmentProvider({
     ),
   });
 
+  const value = useMemo(() => {
+    return {
+      establishmentForm,
+      mapForm,
+      availabilitiesForm,
+    };
+  }, [establishmentForm, mapForm, availabilitiesForm]);
+
+  const zipCode = value.establishmentForm.watch("zipCode");
+
+  const handleCepContent = async () => {
+    const cepContent = await checkCepExists(zipCode);
+
+    if (cepContent) {
+      establishmentForm.setValues((data) => {
+        return {
+          ...data,
+          city: cepContent.city,
+          street: cepContent.street,
+          state: cepContent.state,
+        };
+      });
+    }
+  };
+
+  useEffect(() => {
+    handleCepContent();
+  }, [zipCode]);
+
   return (
-    <CreateEstablishmentProviderContext.Provider
-      value={{ establishmentForm, mapForm, availabilitiesForm }}
-    >
+    <CreateEstablishmentProviderContext.Provider value={value}>
       {children}
     </CreateEstablishmentProviderContext.Provider>
   );

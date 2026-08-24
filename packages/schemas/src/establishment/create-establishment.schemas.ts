@@ -72,20 +72,22 @@ export const createEstablishmentSchema = z.object({
       .string({ error: "A descrição é obrigatória" })
       .min(10, { error: "A descrição deve conter ao menos 10 caracteres" })
       .max(1800, { error: "A descrição está muito longa" }),
-    address: z
-      .string({ error: "O endereço é obrigatório" })
-      .min(5, { error: "O endereço deve conter ao menos 5 caracteres" })
-      .max(255, { error: "O endereço deve conter no máximo 255 caracteres" }),
+    street: z
+      .string({ error: "A rua é obrigatória" })
+      .min(5, { error: "A rua deve conter ao menos 5 caracteres" })
+      .max(255, { error: "A rua deve conter no máximo 255 caracteres" }),
+    number: z.coerce.number<number>({ error: "O número é obrigatório" }),
+    neighborhood: z
+      .string({ error: "O bairro é obrigatório" })
+      .min(2, { error: "O bairro deve ter ao menos 2 caracteres" })
+      .max(100, { error: "O bairro deve ter no máximo 100 caracteres" }),
     city: z
       .string({ error: "A cidade é obrigatória" })
       .min(2, { error: "A cidade deve conter ao menos 2 caracteres" })
       .max(100, { error: "A cidade deve conter no máximo 100 caracteres" }),
     state: z
       .string({ error: "O estado é obrigatório" })
-      .length(2, { error: "O estado deve ser informado com a sigla (UF)" })
-      .regex(/^[A-Z]{2}$/, {
-        error: "A UF deve conter duas letras maiúsculas",
-      }),
+      .min(4, { error: "O estado deve conter ao menos 2 caracteres" }),
     zipCode: z
       .string({ error: "O CEP é obrigatório" })
       .regex(/^\d{5}-?\d{3}$/, {

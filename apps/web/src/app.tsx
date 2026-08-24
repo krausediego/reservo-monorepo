@@ -24,7 +24,7 @@ export function App({ router }: AppProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="reservo-ui-theme">
+      <ThemeProvider defaultTheme="dark" storageKey="reservo-ui-theme">
         <RouterProvider router={router} />
         <TanStackRouterDevtools router={router} />
         <Toaster timeout={3000} />

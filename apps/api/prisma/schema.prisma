@@ -212,7 +212,7 @@ model EstablishmentAvailabilities {
   dayOfWeek       Int     @map("day_of_week")
   startMinutes    Int     @map("start_minutes")
   endMinutes      Int     @map("end_minutes")
-  closed          Boolean @default(false)
+  opened          Boolean @default(false)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

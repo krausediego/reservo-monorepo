@@ -8,7 +8,7 @@ import type {
   IMapForm,
 } from "../types";
 import { createEstablishmentSchema } from "@reservo/schemas";
-import { checkCepExists, isValidCep } from "@/helpers";
+import { checkCepExists, UFS } from "@/helpers";
 
 type CreateEstablishmentProviderState = {
   establishmentForm: UseFormReturn<IEstablishmentForm, any, IEstablishmentForm>;
@@ -38,6 +38,19 @@ function CreateEstablishmentProvider({
         longitude: true,
       }),
     ),
+    defaultValues: {
+      name: "",
+      cnpj: "",
+      description: "",
+      zipCode: "",
+      street: "",
+      number: undefined,
+      neighborhood: "",
+      city: "",
+      state: "",
+      logo: undefined,
+      cover: undefined,
+    },
     mode: "onChange",
   });
 
@@ -48,6 +61,10 @@ function CreateEstablishmentProvider({
         longitude: true,
       }),
     ),
+    defaultValues: {
+      latitude: 0,
+      longitude: 0,
+    },
   });
 
   const availabilitiesForm = useForm<IAvailabilitiesForm>({
@@ -56,6 +73,52 @@ function CreateEstablishmentProvider({
         establishmentAvailabilities: true,
       }),
     ),
+    defaultValues: {
+      establishmentAvailabilities: [
+        {
+          dayOfWeek: 0,
+          startMinutes: 480,
+          endMinutes: 1080,
+          opened: false,
+        },
+        {
+          dayOfWeek: 1,
+          startMinutes: 480,
+          endMinutes: 1080,
+          opened: true,
+        },
+        {
+          dayOfWeek: 2,
+          startMinutes: 480,
+          endMinutes: 1080,
+          opened: true,
+        },
+        {
+          dayOfWeek: 3,
+          startMinutes: 480,
+          endMinutes: 1080,
+          opened: true,
+        },
+        {
+          dayOfWeek: 4,
+          startMinutes: 480,
+          endMinutes: 1080,
+          opened: true,
+        },
+        {
+          dayOfWeek: 5,
+          startMinutes: 480,
+          endMinutes: 1080,
+          opened: true,
+        },
+        {
+          dayOfWeek: 6,
+          startMinutes: 480,
+          endMinutes: 1080,
+          opened: false,
+        },
+      ],
+    },
   });
 
   const value = useMemo(() => {
@@ -68,24 +131,27 @@ function CreateEstablishmentProvider({
 
   const zipCode = value.establishmentForm.watch("zipCode");
 
-  const handleCepContent = async () => {
-    const cepContent = await checkCepExists(zipCode);
-
-    if (cepContent) {
-      establishmentForm.setValues((data) => {
-        return {
-          ...data,
-          city: cepContent.city,
-          street: cepContent.street,
-          state: cepContent.state,
-        };
-      });
-    }
-  };
-
   useEffect(() => {
-    handleCepContent();
-  }, [zipCode]);
+    const controller = new AbortController();
+
+    (async () => {
+      const cep = await checkCepExists(zipCode, controller.signal);
+      console.log("CEP", cep);
+      if (!cep) return;
+
+      const opts = { shouldValidate: true, shouldDirty: true } as const;
+      establishmentForm.setValue("street", cep.street, opts);
+      establishmentForm.setValue("neighborhood", cep.neighborhood, opts);
+      establishmentForm.setValue("city", cep.city, opts);
+      establishmentForm.setValue(
+        "state",
+        UFS.find((uf) => uf.acronym === cep.state)?.name ?? "",
+        opts,
+      );
+    })();
+
+    return () => controller.abort();
+  }, [zipCode, establishmentForm]);
 
   return (
     <CreateEstablishmentProviderContext.Provider value={value}>

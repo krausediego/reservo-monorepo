@@ -16,7 +16,7 @@ const businessHourSchema = z.object(
       .max(6, { error: "O dia deve estar entre 0 e 6" }),
     startMinutes: timeMinutesSchema,
     endMinutes: timeMinutesSchema,
-    closed: z.boolean(),
+    opened: z.boolean(),
   },
   { error: "O horário de funcionamento é obrigatório" },
 );
@@ -35,7 +35,7 @@ const businessHoursArraySchema = z
   .refine(
     (hours) => {
       return hours.every((h) => {
-        if (h.closed) return true;
+        if (!h.opened) return true;
 
         return h.startMinutes < h.endMinutes;
       });
@@ -76,7 +76,10 @@ export const createEstablishmentSchema = z.object({
       .string({ error: "A rua é obrigatória" })
       .min(5, { error: "A rua deve conter ao menos 5 caracteres" })
       .max(255, { error: "A rua deve conter no máximo 255 caracteres" }),
-    number: z.coerce.number<number>({ error: "O número é obrigatório" }),
+    number: z.coerce
+      .number<number>({ error: "O número é obrigatório" })
+      .int({ error: "O número deve ser inteiro" })
+      .positive({ error: "O número não pode ser negativo" }),
     neighborhood: z
       .string({ error: "O bairro é obrigatório" })
       .min(2, { error: "O bairro deve ter ao menos 2 caracteres" })

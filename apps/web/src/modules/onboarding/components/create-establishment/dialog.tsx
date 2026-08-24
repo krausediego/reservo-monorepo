@@ -6,11 +6,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { FormProvider } from "react-hook-form";
+import { FormProvider, useFormState } from "react-hook-form";
 import { EstablishmentForm } from "./establishment-form";
 import { useState } from "react";
 import { MapForm } from "./map-form";
 import { useCreateEstablishment } from "../../contexts";
+import { AvailabilitiesForm } from "./availabilities-form";
 
 type Steps = {
   name: string;
@@ -21,7 +22,15 @@ type Steps = {
 export function CreateEstablishmentDialog() {
   const [step, setStep] = useState(1);
 
-  const { establishmentForm, mapForm } = useCreateEstablishment();
+  const { establishmentForm, mapForm, availabilitiesForm } =
+    useCreateEstablishment();
+
+  const { isValid: isEstablishmentFormValid } = useFormState({
+    control: establishmentForm.control,
+  });
+  const { isValid: isMapFormValid } = useFormState({
+    control: mapForm.control,
+  });
 
   const steps: Steps[] = [
     {
@@ -32,16 +41,14 @@ export function CreateEstablishmentDialog() {
     {
       name: "Mapa",
       step: 2,
-      availableNavigate: establishmentForm.formState.isValid,
+      availableNavigate: isEstablishmentFormValid,
     },
     {
       name: "Horários",
       step: 3,
-      availableNavigate: mapForm.formState.isValid,
+      availableNavigate: isMapFormValid,
     },
   ];
-
-  console.log(establishmentForm.formState.isValid);
 
   const renderStepForm = () => {
     switch (step) {
@@ -58,7 +65,11 @@ export function CreateEstablishmentDialog() {
           </FormProvider>
         );
       case 3:
-        return <div>form 3</div>;
+        return (
+          <FormProvider {...availabilitiesForm}>
+            <AvailabilitiesForm />
+          </FormProvider>
+        );
       default:
         return null;
     }
@@ -84,6 +95,13 @@ export function CreateEstablishmentDialog() {
           <Button
             key={stepItem.step}
             variant={stepItem.step === step ? "default" : "outline"}
+            onClick={() => {
+              if (!stepItem.availableNavigate) {
+                return;
+              }
+
+              setStep(stepItem.step);
+            }}
             disabled={!stepItem.availableNavigate}
             className="w-full flex-1 disabled:cursor-not-allowed"
           >

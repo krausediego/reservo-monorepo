@@ -57,7 +57,12 @@ export const matchesState = (cep: string, uf: string): boolean => {
 export const checkCepExists = async (
   cep: string,
   signal?: AbortSignal,
-): Promise<{ street: string; city: string; state: string } | null> => {
+): Promise<{
+  street: string;
+  city: string;
+  state: string;
+  neighborhood: string;
+} | null> => {
   if (!isValidCep(cep)) return null;
 
   const res = await fetch(
@@ -70,11 +75,13 @@ export const checkCepExists = async (
     street?: string;
     city?: string;
     state?: string;
+    neighborhood?: string;
   };
 
   return {
     street: data.street ?? "",
     city: data.city ?? "",
     state: data.state ?? "",
+    neighborhood: data.neighborhood ?? "",
   };
 };

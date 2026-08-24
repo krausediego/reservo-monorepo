@@ -95,10 +95,35 @@ export function EstablishmentForm() {
       />
 
       <Controller
+        name="number"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid} className="col-span-2">
+            <FieldLabel htmlFor="number">Número</FieldLabel>
+            <Input
+              {...field}
+              value={field.value ?? ""}
+              onChange={(e) => {
+                const v = e.target.value;
+                field.onChange(v === "" ? undefined : Number(v));
+              }}
+              id="number"
+              aria-invalid={fieldState.invalid}
+              placeholder="000"
+              type="number"
+              autoComplete="off"
+              autoCapitalize="off"
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <Controller
         name="street"
         control={form.control}
         render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid} className="col-span-4">
+          <Field data-invalid={fieldState.invalid} className="col-span-3">
             <FieldLabel htmlFor="street">Rua</FieldLabel>
             <Input
               {...field}
@@ -116,17 +141,18 @@ export function EstablishmentForm() {
       />
 
       <Controller
-        name="number"
+        name="neighborhood"
         control={form.control}
         render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid} className="col-span-2">
-            <FieldLabel htmlFor="number">Número</FieldLabel>
+          <Field data-invalid={fieldState.invalid} className="col-span-3">
+            <FieldLabel htmlFor="neighborhood">Bairro</FieldLabel>
             <Input
               {...field}
-              id="number"
+              id="neighborhood"
               aria-invalid={fieldState.invalid}
-              placeholder="000"
-              type="number"
+              placeholder="Bairro ..."
+              type="text"
+              disabled
               autoComplete="off"
               autoCapitalize="off"
             />

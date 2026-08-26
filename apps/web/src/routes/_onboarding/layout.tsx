@@ -7,9 +7,12 @@ import {
 } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_onboarding")({
-  beforeLoad: async ({ location }) => {
+  beforeLoad: async ({ context, location }) => {
     try {
-      const { session, establishment } = await loadAuthContext(location);
+      const { session, establishment } = await loadAuthContext(
+        location,
+        context.queryClient,
+      );
 
       if (establishment) throw redirect({ to: "/dashboard" });
 

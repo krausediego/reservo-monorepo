@@ -24,7 +24,10 @@ export function EstablishmentForm() {
         name="name"
         control={form.control}
         render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid} className="col-span-4">
+          <Field
+            data-invalid={fieldState.invalid}
+            className="col-span-6 lg:col-span-4"
+          >
             <FieldLabel htmlFor="name">Nome</FieldLabel>
             <Input
               {...field}
@@ -41,15 +44,39 @@ export function EstablishmentForm() {
       />
 
       <Controller
+        name="phone"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field
+            data-invalid={fieldState.invalid}
+            className="col-span-6 lg:col-span-2"
+          >
+            <FieldLabel htmlFor="phone">Telefone</FieldLabel>
+            <Input
+              {...field}
+              id="phone"
+              value={field.value && masked.celPhone(field.value)}
+              aria-invalid={fieldState.invalid}
+              placeholder="(00) 00000-0000"
+              type="text"
+              autoComplete="off"
+              autoCapitalize="off"
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <Controller
         name="cnpj"
         control={form.control}
         render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid} className="col-span-2">
+          <Field data-invalid={fieldState.invalid} className="col-span-6">
             <FieldLabel htmlFor="cnpj">CNPJ</FieldLabel>
             <Input
               {...field}
-              value={masked.cnpj(field.value)}
               id="cnpj"
+              value={masked.cnpj(field.value)}
               aria-invalid={fieldState.invalid}
               maxLength={18}
               placeholder="00.000.000/000-00"
@@ -87,6 +114,7 @@ export function EstablishmentForm() {
             <FieldLabel htmlFor="zipCode">CEP</FieldLabel>
             <Input
               {...field}
+              value={masked.cep(field.value)}
               id="zipCode"
               aria-invalid={fieldState.invalid}
               placeholder="00000-000"
@@ -102,7 +130,10 @@ export function EstablishmentForm() {
         name="number"
         control={form.control}
         render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid} className="col-span-2">
+          <Field
+            data-invalid={fieldState.invalid}
+            className="col-span-3 lg:col-span-2"
+          >
             <FieldLabel htmlFor="number">Número</FieldLabel>
             <Input
               {...field}

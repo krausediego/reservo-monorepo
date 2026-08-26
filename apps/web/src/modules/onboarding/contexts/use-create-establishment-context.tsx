@@ -40,6 +40,7 @@ function CreateEstablishmentProvider({
     ),
     defaultValues: {
       name: "",
+      phone: "",
       cnpj: "",
       description: "",
       zipCode: "",

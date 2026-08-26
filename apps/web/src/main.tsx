@@ -5,8 +5,22 @@ import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
+import { QueryClient } from "@tanstack/react-query";
 
-export const router = createRouter({ routeTree });
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 5 * 60, // 5 minutes
+    },
+  },
+});
+
+export const router = createRouter({
+  routeTree,
+  context: {
+    queryClient,
+  },
+});
 
 export type TanstackRouter = typeof router;
 

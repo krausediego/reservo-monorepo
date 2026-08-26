@@ -81,7 +81,7 @@ export const establishmentBodySchema = z.object({
     .max(100, { error: "O estado deve conter no máximo 100 caracteres" }),
   zipCode: z
     .string({ error: "O CEP é obrigatório" })
-    .regex(/^\d{5}-?\d{3}$/, { error: "CEP inválido" }),
+    .min(10, { error: "O CEP está inválido" }),
   latitude: z
     .number({ error: "A latitude é obrigatória" })
     .min(-90, { error: "Latitude inválida" })
@@ -91,12 +91,7 @@ export const establishmentBodySchema = z.object({
     .min(-180, { error: "Longitude inválida" })
     .max(180, { error: "Longitude inválida" }),
   establishmentAvailabilities: businessHoursArraySchema,
-  phone: z
-    .string()
-    .regex(/^(\+55\s?)?(\(?\d{2}\)?\s?)?\d{4,5}-?\d{4}$/, {
-      error: "Telefone inválido",
-    })
-    .optional(),
+  phone: z.string().optional(),
   logo: z.instanceof(File).optional(),
   cover: z.instanceof(File).optional(),
 });

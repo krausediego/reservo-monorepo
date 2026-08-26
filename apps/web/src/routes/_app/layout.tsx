@@ -1,34 +1,25 @@
+import { AppSidebarLayout } from "@/components/app-sidebar";
 import { loadAuthContext } from "@/lib/auth-guard";
-import {
-  createFileRoute,
-  isRedirect,
-  Outlet,
-  redirect,
-} from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app")({
-  beforeLoad: async ({ location }) => {
-    try {
-      const { session, establishment } = await loadAuthContext(location);
+  beforeLoad: async ({ context, location }) => {
+    const { session, establishment } = await loadAuthContext(
+      location,
+      context.queryClient,
+    );
 
-      if (!establishment) throw redirect({ to: "/onboarding" });
+    if (!establishment) throw redirect({ to: "/onboarding" });
 
-      return { ...session };
-    } catch (error) {
-      if (isRedirect(error)) throw error;
-
-      throw redirect({
-        to: "/sign-in",
-      });
-    }
+    return { ...session };
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
   return (
-    <div>
+    <AppSidebarLayout>
       <Outlet />
-    </div>
+    </AppSidebarLayout>
   );
 }

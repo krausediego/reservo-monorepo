@@ -4,7 +4,7 @@ import { makeCreateEstablishmentController } from "@/modules/establishment/creat
 import { makeGetEstablishmentController } from "@/modules/establishment/get-establishment";
 import { makeUpdateEstablishmentController } from "@/modules/establishment/update-establishment";
 import {
-  createEstablishmentSchema,
+  createEstablishmentMultipartSchema,
   updateEstablishmentSchema,
 } from "@reservo/schemas";
 
@@ -25,7 +25,7 @@ export default (router: Router): void => {
       { name: "cover", maxCount: 1 },
     ]),
     normalizeFiles(),
-    validateRequest(createEstablishmentSchema),
+    validateRequest(createEstablishmentMultipartSchema),
     adaptRoute(makeCreateEstablishmentController()),
   );
 

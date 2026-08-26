@@ -1,6 +1,6 @@
 import { getHttpError, type Http, ok } from "@/infra";
 import type { IController } from "@/modules/shared";
-import { createEstablishmentSchema } from "@reservo/schemas";
+import { createEstablishmentMultipartSchema } from "@reservo/schemas";
 import type { ICreateEstablishmentSchema } from "@reservo/types";
 
 import type { ICreateEstablishment } from ".";
@@ -18,7 +18,7 @@ export class CreateEstablishmentController implements IController {
   }: Http.IRequest<ICreateEstablishmentSchema.GetParams>): Promise<Http.IResponse> {
     try {
       const content = await this.createEstablishmentService().run({
-        ...createEstablishmentSchema.parse({ body: data }).body,
+        ...createEstablishmentMultipartSchema.parse({ body: data }).body,
         userId: locals.user.id,
         organizationId: locals.session.activeOrganizationId!,
         traceId: locals.traceId,

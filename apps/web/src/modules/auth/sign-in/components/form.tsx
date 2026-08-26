@@ -110,7 +110,7 @@ export function SignInForm() {
 
       <Button type="submit" className="w-full" disabled={isPending}>
         {isPending && <Spinner />}
-        Criar conta
+        Entrar
       </Button>
     </form>
   );

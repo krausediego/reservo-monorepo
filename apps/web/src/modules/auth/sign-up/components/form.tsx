@@ -100,6 +100,7 @@ export function SignUpForm() {
                 <InputGroupInput
                   {...field}
                   id="password"
+                  type="password"
                   aria-invalid={fieldState.invalid}
                   placeholder="Digite uma senha segura"
                   autoComplete="off"
@@ -125,6 +126,7 @@ export function SignUpForm() {
                 <InputGroupInput
                   {...field}
                   id="repeat-password"
+                  type="password"
                   aria-invalid={fieldState.invalid}
                   placeholder="Repita sua senha"
                   autoComplete="off"

@@ -10,11 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UFS } from "@/helpers";
+import { InputMask, UFS } from "@/helpers";
 import { ImageInput } from "@/components/ui/image-input";
 
 export function EstablishmentForm() {
   const form = useFormContext<IEstablishmentForm>();
+
+  const masked = new InputMask();
 
   return (
     <form className="grid grid-cols-6 gap-4">
@@ -46,10 +48,12 @@ export function EstablishmentForm() {
             <FieldLabel htmlFor="cnpj">CNPJ</FieldLabel>
             <Input
               {...field}
+              value={masked.cnpj(field.value)}
               id="cnpj"
               aria-invalid={fieldState.invalid}
+              maxLength={18}
               placeholder="00.000.000/000-00"
-              type="number"
+              type="text"
               autoComplete="off"
             />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

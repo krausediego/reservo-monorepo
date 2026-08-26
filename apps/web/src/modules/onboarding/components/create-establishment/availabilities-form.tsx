@@ -30,7 +30,10 @@ export function AvailabilitiesForm() {
       </div>
       <form className="border border-border border-collapse rounded-md">
         {fields.map((item, index) => (
-          <div className="flex gap-2 border border-border/30 items-center p-2">
+          <div
+            key={item.dayOfWeek}
+            className="flex gap-2 border border-border/30 items-center p-2"
+          >
             <Controller
               name={`establishmentAvailabilities.${index}.opened`}
               control={form.control}

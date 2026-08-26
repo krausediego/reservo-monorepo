@@ -12,6 +12,8 @@ import { useState } from "react";
 import { MapForm } from "./map-form";
 import { useCreateEstablishment } from "../../contexts";
 import { AvailabilitiesForm } from "./availabilities-form";
+import { useCreateEstablishmentMutation } from "../../hooks";
+import { Spinner } from "@/components/ui/spinner";
 
 type Steps = {
   name: string;
@@ -24,6 +26,10 @@ export function CreateEstablishmentDialog() {
 
   const { establishmentForm, mapForm, availabilitiesForm } =
     useCreateEstablishment();
+  const {
+    mutateAsync: createEstablishmentFn,
+    isPending: isCreateEstablishmentPending,
+  } = useCreateEstablishmentMutation();
 
   const { isValid: isEstablishmentFormValid } = useFormState({
     control: establishmentForm.control,
@@ -31,22 +37,26 @@ export function CreateEstablishmentDialog() {
   const { isValid: isMapFormValid } = useFormState({
     control: mapForm.control,
   });
+  const { isValid: isAvailabilitiesValid } = useFormState({
+    control: availabilitiesForm.control,
+  });
 
   const steps: Steps[] = [
     {
       name: "Informações",
       step: 1,
-      availableNavigate: true,
+      availableNavigate: isEstablishmentFormValid,
     },
     {
       name: "Mapa",
       step: 2,
-      availableNavigate: isEstablishmentFormValid,
+      availableNavigate: isEstablishmentFormValid && isMapFormValid,
     },
     {
       name: "Horários",
       step: 3,
-      availableNavigate: isMapFormValid,
+      availableNavigate:
+        isEstablishmentFormValid && isMapFormValid && isAvailabilitiesValid,
     },
   ];
 
@@ -79,6 +89,12 @@ export function CreateEstablishmentDialog() {
     if (step !== 3) {
       return setStep((prev) => prev + 1);
     }
+
+    await createEstablishmentFn({
+      ...establishmentForm.getValues(),
+      ...mapForm.getValues(),
+      ...availabilitiesForm.getValues(),
+    });
   };
 
   return (
@@ -133,11 +149,12 @@ export function CreateEstablishmentDialog() {
             )}
             <Button
               disabled={
-                !steps.find((stepItem) => stepItem.step === step + 1)
-                  ?.availableNavigate
+                !steps.find((stepItem) => stepItem.step === step)
+                  ?.availableNavigate || isCreateEstablishmentPending
               }
               onClick={handleSubmit}
             >
+              {isCreateEstablishmentPending && <Spinner />}
               {step !== 3 ? "Continuar" : "Criar estabelecimento"}
             </Button>
           </div>

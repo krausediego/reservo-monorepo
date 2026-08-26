@@ -155,7 +155,6 @@ export class CreateEstablishmentService
       if (coverStorageKey) {
         await this.removeImage({ key: coverStorageKey });
       }
-
       if (error?.message) {
         this.log(
           "warn",

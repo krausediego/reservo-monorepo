@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { rejectInvitationApi } from "../api";
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import { onboardingInvitationsKeys } from "../onboarding-invitations.keys";
 import type { IListMyInvitationsSchema } from "@reservo/types";
 
@@ -11,10 +11,7 @@ export function useRejectInvitationMutation() {
   return useMutation({
     mutationFn: rejectInvitationApi,
     onSuccess: (_, { id }) => {
-      toast.add({
-        type: "success",
-        title: "Convite rejeitado!",
-      });
+      toast.success("Convite rejeitado!");
 
       queryClient.setQueryData(
         key,
@@ -23,10 +20,7 @@ export function useRejectInvitationMutation() {
       );
     },
     onError: () => {
-      toast.add({
-        type: "error",
-        title: "Ocorreu um erro ao rejeitar o convite",
-      });
+      toast.error("Ocorreu um erro ao rejeitar o convite");
     },
     onSettled: () => {
       queryClient.invalidateQueries({

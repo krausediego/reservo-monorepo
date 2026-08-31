@@ -99,71 +99,69 @@ export function CreateEstablishmentDialog() {
   };
 
   return (
-    <>
-      <DialogContent className="h-[90%] lg:min-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Novo estabelecimento</DialogTitle>
-          <DialogDescription>
-            Preencha as informações principais do estabelecimento
-          </DialogDescription>
-        </DialogHeader>
-        <div className="w-full flex gap-4">
-          {steps.map((stepItem) => (
-            <Button
-              key={stepItem.step}
-              variant={stepItem.step === step ? "default" : "outline"}
-              onClick={() => {
-                if (!stepItem.availableNavigate) {
-                  return;
-                }
+    <DialogContent className="h-[90%] lg:min-w-2xl">
+      <DialogHeader>
+        <DialogTitle>Novo estabelecimento</DialogTitle>
+        <DialogDescription>
+          Preencha as informações principais do estabelecimento
+        </DialogDescription>
+      </DialogHeader>
+      <div className="w-full flex gap-4">
+        {steps.map((stepItem) => (
+          <Button
+            key={stepItem.step}
+            variant={stepItem.step === step ? "default" : "outline"}
+            onClick={() => {
+              if (!stepItem.availableNavigate) {
+                return;
+              }
 
-                setStep(stepItem.step);
-              }}
-              disabled={!stepItem.availableNavigate}
-              className="w-full flex-1 disabled:cursor-not-allowed"
-            >
-              {stepItem.name}
-            </Button>
-          ))}
-        </div>
+              setStep(stepItem.step);
+            }}
+            disabled={!stepItem.availableNavigate}
+            className="w-full flex-1 disabled:cursor-not-allowed"
+          >
+            {stepItem.name}
+          </Button>
+        ))}
+      </div>
 
-        <div className="overflow-y-scroll lg:overflow-y-auto">
-          {renderStepForm()}
-        </div>
+      <div className="overflow-y-scroll lg:overflow-y-auto">
+        {renderStepForm()}
+      </div>
 
-        <DialogFooter>
-          <div className="w-full flex items-center justify-between">
-            <p className="text-xs text-muted-foreground/40">
-              Etapa {step} de 3 ·{" "}
-            </p>
+      <DialogFooter>
+        <div className="w-full flex items-center justify-between">
+          <p className="text-xs text-muted-foreground/40">
+            Etapa {step} de 3 ·{" "}
+          </p>
 
-            <div className="space-x-2">
-              {step === 1 ? (
-                <DialogClose
-                  render={<Button variant="outline">Cancelar</Button>}
-                />
-              ) : (
-                <Button
-                  onClick={() => setStep((prev) => prev - 1)}
-                  variant="outline"
-                >
-                  Voltar
-                </Button>
-              )}
+          <div className="space-x-2">
+            {step === 1 ? (
+              <DialogClose asChild>
+                <Button variant="outline">Cancelar</Button>
+              </DialogClose>
+            ) : (
               <Button
-                disabled={
-                  !steps.find((stepItem) => stepItem.step === step)
-                    ?.availableNavigate || isCreateEstablishmentPending
-                }
-                onClick={handleSubmit}
+                onClick={() => setStep((prev) => prev - 1)}
+                variant="outline"
               >
-                {isCreateEstablishmentPending && <Spinner />}
-                {step !== 3 ? "Continuar" : "Criar estabelecimento"}
+                Voltar
               </Button>
-            </div>
+            )}
+            <Button
+              disabled={
+                !steps.find((stepItem) => stepItem.step === step)
+                  ?.availableNavigate || isCreateEstablishmentPending
+              }
+              onClick={handleSubmit}
+            >
+              {isCreateEstablishmentPending && <Spinner />}
+              {step !== 3 ? "Continuar" : "Criar estabelecimento"}
+            </Button>
           </div>
-        </DialogFooter>
-      </DialogContent>
-    </>
+        </div>
+      </DialogFooter>
+    </DialogContent>
   );
 }

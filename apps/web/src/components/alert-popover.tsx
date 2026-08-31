@@ -49,26 +49,22 @@ export function AlertPopover({
         setOpen(next);
       }}
     >
-      <PopoverTrigger
-        render={
-          <Button disabled={isPending} variant="outline">
-            Rejeitar
-          </Button>
-        }
-      />
+      <PopoverTrigger asChild>
+        <Button disabled={isPending} variant="outline">
+          Rejeitar
+        </Button>
+      </PopoverTrigger>
       <PopoverContent>
         <PopoverHeader>
           <PopoverTitle>{title}</PopoverTitle>
           <PopoverDescription>{description}</PopoverDescription>
         </PopoverHeader>
         <div className="flex gap-2 justify-end">
-          <PopoverClose
-            render={
-              <Button disabled={isPending} variant="outline">
-                Cancelar
-              </Button>
-            }
-          />
+          <PopoverClose asChild>
+            <Button disabled={isPending} variant="outline">
+              Cancelar
+            </Button>
+          </PopoverClose>
           <Button
             disabled={isPending}
             variant="destructive"

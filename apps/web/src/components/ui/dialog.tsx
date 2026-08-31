@@ -1,32 +1,154 @@
+"use client";
+
 import * as React from "react";
-import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
+import { XIcon } from "lucide-react";
+import { Dialog as DialogPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { XIcon } from "lucide-react";
+import { Spinner } from "./spinner";
+import {
+  FormProvider,
+  type FieldValues,
+  type SubmitHandler,
+  type UseFormReturn,
+} from "react-hook-form";
 
-function Dialog({ ...props }: DialogPrimitive.Root.Props) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />;
+type DialogContextProps = {
+  open: boolean;
+  prevent: boolean;
+  onClose: () => void;
+  preventCloseDialog: (isPrevent: boolean) => void;
+  onOpenChange: (state: boolean) => void;
+};
+
+const DialogContext = React.createContext<DialogContextProps | null>(null);
+
+function useDialog() {
+  const context = React.useContext(DialogContext);
+  if (!context) {
+    throw new Error("useDialog must be used within a DialogProvider");
+  }
+
+  return context;
 }
 
-function DialogTrigger({ ...props }: DialogPrimitive.Trigger.Props) {
+function Dialog({
+  children,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+  defaultOpen = false,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Root>) {
+  const [prevent, setPrevent] = React.useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
+
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
+  const onOpenChange = (state: boolean) => {
+    if (!isControlled) {
+      setUncontrolledOpen(state);
+    }
+    controlledOnOpenChange?.(state);
+  };
+  const onClose = () => {
+    onOpenChange(false);
+  };
+  const preventCloseDialog = (isPrevent: boolean) => {
+    setPrevent(isPrevent);
+  };
+
+  return (
+    <DialogContext.Provider
+      value={{ prevent, open, onClose, preventCloseDialog, onOpenChange }}
+    >
+      <DialogPrimitive.Root
+        data-slot="dialog"
+        onOpenChange={onOpenChange}
+        open={open}
+        {...props}
+      >
+        {children}
+      </DialogPrimitive.Root>
+    </DialogContext.Provider>
+  );
+}
+
+type DialogFormProps<TFieldValues extends FieldValues> = Omit<
+  React.ComponentProps<"form">,
+  "onSubmit"
+> & {
+  form: UseFormReturn<TFieldValues>;
+  onSubmit: (values: TFieldValues) => unknown | Promise<unknown>;
+  children: React.ReactNode;
+  autoCloseOnSuccess?: boolean;
+  resetOnSuccess?: boolean;
+};
+
+function DialogForm<TFieldValues extends FieldValues>({
+  form,
+  onSubmit,
+  autoCloseOnSuccess = true,
+  resetOnSuccess = false,
+  children,
+  className,
+  ...props
+}: DialogFormProps<TFieldValues>) {
+  const { preventCloseDialog, onClose } = useDialog();
+
+  const handleSubmit: SubmitHandler<TFieldValues> = async (values) => {
+    preventCloseDialog(true);
+    try {
+      await onSubmit(values);
+
+      if (resetOnSuccess) {
+        form.reset();
+      }
+      if (autoCloseOnSuccess) {
+        onClose();
+      }
+    } finally {
+      preventCloseDialog(false);
+    }
+  };
+
+  return (
+    <FormProvider {...form}>
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className={cn("contents", className)}
+        {...props}
+      >
+        {children}
+      </form>
+    </FormProvider>
+  );
+}
+
+function DialogTrigger({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
-function DialogPortal({ ...props }: DialogPrimitive.Portal.Props) {
+function DialogPortal({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Portal>) {
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
 }
 
-function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
+function DialogClose({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Close>) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
 function DialogOverlay({
   className,
   ...props
-}: DialogPrimitive.Backdrop.Props) {
+}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
   return (
-    <DialogPrimitive.Backdrop
+    <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
         "fixed inset-0 isolate z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
@@ -42,37 +164,52 @@ function DialogContent({
   children,
   showCloseButton = true,
   ...props
-}: DialogPrimitive.Popup.Props & {
+}: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean;
 }) {
+  const { prevent } = useDialog();
+
   return (
     <DialogPortal>
       <DialogOverlay />
-      <DialogPrimitive.Popup
+      <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
           "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className,
         )}
+        onEscapeKeyDown={(e) => {
+          if (prevent) {
+            e.preventDefault();
+          }
+        }}
+        onInteractOutside={(e) => {
+          if (prevent) {
+            e.preventDefault();
+          }
+        }}
+        onPointerDownOutside={(e) => {
+          if (prevent) {
+            e.preventDefault();
+          }
+        }}
         {...props}
       >
         {children}
         {showCloseButton && (
-          <DialogPrimitive.Close
-            data-slot="dialog-close"
-            render={
-              <Button
-                variant="ghost"
-                className="absolute top-2 right-2"
-                size="icon-sm"
-              >
-                <XIcon />
-                <span className="sr-only">Close</span>
-              </Button>
-            }
-          />
+          <DialogPrimitive.Close data-slot="dialog-close" asChild>
+            <Button
+              variant="ghost"
+              className="absolute top-2 right-2"
+              size="icon-sm"
+              disabled={prevent}
+            >
+              <XIcon />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DialogPrimitive.Close>
         )}
-      </DialogPrimitive.Popup>
+      </DialogPrimitive.Content>
     </DialogPortal>
   );
 }
@@ -106,19 +243,25 @@ function DialogFooter({
     >
       {children}
       {showCloseButton && (
-        <DialogPrimitive.Close
-          render={<Button variant="outline">Close</Button>}
-        />
+        <DialogPrimitive.Close asChild>
+          <Button variant="outline">Close</Button>
+        </DialogPrimitive.Close>
       )}
     </div>
   );
 }
 
-function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
+function DialogTitle({
+  className,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Title>) {
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("font-heading leading-none font-medium", className)}
+      className={cn(
+        "cn-font-heading text-base leading-none font-medium",
+        className,
+      )}
       {...props}
     />
   );
@@ -127,7 +270,7 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
 function DialogDescription({
   className,
   ...props
-}: DialogPrimitive.Description.Props) {
+}: React.ComponentProps<typeof DialogPrimitive.Description>) {
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
@@ -137,6 +280,33 @@ function DialogDescription({
       )}
       {...props}
     />
+  );
+}
+
+function DialogSubmitButton({
+  children,
+  ...props
+}: React.ComponentProps<typeof Button>) {
+  const { prevent } = useDialog();
+
+  return (
+    <Button type="submit" disabled={prevent} {...props}>
+      {prevent && <Spinner />}
+      {children}
+    </Button>
+  );
+}
+
+function DialogCloseButton({
+  variant = "outline",
+  ...props
+}: React.ComponentProps<typeof Button>) {
+  const { prevent } = useDialog();
+
+  return (
+    <DialogPrimitive.Close data-slot="dialog-close" asChild>
+      <Button variant={variant} disabled={prevent} {...props} />
+    </DialogPrimitive.Close>
   );
 }
 
@@ -151,4 +321,8 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
+  DialogForm,
+  DialogSubmitButton,
+  DialogCloseButton,
+  useDialog,
 };

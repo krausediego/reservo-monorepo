@@ -1,23 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
 import { signUpApi } from "../api";
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import { router } from "@/main";
 
 export function useSignUpMutation() {
   return useMutation({
     mutationFn: signUpApi,
     onSuccess: async () => {
-      toast.add({
-        type: "success",
-        title: "Conta criada com sucesso!",
-      });
+      toast.success("Conta criada com sucesso!");
       await router.navigate({ to: "/sign-in" });
     },
     onError: () => {
-      toast.add({
-        type: "error",
-        title: "Ocorreu um erro ao criar sua conta.",
-      });
+      toast.error("Ocorreu um erro ao criar sua conta.");
     },
   });
 }

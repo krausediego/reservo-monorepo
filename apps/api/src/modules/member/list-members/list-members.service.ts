@@ -1,4 +1,4 @@
-import { UsersWhereInput } from "generated/prisma/models";
+import { MembersWhereInput } from "generated/prisma/models";
 
 import {
   setTraceId,
@@ -32,48 +32,41 @@ export class ListMembersService
       limit: params.limit,
     });
 
-    const where: UsersWhereInput = {
-      members: {
-        every: {
-          organizationId: params.organizationId,
+    const where: MembersWhereInput = {
+      organizationId: params.organizationId,
+      users: {
+        name: {
+          contains: params.name,
+          mode: "insensitive",
         },
-      },
-      name: {
-        contains: params.name,
-        mode: "insensitive",
       },
     };
 
     const [data, total] = await Promise.all([
-      await basePrisma.users.findMany({
-        omit: {
-          emailVerified: true,
-          phoneNumberVerified: true,
-        },
-        where,
-        include: {
-          members: {
-            select: {
-              id: true,
-              role: true,
-              createdAt: true,
-              updatedAt: true,
+      await basePrisma.members.findMany({
+        select: {
+          id: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+          users: {
+            omit: {
+              emailVerified: true,
+              phoneNumberVerified: true,
             },
           },
         },
+        where,
         take: pagination.limit,
         skip: offset,
-        orderBy: {
-          name: params.orderBy,
-        },
       }),
-      basePrisma.users.count({ where }),
+      basePrisma.members.count({ where }),
     ]);
 
-    const membersSerialized = data.map(({ members, ...user }) => {
+    const membersSerialized = data.map(({ users, ...member }) => {
       return {
-        user,
-        member: members[0],
+        member,
+        user: users,
       };
     });
 

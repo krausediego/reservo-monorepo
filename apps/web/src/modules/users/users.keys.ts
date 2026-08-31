@@ -1,3 +1,5 @@
+import type { PaginationOffsetParams } from "@reservo/types";
+
 export const usersKeys = {
-  users: () => ["users"] as const,
+  users: (params: PaginationOffsetParams) => ["users", { ...params }] as const,
 };

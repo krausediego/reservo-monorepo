@@ -1,65 +1,35 @@
-import { useTable } from "@tanstack/react-table";
+import * as React from "react";
+import { useTable, type PaginationState } from "@tanstack/react-table";
 import { useListUsersQuery } from "../hooks";
 import { usersColumns, usersFeatures } from "./columns";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { DataTable } from "@/components/ui/data-table";
 
 export function UsersDataTable() {
-  const { data } = useListUsersQuery();
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { data } = useListUsersQuery({
+    page: pagination.pageIndex,
+    limit: pagination.pageSize,
+  });
 
   const table = useTable({
     features: usersFeatures,
     data: data.data,
     columns: usersColumns,
+    state: { pagination },
+    onPaginationChange: setPagination,
+    manualPagination: true,
+    rowCount: data.meta.total,
   });
 
   return (
-    <div className="w-full overflow-hidden rounded-md border">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder ? null : (
-                      <table.FlexRender header={header} />
-                    )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getAllCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    <table.FlexRender cell={cell} />
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={usersColumns.length}
-                className="h-24 text-center"
-              >
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+    <DataTable
+      table={table}
+      columnsCount={usersColumns.length}
+      noResultsMessage="Sem usuários"
+    />
   );
 }

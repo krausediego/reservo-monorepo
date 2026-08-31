@@ -1,5 +1,6 @@
 import { ContentLayout } from "@/components/content-layout";
 import { Button } from "@/components/ui/button";
+import { DataTableSkeleton } from "@/components/ui/data-table-skeleton";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { InviteUserDialog, UsersDataTable } from "@/modules/users/components";
 import { createFileRoute } from "@tanstack/react-router";
@@ -30,7 +31,7 @@ function RouteComponent() {
         </Dialog>
       }
     >
-      <Suspense fallback={<></>}>
+      <Suspense fallback={<DataTableSkeleton columnCount={5} showCheckbox />}>
         <UsersDataTable />
       </Suspense>
     </ContentLayout>

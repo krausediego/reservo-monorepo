@@ -11,7 +11,7 @@ http:
     data: |-
       {
         "plan": "pro",
-        "referenceId": "cms4uz6a300004s7s28msgvv5",
+        "referenceId": "cmta6hq4f0000r07srzkmdzop",
         "customerType": "organization",
         "successUrl": "",
         "cancelUrl": "",
@@ -24,3 +24,4 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true

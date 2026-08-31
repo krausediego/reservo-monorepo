@@ -13,6 +13,7 @@ import {
   tableFeatures,
   rowSelectionFeature,
   rowSortingFeature,
+  rowPaginationFeature,
   columnVisibilityFeature,
   type ColumnDef,
 } from "@tanstack/react-table";
@@ -22,6 +23,7 @@ import { Ellipsis, UserRoundX } from "lucide-react";
 export const usersFeatures = tableFeatures({
   rowSelectionFeature,
   rowSortingFeature,
+  rowPaginationFeature,
   columnVisibilityFeature,
 });
 

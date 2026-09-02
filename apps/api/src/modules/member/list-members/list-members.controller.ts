@@ -1,5 +1,6 @@
 import { getHttpError, type Http, ok } from "@/infra";
 import type { IController } from "@/modules/shared";
+import { listMembersSchema } from "@reservo/schemas";
 import type { IListMembersSchema } from "@reservo/types";
 
 import type { IListMembers } from ".";
@@ -15,7 +16,7 @@ export class ListMembersController implements IController {
   }: Http.IRequest<IListMembersSchema.GetParams>): Promise<Http.IResponse> {
     try {
       const content = await this.listMembersService().run({
-        ...data,
+        ...listMembersSchema.parse({ query: data }).query,
         userId: locals.user.id,
         organizationId: locals.session.activeOrganizationId!,
         traceId: locals.traceId,

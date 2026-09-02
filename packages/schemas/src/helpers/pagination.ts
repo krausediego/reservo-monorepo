@@ -2,12 +2,12 @@ import z, { ZodType } from "zod";
 
 export const paginationQuerySchema = z.object({
   page: z.coerce
-    .number({ error: "A página deve ser um número" })
+    .number<number>({ error: "A página deve ser um número" })
     .min(1, { error: "Número de página inválido" })
     .int({ error: "A página deve ser um número inteiro" })
     .default(1),
   limit: z.coerce
-    .number({ error: "A quantidade por página deve ser um número" })
+    .number<number>({ error: "A quantidade por página deve ser um número" })
     .min(1, { error: "Quantidade inválida" })
     .int({ error: "A quantidade por página deve ser um número inteiro" })
     .default(10),

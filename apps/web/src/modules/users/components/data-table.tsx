@@ -11,7 +11,7 @@ export function UsersDataTable() {
   });
 
   const { data } = useListUsersQuery({
-    page: pagination.pageIndex,
+    page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
   });
 

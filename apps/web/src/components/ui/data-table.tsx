@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button } from "./button";
 import {
   Table,
   TableBody,
@@ -6,20 +8,21 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
-import type { ReactTable, TableFeatures, RowData } from "@tanstack/react-table";
+import type { ReactTable, RowData } from "@tanstack/react-table";
 
-type DataTableProps<TFeatures extends TableFeatures, TData extends RowData> = {
-  table: ReactTable<TFeatures, TData>;
+type DataTableProps<TData extends RowData> = {
+  table: ReactTable<any, TData>;
   columnsCount: number;
   noResultsMessage?: string;
 };
 
-export function DataTable<
-  TFeatures extends TableFeatures,
-  TData extends RowData,
->({ table, columnsCount, noResultsMessage }: DataTableProps<TFeatures, TData>) {
+export function DataTable<TData extends RowData>({
+  table,
+  columnsCount,
+  noResultsMessage,
+}: DataTableProps<TData>) {
   return (
-    <div className="w-full">
+    <div className="flex flex-col w-full gap-4">
       <div className="w-full overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
@@ -57,7 +60,23 @@ export function DataTable<
         </Table>
       </div>
 
-      <div></div>
+      <div className="ml-auto space-x-4">
+        <Button
+          variant="outline"
+          disabled={!table.getCanPreviousPage()}
+          onClick={() => table.previousPage()}
+        >
+          Anterior
+        </Button>
+
+        <Button
+          variant="outline"
+          disabled={!table.getCanNextPage()}
+          onClick={() => table.nextPage()}
+        >
+          Próxima
+        </Button>
+      </div>
     </div>
   );
 }

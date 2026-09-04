@@ -1,3 +1,12 @@
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -19,6 +28,7 @@ import {
 } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { Ellipsis, UserRoundX } from "lucide-react";
+import { UsersDataTableActions } from "./data-table-actions";
 
 export const usersFeatures = tableFeatures({
   rowSelectionFeature,
@@ -97,24 +107,7 @@ export const usersColumns: Array<
   {
     id: "actions",
     cell: () => {
-      return (
-        <div className=" flex justify-end">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost">
-                <Ellipsis />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem variant="destructive">
-                <UserRoundX />
-                Remover
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      );
+      return <UsersDataTableActions />;
     },
   },
 ];

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "./button";
 import {
   Table,
@@ -8,19 +7,26 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
-import type { ReactTable, RowData } from "@tanstack/react-table";
+import type {
+  ReactTable,
+  RowData,
+  TableFeatures,
+  Table_RowPagination,
+} from "@tanstack/react-table";
 
-type DataTableProps<TData extends RowData> = {
-  table: ReactTable<any, TData>;
+type DataTableProps<
+  TData extends RowData,
+  TFeatures extends TableFeatures = TableFeatures,
+> = {
+  table: ReactTable<TFeatures, TData> & Table_RowPagination<TFeatures, TData>;
   columnsCount: number;
   noResultsMessage?: string;
 };
 
-export function DataTable<TData extends RowData>({
-  table,
-  columnsCount,
-  noResultsMessage,
-}: DataTableProps<TData>) {
+export function DataTable<
+  TData extends RowData,
+  TFeatures extends TableFeatures = TableFeatures,
+>({ table, columnsCount, noResultsMessage }: DataTableProps<TData, TFeatures>) {
   return (
     <div className="flex flex-col w-full gap-4">
       <div className="w-full overflow-hidden rounded-md border">

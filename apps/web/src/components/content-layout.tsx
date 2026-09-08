@@ -1,8 +1,11 @@
+import { cn } from "@/lib/utils";
+
 type ContentLayoutProps = {
   title: string;
   description: string;
   children: React.ReactNode;
   action?: React.ReactNode;
+  className?: string;
 };
 
 export function ContentLayout({
@@ -10,6 +13,7 @@ export function ContentLayout({
   description,
   action,
   children,
+  className,
 }: ContentLayoutProps) {
   return (
     <div className="space-y-4 container mx-auto">
@@ -24,7 +28,7 @@ export function ContentLayout({
         {action}
       </div>
 
-      <div className="flex flex-1 gap-4">{children}</div>
+      <div className={cn("flex flex-1 gap-4", className)}>{children}</div>
     </div>
   );
 }

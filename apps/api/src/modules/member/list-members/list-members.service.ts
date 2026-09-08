@@ -1,3 +1,4 @@
+import { MemberRole } from "generated/prisma/enums";
 import { MembersWhereInput } from "generated/prisma/models";
 
 import {
@@ -8,6 +9,7 @@ import {
 } from "@/helpers";
 import { type ILoggingManager, type IDatabase, basePrisma } from "@/infra";
 import { BaseDatabaseService } from "@/modules/shared";
+import { FieldRef } from "@prisma/client/runtime/client";
 
 import type { ListMembers, IListMembers } from ".";
 
@@ -34,6 +36,12 @@ export class ListMembersService
 
     const where: MembersWhereInput = {
       organizationId: params.organizationId,
+      role: {
+        in: params.roles as
+          | MemberRole[]
+          | FieldRef<"Members", "MemberRole[]">
+          | undefined,
+      },
       users: {
         name: {
           contains: params.name,

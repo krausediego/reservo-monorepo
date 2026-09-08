@@ -1,16 +1,12 @@
 import { clientAPI } from "@/lib/axios";
-import type {
-  IListMembersSchema,
-  PaginationOffsetParams,
-} from "@reservo/types";
+import type { IListMembersSchema } from "@reservo/types";
 
-export async function listUsersApi({
-  page,
-  limit,
-}: PaginationOffsetParams): Promise<IListMembersSchema.GetResponse> {
+export async function listUsersApi(
+  params: IListMembersSchema.GetParams,
+): Promise<IListMembersSchema.GetResponse> {
   const { data } = await clientAPI.get<IListMembersSchema.GetResponse>(
     `/members`,
-    { params: { page, limit } },
+    { params },
   );
 
   return data;

@@ -6,6 +6,13 @@ import { memberSchema } from "./member.schemas";
 export const listMembersSchema = z.object({
   query: paginationQuerySchema.extend({
     name: z.string().optional(),
+    roles: z
+      .union([z.string(), z.array(z.string())])
+      .optional()
+      .transform((val) => {
+        if (!val) return undefined;
+        if (!Array.isArray(val)) return val.split(",");
+      }),
     orderBy: z
       .union([z.literal("asc"), z.literal("desc")])
       .optional()

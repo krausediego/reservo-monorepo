@@ -10,7 +10,7 @@ import {
   type ColumnDef,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { UsersDataTableActions } from "./data-table-actions";
+import { UsersActions } from "./actions";
 
 export const usersFeatures = tableFeatures({
   rowSelectionFeature,
@@ -88,8 +88,10 @@ export const usersColumns: Array<
   },
   {
     id: "actions",
-    cell: () => {
-      return <UsersDataTableActions />;
+    cell: (info) => {
+      const value = info.row.original;
+
+      return <UsersActions memberId={value.member.id} />;
     },
   },
 ];

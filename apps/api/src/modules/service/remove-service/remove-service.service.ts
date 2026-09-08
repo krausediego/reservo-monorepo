@@ -39,7 +39,7 @@ export class RemoveServiceService
       this.log("warn", "Service not found", {
         id: params.id,
       });
-      throw new NotFoundError("Service not found");
+      throw new NotFoundError("Serviço não encontrado");
     }
 
     const hasFutureAppointmentsWithService = await this.db.appointments.count({
@@ -60,7 +60,7 @@ export class RemoveServiceService
         },
       );
       throw new ConflictError(
-        `This service has ${hasFutureAppointmentsWithService} linked appointments; switch to another service or remove them to proceed with removing the service.`,
+        `Este serviço possui ${hasFutureAppointmentsWithService} agendamentos vinculados; altere para outro serviço ou remova-os para prosseguir com a remoção do serviço.`,
       );
     }
 

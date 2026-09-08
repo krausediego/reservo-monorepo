@@ -41,7 +41,7 @@ export class ListMyInvitationsService
       this.log("warn", "User not found", {
         userId: params.userId,
       });
-      throw new NotFoundError("User not found");
+      throw new NotFoundError("Usuário não encontrado");
     }
 
     const invitations = await this.db.invitations.findMany({

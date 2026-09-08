@@ -39,7 +39,9 @@ export class CreateEstablishmentService
 
     if (alreadyMember) {
       this.log("warn", "User already member with organization.");
-      throw new ConflictError("User already member with organization.");
+      throw new ConflictError(
+        "Este usuário já faz parte de um estabelecimento",
+      );
     }
 
     const alreadyEstablishment = await basePrisma.establishments.findFirst({
@@ -56,7 +58,7 @@ export class CreateEstablishmentService
         sameEstablishment: alreadyEstablishment.id,
         insertNewCnpj: params.cnpj,
       });
-      throw new ConflictError("Establishment already exists.");
+      throw new ConflictError("Estabelecimento já existe");
     }
 
     const slug = await generateUniqueSlug(params.name, (slugName) =>
@@ -161,9 +163,7 @@ export class CreateEstablishmentService
           "An error occurred while creating the establishment.",
           { message: error?.message },
         );
-        throw new BadRequestError(
-          "An error occurred while creating the establishment.",
-        );
+        throw new BadRequestError("Ocorreu um erro ao criar o estabelecimento");
       }
     }
 

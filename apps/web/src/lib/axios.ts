@@ -20,7 +20,12 @@ clientAPI.interceptors.response.use(
     await new Promise((resolve) => setTimeout(resolve, 3000));
     return response;
   },
-  (error) => {
+  async (error) => {
+    const apiMessage = error.response?.data?.message;
+    if (apiMessage) {
+      error.message = apiMessage;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     return Promise.reject(error);
   },
 );

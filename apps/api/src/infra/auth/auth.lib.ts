@@ -118,7 +118,9 @@ export const auth = betterAuth({
           const role = user.role as string;
 
           if (role && !["CLIENT", "ADMIN"].includes(role)) {
-            throw new APIError("BAD_REQUEST", { message: "Invalid role" });
+            throw new APIError("BAD_REQUEST", {
+              message: "Permissão inválida",
+            });
           }
 
           return {

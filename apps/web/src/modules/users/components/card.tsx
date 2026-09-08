@@ -1,7 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import type { IListMembersSchema } from "@reservo/types";
 import type { Row } from "@tanstack/react-table";
-import { UsersDataTableActions } from "./data-table-actions";
+import { UsersActions } from "./actions";
 import { Badge } from "@/components/ui/badge";
 import { memberRoleToText } from "@/helpers";
 import { format } from "date-fns";
@@ -47,7 +47,7 @@ export function UsersCard({ row }: UsersCardProps) {
             </p>
           </div>
         </div>
-        <UsersDataTableActions />
+        <UsersActions memberId={item.member.id} />
       </div>
       <div className="mt-4 space-y-2 text-xs border-t pt-3">
         <div className="flex justify-between items-center">

@@ -38,7 +38,7 @@ export class GetEstablishmentService
 
     if (!hasMember) {
       this.log("warn", "You are not part of an organization.");
-      throw new NotAllowedError("You are not part of an organization.");
+      throw new NotAllowedError("Você não faz parte deste estabelecimento");
     }
 
     const establishment = await basePrisma.establishments.findFirst({
@@ -54,7 +54,7 @@ export class GetEstablishmentService
       this.log("warn", "Establishment not found.", {
         organizationId: hasMember.organizationId,
       });
-      throw new BadRequestError("Establishment not found.");
+      throw new BadRequestError("Estabelecimento não encontrado");
     }
 
     const {

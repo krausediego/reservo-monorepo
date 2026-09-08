@@ -19,8 +19,8 @@ export function useRejectInvitationMutation() {
           old?.filter((i) => i.id !== id),
       );
     },
-    onError: () => {
-      toast.error("Ocorreu um erro ao rejeitar o convite");
+    onError: ({ message }) => {
+      toast.error(message);
     },
     onSettled: () => {
       queryClient.invalidateQueries({

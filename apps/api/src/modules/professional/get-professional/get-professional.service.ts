@@ -50,7 +50,7 @@ export class GetProfessionalService
       this.log("warn", "Professional not found", {
         id: params.id,
       });
-      throw new NotFoundError("Professional not found");
+      throw new NotFoundError("Profissional não encontrado");
     }
 
     const avatarUrl =

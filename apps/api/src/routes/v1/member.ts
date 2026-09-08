@@ -1,7 +1,8 @@
 import { Router } from "express";
 
 import { makeListMembersController } from "@/modules/member/list-members";
-import { listMembersSchema } from "@reservo/schemas";
+import { makeRevokeMemberController } from "@/modules/member/revoke-member";
+import { listMembersSchema, revokeMemberSchema } from "@reservo/schemas";
 
 import { adaptRoute } from "../handlers";
 import { authAdmin, enforceAccess, validateRequest } from "../middlewares";
@@ -13,5 +14,13 @@ export default (router: Router) => {
     enforceAccess("READ"),
     validateRequest(listMembersSchema),
     adaptRoute(makeListMembersController()),
+  );
+
+  router.delete(
+    "/member/:id",
+    authAdmin,
+    enforceAccess("WRITE"),
+    validateRequest(revokeMemberSchema),
+    adaptRoute(makeRevokeMemberController()),
   );
 };

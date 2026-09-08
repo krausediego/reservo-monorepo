@@ -32,7 +32,7 @@ export class UpdateServiceService
 
     if (!hasService) {
       this.log("warn", "Service not found");
-      throw new NotFoundError("Service not found");
+      throw new NotFoundError("Serviço não encontrado");
     }
 
     const service = await this.db.services.update({

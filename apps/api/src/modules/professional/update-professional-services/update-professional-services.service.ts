@@ -42,7 +42,7 @@ export class UpdateProfessionalServicesService
       this.log("warn", "Professional not found", {
         id: params.id,
       });
-      throw new NotFoundError("Professional not found");
+      throw new NotFoundError("Profissional não encontrado");
     }
 
     const incomingIds = [...new Set(params.services)];
@@ -59,7 +59,7 @@ export class UpdateProfessionalServicesService
 
     if (hasServices.length !== incomingIds.length) {
       this.log("warn", "One or more services not found");
-      throw new NotFoundError("One or more services not found");
+      throw new NotFoundError("Um ou mais serviços não foram encontrados");
     }
 
     const currentProfessionalServices =

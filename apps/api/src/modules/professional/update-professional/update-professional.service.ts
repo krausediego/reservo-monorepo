@@ -44,7 +44,7 @@ export class UpdateProfessionalService
       this.log("warn", "Professional not found", {
         id: params.id,
       });
-      throw new NotFoundError("Professional not found");
+      throw new NotFoundError("Profissional não encontrado");
     }
 
     const avatarStorageKey = await this.uploadAvatar({
@@ -75,7 +75,9 @@ export class UpdateProfessionalService
         id: params.id,
         message: error?.message,
       });
-      throw new BadRequestError("Error in update professional");
+      throw new BadRequestError(
+        "Ocorreu um erro ao editar os dados do profissional",
+      );
     }
 
     if (hasProfessional.avatarStorageKey) {

@@ -31,7 +31,7 @@ export class GetServiceService
       this.log("warn", "Service not found", {
         id: params.id,
       });
-      throw new NotFoundError("Service not found");
+      throw new NotFoundError("Serviço não encontrado");
     }
 
     return {

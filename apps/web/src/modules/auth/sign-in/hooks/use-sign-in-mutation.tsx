@@ -13,8 +13,8 @@ export function useSignInMutation() {
         to: "/dashboard",
       });
     },
-    onError: () => {
-      toast.error("Ocorreu um erro ao realizar o login, tente novamente.");
+    onError: ({ message }) => {
+      toast.error(message);
     },
   });
 }

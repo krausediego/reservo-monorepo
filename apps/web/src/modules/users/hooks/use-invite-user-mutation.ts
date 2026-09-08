@@ -8,8 +8,8 @@ export function useInviteUserMutation() {
     onSuccess: () => {
       toast.success("Convite enviado com sucesso!");
     },
-    onError: () => {
-      toast.error("Ocorreu um erro ao enviar o convite.");
+    onError: ({ message }) => {
+      toast.error(message);
     },
   });
 }

@@ -45,7 +45,7 @@ export class UpdateEstablishmentService
 
     if (!hasEstablishment) {
       this.log("warn", "Establishment not found");
-      throw new NotFoundError("Establishment not found");
+      throw new NotFoundError("Estabelecimento não encontrado");
     }
 
     if (params.cnpj !== hasEstablishment.cnpj) {
@@ -68,7 +68,7 @@ export class UpdateEstablishmentService
           },
         );
         throw new ConflictError(
-          "There is already an establishment with the same CNPJ provided.",
+          "Já existe um estabelecimento com o mesmo CNPJ fornecido",
         );
       }
     }
@@ -187,7 +187,7 @@ export class UpdateEstablishmentService
           { message: error?.message },
         );
         throw new BadRequestError(
-          "An error occurred while updating the establishment.",
+          "Ocorreu um erro ao atualizar os dados do estabelecimento",
         );
       }
     }

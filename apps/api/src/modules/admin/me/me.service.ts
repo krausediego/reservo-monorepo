@@ -40,7 +40,7 @@ export class MeService extends BaseDatabaseService implements IMe {
       this.log("warn", "User not found", {
         id: params.userId,
       });
-      throw new NotFoundError("User not found");
+      throw new NotFoundError("Usuário não encontrado");
     }
 
     const { members, ...user } = hasUser;
@@ -62,7 +62,7 @@ export class MeService extends BaseDatabaseService implements IMe {
       this.log("warn", "Establishment not found.", {
         organizationId: members[0]?.organizationId,
       });
-      throw new NotFoundError("Establishment not found.");
+      throw new NotFoundError("Estabelecimento não encontrado");
     }
 
     const {

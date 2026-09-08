@@ -40,7 +40,7 @@ export class SendInviteService
       this.log("warn", "This user already member or not found", {
         email: params.email,
       });
-      throw new NotFoundError("This user already member or not found");
+      throw new NotFoundError("Este usuário já é membro ou não existe");
     }
 
     const alreadyMember = await this.db.members.findFirst({
@@ -56,7 +56,7 @@ export class SendInviteService
       this.log("warn", "This user already member or not found", {
         memberId: alreadyMember.id,
       });
-      throw new NotFoundError("This user already member or not found");
+      throw new NotFoundError("Este usuário já é membro ou não existe");
     }
 
     const alreadyValidInvite = await this.db.invitations.findFirst({
@@ -67,6 +67,9 @@ export class SendInviteService
         email: params.email,
         organizationId: params.organizationId,
         status: "PENDING",
+        expiresAt: {
+          gt: new Date(),
+        },
       },
     });
 
@@ -75,7 +78,9 @@ export class SendInviteService
         email: params.email,
         invitationId: alreadyValidInvite.id,
       });
-      throw new BadRequestError("This user already valid invited open");
+      throw new BadRequestError(
+        "Este usuário já possuí um convite pendente válido",
+      );
     }
 
     const invitation = await this.db.invitations.create({

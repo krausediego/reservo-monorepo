@@ -1,6 +1,7 @@
 import type { IListMembersSchema } from "@reservo/types";
 
 export const usersKeys = {
+  all: () => ["users"] as const,
   users: (params: IListMembersSchema.GetParams) =>
-    ["users", { ...params }] as const,
+    [...usersKeys.all(), { ...params }] as const,
 };

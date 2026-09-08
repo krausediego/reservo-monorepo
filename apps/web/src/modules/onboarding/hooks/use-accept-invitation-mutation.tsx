@@ -10,8 +10,8 @@ export function useAcceptInvitationMutation() {
       toast.success("Convite aceito!");
       await router.navigate({ to: "/dashboard" });
     },
-    onError: () => {
-      toast.error("Ocorreu um problema ao aceitar o seu convite.");
+    onError: ({ message }) => {
+      toast.error(message);
     },
   });
 }

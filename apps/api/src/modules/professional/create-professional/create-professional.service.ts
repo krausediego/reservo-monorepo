@@ -45,7 +45,7 @@ export class CreateProfessionalService
       this.log("warn", "Member not found", {
         memberId: params.memberId,
       });
-      throw new NotFoundError("Member not found");
+      throw new NotFoundError("Membro não encontrado");
     }
 
     const hasProfessionalWithSameMember = await this.db.professionals.findFirst(
@@ -62,7 +62,9 @@ export class CreateProfessionalService
 
     if (hasProfessionalWithSameMember) {
       this.log("warn", "Member already linked");
-      throw new ConflictError("Member already linked");
+      throw new ConflictError(
+        "Este membro já está vinculado a outro profissional",
+      );
     }
 
     const hasServices = await this.db.services.findMany({
@@ -80,7 +82,7 @@ export class CreateProfessionalService
       hasServices.length !== params.servicesIds?.length
     ) {
       this.log("warn", "One or more services not found");
-      throw new NotFoundError("One or more services not found");
+      throw new NotFoundError("Um ou mais serviços não foram encontrados");
     }
 
     const professionalId = createId();
@@ -104,7 +106,7 @@ export class CreateProfessionalService
 
       this.log("warn", "Error occurred in create professional.");
       throw new BadRequestError(
-        error?.message ?? "Error occurred in create professional.",
+        error?.message ?? "Ocorreu um erro ao criar o profissional",
       );
     });
 

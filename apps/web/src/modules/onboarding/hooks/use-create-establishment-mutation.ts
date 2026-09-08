@@ -13,8 +13,8 @@ export function useCreateEstablishmentMutation() {
         to: "/dashboard",
       });
     },
-    onError: () => {
-      toast.error("Ocorreu um erro ao criar o estabelecimento");
+    onError: ({ message }) => {
+      toast.error(message);
     },
   });
 }

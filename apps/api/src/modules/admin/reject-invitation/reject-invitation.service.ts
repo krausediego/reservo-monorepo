@@ -45,7 +45,7 @@ export class RejectInvitationService
       this.log("warn", "Invitation not found or expired.", {
         invitationId: params.id,
       });
-      throw new BadRequestError("Invitation not found or expired.");
+      throw new BadRequestError("Convite inexistente ou expirado");
     }
 
     const userInvited = await this.db.users.findFirst({
@@ -61,7 +61,7 @@ export class RejectInvitationService
       this.log("warn", "User not found", {
         email: hasInvitation.email,
       });
-      throw new NotFoundError("User not found");
+      throw new NotFoundError("Usuário não encontrado");
     }
 
     if (params.userId !== userInvited.id) {
@@ -70,7 +70,7 @@ export class RejectInvitationService
         userId: params.userId,
       });
       throw new BadRequestError(
-        "You cannot accept an invitation that isn't for you.",
+        "Você não pode aceitar um convite que não é para você.",
       );
     }
 

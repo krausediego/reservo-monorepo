@@ -38,7 +38,7 @@ export class DeleteProfessionalService
 
     if (!hasProfessional) {
       this.log("warn", "Professional not found");
-      throw new BadRequestError("Professional not found");
+      throw new BadRequestError("Profissional não encontrado");
     }
 
     const appointments = await this.db.appointments.count({
@@ -57,7 +57,7 @@ export class DeleteProfessionalService
         },
       );
       throw new ConflictError(
-        `This professional has ${appointments} linked appointments; switch to another professional or remove them to proceed with deleting the professional.`,
+        `Este profissional possui ${appointments} agendamentos vinculados; alterne para outro profissional ou remova-os para prosseguir com a exclusão do profissional.`,
       );
     }
 

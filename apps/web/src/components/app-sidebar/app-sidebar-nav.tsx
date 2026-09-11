@@ -22,7 +22,11 @@ export function AppSidebarNav() {
           <SidebarMenuItem key={name}>
             <SidebarMenuButton
               onClick={() => router.navigate({ to })}
-              variant={pathname.includes(to) ? "secondary" : "default"}
+              variant={
+                pathname.split("/")[1] === to.split("/")[1]
+                  ? "secondary"
+                  : "default"
+              }
               tooltip={name}
             >
               <Icon />

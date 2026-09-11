@@ -13,11 +13,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppLayoutRouteImport } from './routes/_app/layout'
 import { Route as AuthLayoutRouteImport } from './routes/_auth/layout'
 import { Route as OnboardingLayoutRouteImport } from './routes/_onboarding/layout'
+import { Route as AppSettingsLayoutRouteImport } from './routes/_app/settings/layout'
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
 import { Route as AppUsersIndexRouteImport } from './routes/_app/users/index'
 import { Route as AuthSignInIndexRouteImport } from './routes/_auth/sign-in/index'
 import { Route as AuthSignUpIndexRouteImport } from './routes/_auth/sign-up/index'
 import { Route as OnboardingOnboardingIndexRouteImport } from './routes/_onboarding/onboarding/index'
+import { Route as AppSettingsProfileIndexRouteImport } from './routes/_app/settings/profile/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,6 +37,11 @@ const AuthLayoutRoute = AuthLayoutRouteImport.update({
 const OnboardingLayoutRoute = OnboardingLayoutRouteImport.update({
   id: '/_onboarding',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppSettingsLayoutRoute = AppSettingsLayoutRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppLayoutRoute,
 } as any)
 const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   id: '/dashboard/',
@@ -62,22 +69,31 @@ const OnboardingOnboardingIndexRoute =
     path: '/onboarding/',
     getParentRoute: () => OnboardingLayoutRoute,
   } as any)
+const AppSettingsProfileIndexRoute = AppSettingsProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => AppSettingsLayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/settings': typeof AppSettingsLayoutRouteWithChildren
   '/dashboard/': typeof AppDashboardIndexRoute
   '/users/': typeof AppUsersIndexRoute
   '/sign-in/': typeof AuthSignInIndexRoute
   '/sign-up/': typeof AuthSignUpIndexRoute
   '/onboarding/': typeof OnboardingOnboardingIndexRoute
+  '/settings/profile/': typeof AppSettingsProfileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/settings': typeof AppSettingsLayoutRouteWithChildren
   '/dashboard': typeof AppDashboardIndexRoute
   '/users': typeof AppUsersIndexRoute
   '/sign-in': typeof AuthSignInIndexRoute
   '/sign-up': typeof AuthSignUpIndexRoute
   '/onboarding': typeof OnboardingOnboardingIndexRoute
+  '/settings/profile': typeof AppSettingsProfileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,34 +101,48 @@ export interface FileRoutesById {
   '/_app': typeof AppLayoutRouteWithChildren
   '/_auth': typeof AuthLayoutRouteWithChildren
   '/_onboarding': typeof OnboardingLayoutRouteWithChildren
+  '/_app/settings': typeof AppSettingsLayoutRouteWithChildren
   '/_app/dashboard/': typeof AppDashboardIndexRoute
   '/_app/users/': typeof AppUsersIndexRoute
   '/_auth/sign-in/': typeof AuthSignInIndexRoute
   '/_auth/sign-up/': typeof AuthSignUpIndexRoute
   '/_onboarding/onboarding/': typeof OnboardingOnboardingIndexRoute
+  '/_app/settings/profile/': typeof AppSettingsProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/settings'
     | '/dashboard/'
     | '/users/'
     | '/sign-in/'
     | '/sign-up/'
     | '/onboarding/'
+    | '/settings/profile/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/users' | '/sign-in' | '/sign-up' | '/onboarding'
+  to:
+    | '/'
+    | '/settings'
+    | '/dashboard'
+    | '/users'
+    | '/sign-in'
+    | '/sign-up'
+    | '/onboarding'
+    | '/settings/profile'
   id:
     | '__root__'
     | '/'
     | '/_app'
     | '/_auth'
     | '/_onboarding'
+    | '/_app/settings'
     | '/_app/dashboard/'
     | '/_app/users/'
     | '/_auth/sign-in/'
     | '/_auth/sign-up/'
     | '/_onboarding/onboarding/'
+    | '/_app/settings/profile/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -152,6 +182,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsLayoutRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/dashboard/': {
       id: '/_app/dashboard/'
       path: '/dashboard'
@@ -187,15 +224,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingOnboardingIndexRouteImport
       parentRoute: typeof OnboardingLayoutRoute
     }
+    '/_app/settings/profile/': {
+      id: '/_app/settings/profile/'
+      path: '/profile'
+      fullPath: '/settings/profile/'
+      preLoaderRoute: typeof AppSettingsProfileIndexRouteImport
+      parentRoute: typeof AppSettingsLayoutRoute
+    }
   }
 }
 
+interface AppSettingsLayoutRouteChildren {
+  AppSettingsProfileIndexRoute: typeof AppSettingsProfileIndexRoute
+}
+
+const AppSettingsLayoutRouteChildren: AppSettingsLayoutRouteChildren = {
+  AppSettingsProfileIndexRoute: AppSettingsProfileIndexRoute,
+}
+
+const AppSettingsLayoutRouteWithChildren =
+  AppSettingsLayoutRoute._addFileChildren(AppSettingsLayoutRouteChildren)
+
 interface AppLayoutRouteChildren {
+  AppSettingsLayoutRoute: typeof AppSettingsLayoutRouteWithChildren
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
   AppUsersIndexRoute: typeof AppUsersIndexRoute
 }
 
 const AppLayoutRouteChildren: AppLayoutRouteChildren = {
+  AppSettingsLayoutRoute: AppSettingsLayoutRouteWithChildren,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
   AppUsersIndexRoute: AppUsersIndexRoute,
 }

@@ -31,6 +31,7 @@ export class MeService extends BaseDatabaseService implements IMe {
         members: {
           select: {
             organizationId: true,
+            role: true,
           },
         },
       },
@@ -77,7 +78,10 @@ export class MeService extends BaseDatabaseService implements IMe {
     const coverSignedUrl = await this.getSignedUrl({ key: coverStorageKey });
 
     return {
-      user,
+      user: {
+        ...user,
+        memberRole: members[0].role,
+      },
       establishment: {
         ...establishment,
         latitude: latitude.toNumber(),

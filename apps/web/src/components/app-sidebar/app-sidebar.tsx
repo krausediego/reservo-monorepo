@@ -1,5 +1,11 @@
 import { Separator } from "../ui/separator";
-import { Sidebar, SidebarContent, SidebarHeader } from "../ui/sidebar";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+} from "../ui/sidebar";
+import { AppSidebarFooter } from "./app-sidebar-footer";
 import { AppSidebarHeader } from "./app-sidebar-header";
 import { AppSidebarNav } from "./app-sidebar-nav";
 
@@ -13,6 +19,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <AppSidebarNav />
       </SidebarContent>
+      <Separator />
+      <SidebarFooter>
+        <AppSidebarFooter />
+      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -8,7 +8,7 @@ import {
   UsersDataTable,
   UsersFilters,
   UsersPageActions,
-} from "@/modules/users/components";
+} from "@/modules/app/users/components";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { Suspense } from "react";

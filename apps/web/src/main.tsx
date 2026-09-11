@@ -17,6 +17,7 @@ export const queryClient = new QueryClient({
 
 export const router = createRouter({
   routeTree,
+  defaultViewTransition: true,
   context: {
     queryClient,
   },

@@ -1,5 +1,10 @@
 import type { LinkProps } from "@tanstack/react-router";
-import { LayoutDashboard, Users2, type LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard,
+  Settings,
+  Users2,
+  type LucideIcon,
+} from "lucide-react";
 
 type AppRouteToProps = NonNullable<LinkProps["to"]>;
 
@@ -33,6 +38,11 @@ export function getMenuList(): AppSidebarGroup[] {
           to: "/users",
           name: "Usuários",
           icon: Users2,
+        },
+        {
+          to: "/settings/profile",
+          name: "Configurações",
+          icon: Settings,
         },
       ],
     },

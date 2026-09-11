@@ -3,7 +3,7 @@ import { queryClient, type TanstackRouter } from "./main";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "./components/ui/sonner";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+// import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 type AppProps = {
   router: TanstackRouter;
@@ -14,7 +14,7 @@ export function App({ router }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="reservo-ui-theme">
         <RouterProvider router={router} />
-        <TanStackRouterDevtools router={router} />
+        {/* <TanStackRouterDevtools router={router} /> */}
         <Toaster richColors />
       </ThemeProvider>
     </QueryClientProvider>

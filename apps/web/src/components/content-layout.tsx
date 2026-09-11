@@ -16,7 +16,7 @@ export function ContentLayout({
   className,
 }: ContentLayoutProps) {
   return (
-    <div className="space-y-4 container mx-auto">
+    <div className="space-y-4 container mx-auto p-4">
       <div className="flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground">

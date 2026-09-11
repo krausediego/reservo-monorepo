@@ -10,7 +10,7 @@ import { MeHeader } from "./me-header";
 
 export function AppHeader() {
   return (
-    <header className="h-16 flex gap-4 items-center justify-between px-2">
+    <header className="h-16 sticky flex gap-4 items-center justify-between px-2">
       <div className="flex items-center gap-4">
         <SidebarTrigger />
 

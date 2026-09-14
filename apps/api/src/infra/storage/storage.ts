@@ -27,10 +27,11 @@ export namespace Storage {
   };
 
   export type BuildKeyParams = {
-    organizationId: string;
     context: StorageContext;
     entityId: string;
     fileName: string;
+    organizationId?: string;
+    userId?: string;
   };
 
   export type DeleteParams = BuildKeyParams;
@@ -83,5 +84,9 @@ export namespace Storage {
 
   export type ListFilesResponse = GetFileInfoResponse;
 
-  export type StorageContext = "users" | "establishments" | "professionals";
+  export type StorageContext =
+    | "admin_users"
+    | "establishments"
+    | "professionals"
+    | "client_users";
 }

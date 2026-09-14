@@ -65,7 +65,7 @@ export function AvailabilitiesForm() {
                 <Field data-invalid={fieldState.invalid}>
                   <Select
                     name={field.name}
-                    value={field.value}
+                    value={String(field.value)}
                     onValueChange={(next) => {
                       field.onChange(Number(next));
                     }}
@@ -80,7 +80,7 @@ export function AvailabilitiesForm() {
                     </SelectTrigger>
                     <SelectContent>
                       {timeSlots().map((time) => (
-                        <SelectItem key={time.value} value={time.value}>
+                        <SelectItem key={time.value} value={String(time.value)}>
                           {time.label}
                         </SelectItem>
                       ))}
@@ -100,7 +100,7 @@ export function AvailabilitiesForm() {
                 <Field data-invalid={fieldState.invalid}>
                   <Select
                     name={field.name}
-                    value={field.value}
+                    value={String(field.value)}
                     onValueChange={(next) => {
                       field.onChange(Number(next));
                     }}
@@ -115,7 +115,7 @@ export function AvailabilitiesForm() {
                     </SelectTrigger>
                     <SelectContent>
                       {timeSlots().map((time) => (
-                        <SelectItem key={time.value} value={time.value}>
+                        <SelectItem key={time.value} value={String(time.value)}>
                           {time.label}
                         </SelectItem>
                       ))}

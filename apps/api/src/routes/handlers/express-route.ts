@@ -11,8 +11,6 @@ export const adaptRoute = (controller: IController) => {
       ...(req?.locals?.normalizedFiles ?? {}),
     };
 
-    console.log("data", data);
-
     const httpResponse = await controller.handle({
       data,
       method: req.method,

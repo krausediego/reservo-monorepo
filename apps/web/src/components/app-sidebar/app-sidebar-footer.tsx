@@ -20,7 +20,7 @@ export function AppSidebarFooter() {
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" onClick={handleSignOut}>
           <Avatar>
-            <AvatarImage src={data?.user?.image ?? undefined} />
+            <AvatarImage src={data?.user?.imageUrl ?? undefined} />
             <AvatarFallback>
               <UserRound className="size-4" />
             </AvatarFallback>

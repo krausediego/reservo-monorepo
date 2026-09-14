@@ -20,7 +20,7 @@ export function MeHeader() {
       <DropdownMenuTrigger asChild>
         <Button size="icon" variant="ghost" className="rounded-full">
           <Avatar>
-            <AvatarImage src={data?.user?.image ?? undefined} />
+            <AvatarImage src={data?.user?.imageUrl ?? undefined} />
             <AvatarFallback>
               <User2 />
             </AvatarFallback>

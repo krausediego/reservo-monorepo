@@ -35,6 +35,7 @@ export class R2Service extends BaseService implements IStorage {
 
   async upload({
     organizationId,
+    userId,
     context,
     entityId,
     fileName,
@@ -42,7 +43,13 @@ export class R2Service extends BaseService implements IStorage {
     contentType,
     metadata,
   }: Storage.UploadParams): Promise<Storage.UploadResponse> {
-    const key = this.buildKey({ organizationId, context, entityId, fileName });
+    const key = this.buildKey({
+      organizationId,
+      userId,
+      context,
+      entityId,
+      fileName,
+    });
 
     await this.client.send(
       new PutObjectCommand({
@@ -167,10 +174,11 @@ export class R2Service extends BaseService implements IStorage {
 
   private buildKey({
     organizationId,
+    userId,
     context,
     entityId,
     fileName,
   }: Storage.BuildKeyParams): string {
-    return `${organizationId}/${context}/${entityId}/${fileName}`;
+    return `${organizationId ?? userId}/${context}/${entityId}/${fileName}`;
   }
 }

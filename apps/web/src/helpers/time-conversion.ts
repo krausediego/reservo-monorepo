@@ -74,3 +74,34 @@ export const weekDayEnum = {
   5: "Sexta-feira",
   6: "Sábado",
 };
+
+export const durationOptions = (
+  minMinutes = 5,
+  maxMinutes = 3 * 60,
+  stepMinutes = 5,
+): Array<{ value: number; label: string }> => {
+  const options: Array<{ value: number; label: string }> = [];
+
+  for (
+    let minutes = minMinutes;
+    minutes <= maxMinutes;
+    minutes += stepMinutes
+  ) {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    const label =
+      hours > 0
+        ? remainingMinutes === 0
+          ? `${hours}h`
+          : `${hours}h ${remainingMinutes}min`
+        : `${minutes}min`;
+
+    options.push({
+      value: minutes,
+      label,
+    });
+  }
+
+  return options;
+};

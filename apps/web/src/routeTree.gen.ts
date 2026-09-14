@@ -15,6 +15,7 @@ import { Route as AuthLayoutRouteImport } from './routes/_auth/layout'
 import { Route as OnboardingLayoutRouteImport } from './routes/_onboarding/layout'
 import { Route as AppSettingsLayoutRouteImport } from './routes/_app/settings/layout'
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
+import { Route as AppServicesIndexRouteImport } from './routes/_app/services/index'
 import { Route as AppUsersIndexRouteImport } from './routes/_app/users/index'
 import { Route as AuthSignInIndexRouteImport } from './routes/_auth/sign-in/index'
 import { Route as AuthSignUpIndexRouteImport } from './routes/_auth/sign-up/index'
@@ -48,6 +49,11 @@ const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => AppLayoutRoute,
 } as any)
+const AppServicesIndexRoute = AppServicesIndexRouteImport.update({
+  id: '/services/',
+  path: '/services/',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
 const AppUsersIndexRoute = AppUsersIndexRouteImport.update({
   id: '/users/',
   path: '/users/',
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/settings': typeof AppSettingsLayoutRouteWithChildren
   '/dashboard/': typeof AppDashboardIndexRoute
+  '/services/': typeof AppServicesIndexRoute
   '/users/': typeof AppUsersIndexRoute
   '/sign-in/': typeof AuthSignInIndexRoute
   '/sign-up/': typeof AuthSignUpIndexRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings': typeof AppSettingsLayoutRouteWithChildren
   '/dashboard': typeof AppDashboardIndexRoute
+  '/services': typeof AppServicesIndexRoute
   '/users': typeof AppUsersIndexRoute
   '/sign-in': typeof AuthSignInIndexRoute
   '/sign-up': typeof AuthSignUpIndexRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/_onboarding': typeof OnboardingLayoutRouteWithChildren
   '/_app/settings': typeof AppSettingsLayoutRouteWithChildren
   '/_app/dashboard/': typeof AppDashboardIndexRoute
+  '/_app/services/': typeof AppServicesIndexRoute
   '/_app/users/': typeof AppUsersIndexRoute
   '/_auth/sign-in/': typeof AuthSignInIndexRoute
   '/_auth/sign-up/': typeof AuthSignUpIndexRoute
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/'
     | '/settings'
     | '/dashboard/'
+    | '/services/'
     | '/users/'
     | '/sign-in/'
     | '/sign-up/'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/'
     | '/settings'
     | '/dashboard'
+    | '/services'
     | '/users'
     | '/sign-in'
     | '/sign-up'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/_onboarding'
     | '/_app/settings'
     | '/_app/dashboard/'
+    | '/_app/services/'
     | '/_app/users/'
     | '/_auth/sign-in/'
     | '/_auth/sign-up/'
@@ -196,6 +208,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardIndexRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/services/': {
+      id: '/_app/services/'
+      path: '/services'
+      fullPath: '/services/'
+      preLoaderRoute: typeof AppServicesIndexRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/users/': {
       id: '/_app/users/'
       path: '/users'
@@ -248,12 +267,14 @@ const AppSettingsLayoutRouteWithChildren =
 interface AppLayoutRouteChildren {
   AppSettingsLayoutRoute: typeof AppSettingsLayoutRouteWithChildren
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
+  AppServicesIndexRoute: typeof AppServicesIndexRoute
   AppUsersIndexRoute: typeof AppUsersIndexRoute
 }
 
 const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppSettingsLayoutRoute: AppSettingsLayoutRouteWithChildren,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
+  AppServicesIndexRoute: AppServicesIndexRoute,
   AppUsersIndexRoute: AppUsersIndexRoute,
 }
 

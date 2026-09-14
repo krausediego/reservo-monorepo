@@ -5,3 +5,4 @@ export * from "./validate-cep";
 export * from "./time-conversion";
 export * from "./input-masks";
 export * from "./member-role-to-text";
+export * from "./currency";

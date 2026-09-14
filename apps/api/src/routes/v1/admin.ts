@@ -4,13 +4,15 @@ import { makeAcceptInvitationController } from "@/modules/admin/accept-invitatio
 import { makeListMyInvitationsController } from "@/modules/admin/list-my-invitations";
 import { makeMeController } from "@/modules/admin/me";
 import { makeRejectInvitationController } from "@/modules/admin/reject-invitation";
+import { makeUpdateProfileController } from "@/modules/admin/update-profile";
 import {
   acceptInvitationSchema,
   rejectInvitationSchema,
+  updateProfileSchema,
 } from "@reservo/schemas";
 
-import { adaptRoute } from "../handlers";
-import { authAdmin, validateRequest } from "../middlewares";
+import { adaptRoute, upload } from "../handlers";
+import { authAdmin, normalizeFiles, validateRequest } from "../middlewares";
 
 export default (router: Router): void => {
   router.get("/admin/me", authAdmin, adaptRoute(makeMeController()));
@@ -33,5 +35,14 @@ export default (router: Router): void => {
     authAdmin,
     validateRequest(rejectInvitationSchema),
     adaptRoute(makeRejectInvitationController()),
+  );
+
+  router.put(
+    "/admin/update-profile",
+    authAdmin,
+    upload.single("image"),
+    normalizeFiles(),
+    validateRequest(updateProfileSchema),
+    adaptRoute(makeUpdateProfileController()),
   );
 };

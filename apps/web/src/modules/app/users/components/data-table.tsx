@@ -13,16 +13,17 @@ export function UsersDataTable() {
   const { data } = useListUsersQuery({
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
+    orderBy: "desc",
   });
 
   const table = useTable({
     features: usersFeatures,
-    data: data.data,
+    data: data?.data ?? [],
     columns: usersColumns,
     state: { pagination },
     onPaginationChange: setPagination,
     manualPagination: true,
-    rowCount: data.meta.total,
+    rowCount: data?.meta.total,
   });
 
   return (

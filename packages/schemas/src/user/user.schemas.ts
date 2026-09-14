@@ -6,7 +6,7 @@ export const userSchema = z.object({
   email: z.email(),
   emailVerified: z.boolean(),
   role: z.union([z.literal("ADMIN"), z.literal("CLIENT")]),
-  image: z.string().nullable(),
+  imageUrl: z.string().nullable(),
   phoneNumber: z.string().nullable(),
   phoneNumberVerified: z.boolean().nullable(),
   createdAt: z.date(),

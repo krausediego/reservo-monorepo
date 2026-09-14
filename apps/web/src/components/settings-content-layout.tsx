@@ -14,7 +14,7 @@ export function SettingsContentLayout({
   className,
 }: SettingsContentLayoutProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       <div className="space-y-1">
         <h1 className="text-xl font-bold tracking-tight text-foreground">
           {title}

@@ -1,5 +1,6 @@
 import type { LinkProps } from "@tanstack/react-router";
 import {
+  HandCoins,
   LayoutDashboard,
   Settings,
   Users2,
@@ -28,6 +29,16 @@ export function getMenuList(): AppSidebarGroup[] {
           to: "/dashboard",
           name: "Dashboard",
           icon: LayoutDashboard,
+        },
+      ],
+    },
+    {
+      groupLabel: "Comercial",
+      menus: [
+        {
+          to: "/services",
+          name: "Serviços",
+          icon: HandCoins,
         },
       ],
     },

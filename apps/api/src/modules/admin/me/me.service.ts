@@ -46,9 +46,14 @@ export class MeService extends BaseDatabaseService implements IMe {
 
     const { members, ...user } = hasUser;
 
+    const userImageUrl = await this.getSignedUrl({ key: user.image });
+
     if (!members.length) {
       return {
-        user,
+        user: {
+          ...user,
+          imageUrl: userImageUrl,
+        },
         establishment: null,
       };
     }
@@ -80,6 +85,7 @@ export class MeService extends BaseDatabaseService implements IMe {
     return {
       user: {
         ...user,
+        imageUrl: userImageUrl,
         memberRole: members[0].role,
       },
       establishment: {

@@ -31,7 +31,7 @@ export class RemoveServiceService
       },
       where: {
         id: params.id,
-        isActive: true,
+        deleted: false,
       },
     });
 
@@ -66,7 +66,7 @@ export class RemoveServiceService
 
     const service = await this.db.services.update({
       data: {
-        isActive: false,
+        deleted: false,
       },
       where: {
         id: hasService.id,

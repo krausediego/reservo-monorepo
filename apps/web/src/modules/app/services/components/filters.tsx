@@ -1,19 +1,28 @@
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import { Search } from "lucide-react";
+import { DataFilters } from "@/components/ui/data-filters";
+import type { FilterDefinition } from "@/types";
+
+const SERVICE_FILTERS: FilterDefinition[] = [
+  {
+    type: "tabs",
+    key: "isActive",
+    options: [
+      {
+        label: "Todos",
+        value: "all",
+      },
+      {
+        label: "Ativos",
+        value: true,
+      },
+      {
+        label: "Inativos",
+        value: false,
+      },
+    ],
+  },
+  { type: "search", key: "name", placeholder: "Buscar serviços..." },
+];
 
 export function ServicesFilters() {
-  return (
-    <div className="flex w-full gap-2">
-      <InputGroup className="w-auto">
-        <InputGroupAddon>
-          <Search />
-        </InputGroupAddon>
-        <InputGroupInput placeholder="Buscar serviços..." />
-      </InputGroup>
-    </div>
-  );
+  return <DataFilters definitions={SERVICE_FILTERS} />;
 }

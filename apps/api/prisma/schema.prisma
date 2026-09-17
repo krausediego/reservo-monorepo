@@ -256,6 +256,7 @@ model Services {
   durationMinutes Int     @map("duration_minutes")
   priceCents      Int     @map("price_cents")
   isActive        Boolean @default(true) @map("is_active")
+  deleted         Boolean @default(false)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

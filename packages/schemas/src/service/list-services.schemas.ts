@@ -5,6 +5,7 @@ import { serviceSchema } from ".";
 export const listServicesSchema = z.object({
   query: paginationQuerySchema.extend({
     name: z.string().optional(),
+    isActive: z.stringbool().optional(),
     orderBy: z
       .union([z.literal("asc"), z.literal("desc")])
       .optional()

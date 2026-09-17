@@ -19,7 +19,7 @@ export const updateServiceSchema = z.object({
       .min(10, { error: "A descrição deve conter ao menos 10 caracteres" })
       .max(1000, { error: "A descrição está muito longa" }),
 
-    durationInMinutes: z
+    durationMinutes: z
       .number({ error: "A duração é obrigatória" })
       .int({ error: "A duração deve ser um número inteiro" })
       .positive({ error: "A duração deve ser maior que zero" })
@@ -30,6 +30,8 @@ export const updateServiceSchema = z.object({
       .int({ error: "O preço deve ser um número inteiro" })
       .nonnegative({ error: "O preço não pode ser negativo" })
       .max(10_000_00, "Preço acima do limite permitido"),
+
+    isActive: z.boolean({ error: "O status é obrigatório" }),
   }),
 });
 

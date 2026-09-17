@@ -26,7 +26,7 @@ export class UpdateServiceService
       },
       where: {
         id: params.id,
-        isActive: true,
+        deleted: false,
       },
     });
 
@@ -39,8 +39,9 @@ export class UpdateServiceService
       data: {
         name: params.name,
         description: params.description,
-        durationMinutes: params.durationInMinutes,
+        durationMinutes: params.durationMinutes,
         priceCents: params.priceCents,
+        isActive: params.isActive,
       },
       where: {
         id: params.id,

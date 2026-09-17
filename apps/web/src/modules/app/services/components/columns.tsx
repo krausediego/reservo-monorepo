@@ -10,6 +10,8 @@ import {
   type ColumnDef,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
+import { ServicesActions } from "./actions";
+import { Badge } from "@/components/ui/badge";
 
 export const servicesFeatures = tableFeatures({
   rowSelectionFeature,
@@ -57,6 +59,11 @@ export const servicesColumns: Array<
   {
     accessorKey: "description",
     header: "Descrição",
+    cell: ({ row }) => (
+      <p className="max-w-75 truncate" title={row.original.description}>
+        {row.original.description}
+      </p>
+    ),
   },
   {
     accessorKey: "priceCents",
@@ -71,6 +78,11 @@ export const servicesColumns: Array<
   {
     accessorKey: "isActive",
     header: "Status",
+    cell: ({ row }) => (
+      <Badge variant={row.original.isActive ? "success" : "destructive"}>
+        {row.original.isActive ? "Ativo" : "Inativo"}
+      </Badge>
+    ),
   },
   {
     accessorKey: "createdAt",
@@ -79,10 +91,6 @@ export const servicesColumns: Array<
   },
   {
     id: "actions",
-    cell: () => {
-      // const value = info.row.original;
-
-      return <div>...</div>;
-    },
+    cell: ({ row }) => <ServicesActions service={row.original} />,
   },
 ];

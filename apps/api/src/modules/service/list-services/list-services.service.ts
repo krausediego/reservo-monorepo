@@ -33,7 +33,8 @@ export class ListServicesService
     });
 
     const where: ServicesWhereInput = {
-      isActive: true,
+      deleted: false,
+      isActive: params.isActive,
       name: {
         contains: params.name,
         mode: "insensitive",

@@ -12,7 +12,7 @@ type AppProps = {
 export function App({ router }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="reservo-ui-theme">
+      <ThemeProvider defaultTheme="system" storageKey="reservo-ui-theme">
         <RouterProvider router={router} />
         {/* <TanStackRouterDevtools router={router} /> */}
         <Toaster richColors />

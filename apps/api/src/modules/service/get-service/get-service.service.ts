@@ -23,7 +23,7 @@ export class GetServiceService
     const service = await this.db.services.findFirst({
       where: {
         id: params.id,
-        isActive: true,
+        deleted: false,
       },
     });
 

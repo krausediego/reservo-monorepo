@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { serviceSchema } from "./service.schemas";
+import { capitalize } from "../helpers/capitalize";
 
 export const createServiceSchema = z.object({
   body: z.object({
@@ -9,7 +10,8 @@ export const createServiceSchema = z.object({
       .max(256, { error: "O nome deve conter no máximo 256 caracteres" })
       .regex(/^[a-zA-Z0-9À-ÿ\s]*$/, {
         error: "O nome não pode conter caracteres especiais",
-      }),
+      })
+      .transform(capitalize),
 
     description: z
       .string({ error: "A descrição é obrigatória" })

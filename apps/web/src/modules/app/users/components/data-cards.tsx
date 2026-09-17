@@ -14,6 +14,7 @@ export function UsersDataCards() {
   const { data } = useListUsersQuery({
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
+    orderBy: "desc",
   });
 
   const table = useTable({

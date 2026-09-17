@@ -30,10 +30,10 @@ export function UsersCard({ row }: UsersCardProps) {
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Selecionar usuário"
+            aria-label="Select user"
           />
           <Avatar>
-            <AvatarImage src={item.user.image ?? undefined} />
+            <AvatarImage src={item.user.imageUrl ?? undefined} />
             <AvatarFallback>
               <UserRound className="size-4" />
             </AvatarFallback>

@@ -3,7 +3,6 @@ import type { IUpdateProfileSchema } from "@reservo/types";
 
 export async function updateProfileApi(params: IUpdateProfileSchema.GetParams) {
   const formData = new FormData();
-  console.log(params);
 
   for (const [key, value] of Object.entries(params)) {
     if (value == null) continue;

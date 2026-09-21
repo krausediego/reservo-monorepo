@@ -61,13 +61,28 @@ export class DeleteProfessionalService
       );
     }
 
-    await this.db.professionals.update({
-      data: {
-        isActive: false,
-      },
-      where: {
-        id: hasProfessional.id,
-      },
+    await this.db.$transaction(async (tx) => {
+      await tx.professionalServices.deleteMany({
+        where: {
+          professionalId: params.id,
+        },
+      });
+
+      await tx.professionalAvailabilities.deleteMany({
+        where: {
+          professionalId: params.id,
+        },
+      });
+
+      await tx.professionals.update({
+        data: {
+          isActive: false,
+          deleted: true,
+        },
+        where: {
+          id: params.id,
+        },
+      });
     });
 
     return {

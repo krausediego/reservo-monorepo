@@ -137,7 +137,6 @@ function CreateEstablishmentProvider({
 
     (async () => {
       const cep = await checkCepExists(zipCode, controller.signal);
-      console.log("CEP", cep);
       if (!cep) return;
 
       const opts = { shouldValidate: true, shouldDirty: true } as const;

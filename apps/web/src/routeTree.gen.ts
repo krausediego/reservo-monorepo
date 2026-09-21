@@ -15,6 +15,7 @@ import { Route as AuthLayoutRouteImport } from './routes/_auth/layout'
 import { Route as OnboardingLayoutRouteImport } from './routes/_onboarding/layout'
 import { Route as AppSettingsLayoutRouteImport } from './routes/_app/settings/layout'
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
+import { Route as AppProfessionalsIndexRouteImport } from './routes/_app/professionals/index'
 import { Route as AppServicesIndexRouteImport } from './routes/_app/services/index'
 import { Route as AppUsersIndexRouteImport } from './routes/_app/users/index'
 import { Route as AuthSignInIndexRouteImport } from './routes/_auth/sign-in/index'
@@ -47,6 +48,11 @@ const AppSettingsLayoutRoute = AppSettingsLayoutRouteImport.update({
 const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
+const AppProfessionalsIndexRoute = AppProfessionalsIndexRouteImport.update({
+  id: '/professionals/',
+  path: '/professionals/',
   getParentRoute: () => AppLayoutRoute,
 } as any)
 const AppServicesIndexRoute = AppServicesIndexRouteImport.update({
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/settings': typeof AppSettingsLayoutRouteWithChildren
   '/dashboard/': typeof AppDashboardIndexRoute
+  '/professionals/': typeof AppProfessionalsIndexRoute
   '/services/': typeof AppServicesIndexRoute
   '/users/': typeof AppUsersIndexRoute
   '/sign-in/': typeof AuthSignInIndexRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings': typeof AppSettingsLayoutRouteWithChildren
   '/dashboard': typeof AppDashboardIndexRoute
+  '/professionals': typeof AppProfessionalsIndexRoute
   '/services': typeof AppServicesIndexRoute
   '/users': typeof AppUsersIndexRoute
   '/sign-in': typeof AuthSignInIndexRoute
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/_onboarding': typeof OnboardingLayoutRouteWithChildren
   '/_app/settings': typeof AppSettingsLayoutRouteWithChildren
   '/_app/dashboard/': typeof AppDashboardIndexRoute
+  '/_app/professionals/': typeof AppProfessionalsIndexRoute
   '/_app/services/': typeof AppServicesIndexRoute
   '/_app/users/': typeof AppUsersIndexRoute
   '/_auth/sign-in/': typeof AuthSignInIndexRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/'
     | '/settings'
     | '/dashboard/'
+    | '/professionals/'
     | '/services/'
     | '/users/'
     | '/sign-in/'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/'
     | '/settings'
     | '/dashboard'
+    | '/professionals'
     | '/services'
     | '/users'
     | '/sign-in'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/_onboarding'
     | '/_app/settings'
     | '/_app/dashboard/'
+    | '/_app/professionals/'
     | '/_app/services/'
     | '/_app/users/'
     | '/_auth/sign-in/'
@@ -206,6 +218,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof AppDashboardIndexRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/professionals/': {
+      id: '/_app/professionals/'
+      path: '/professionals'
+      fullPath: '/professionals/'
+      preLoaderRoute: typeof AppProfessionalsIndexRouteImport
       parentRoute: typeof AppLayoutRoute
     }
     '/_app/services/': {
@@ -267,6 +286,7 @@ const AppSettingsLayoutRouteWithChildren =
 interface AppLayoutRouteChildren {
   AppSettingsLayoutRoute: typeof AppSettingsLayoutRouteWithChildren
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
+  AppProfessionalsIndexRoute: typeof AppProfessionalsIndexRoute
   AppServicesIndexRoute: typeof AppServicesIndexRoute
   AppUsersIndexRoute: typeof AppUsersIndexRoute
 }
@@ -274,6 +294,7 @@ interface AppLayoutRouteChildren {
 const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppSettingsLayoutRoute: AppSettingsLayoutRouteWithChildren,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
+  AppProfessionalsIndexRoute: AppProfessionalsIndexRoute,
   AppServicesIndexRoute: AppServicesIndexRoute,
   AppUsersIndexRoute: AppUsersIndexRoute,
 }

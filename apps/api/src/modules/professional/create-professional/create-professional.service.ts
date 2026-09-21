@@ -1,3 +1,5 @@
+import { Professionals } from "generated/prisma/client";
+
 import { setTraceId, setDatabaseContext } from "@/helpers";
 import {
   type ILoggingManager,
@@ -35,6 +37,12 @@ export class CreateProfessionalService
       select: {
         id: true,
         userId: true,
+        users: {
+          select: {
+            email: true,
+            phoneNumber: true,
+          },
+        },
       },
       where: {
         id: params.memberId,
@@ -74,6 +82,7 @@ export class CreateProfessionalService
       where: {
         id: { in: params.servicesIds },
         isActive: true,
+        deleted: false,
       },
     });
 
@@ -85,111 +94,129 @@ export class CreateProfessionalService
       throw new NotFoundError("Um ou mais serviços não foram encontrados");
     }
 
-    const professionalId = createId();
+    const existing = await this.db.professionals.findFirst({
+      select: {
+        id: true,
+      },
+      where: {
+        memberId: params.memberId,
+        deleted: true,
+      },
+    });
+
+    const professionalId = existing?.id ?? createId();
     const avatarStorageKey = await this.uploadAvatar({
       organizationId: params.organizationId,
       professionalId,
       image: params.avatar,
     });
 
-    await this.createProfessional({
-      ...params,
-      professionalId,
-      avatarStorageKey,
-      userId: hasMember.userId,
-    }).catch(async (error: any) => {
-      if (avatarStorageKey) {
-        await this.storage.deleteByKey({
-          key: avatarStorageKey,
-        });
-      }
+    const {
+      professional: professionalCreated,
+      services: servicesCreated,
+      availabilities: availabilitiesCreated,
+    } = await this.db
+      .$transaction(async (tx) => {
+        let professional: Professionals;
 
-      this.log("warn", "Error occurred in create professional.");
-      throw new BadRequestError(
-        error?.message ?? "Ocorreu um erro ao criar o profissional",
-      );
-    });
+        if (existing) {
+          this.log(
+            "info",
+            "Professional already created and deleted, restoring professional with new fields.",
+          );
 
-    const services = await this.db.services.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-      where: {
-        id: { in: params.servicesIds },
-      },
-    });
+          professional = await this.db.professionals.update({
+            data: {
+              name: params.name,
+              bio: params.bio,
+              avatarStorageKey,
+              isActive: true,
+              deleted: false,
+            },
+            where: {
+              id: existing.id,
+            },
+          });
+        } else {
+          professional = await tx.professionals.create({
+            data: {
+              id: professionalId,
+              name: params.name,
+              memberId: params.memberId,
+              bio: params.bio,
+              avatarStorageKey,
+            },
+          });
+        }
 
-    const userMember = await this.db.users.findFirst({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
-      where: {
-        id: hasMember.userId,
-      },
-    });
+        const establishmentAvailabilities =
+          await tx.establishmentAvailabilities.findMany();
 
-    const avatarUrl = await this.getSignedUrl({
-      key: avatarStorageKey,
-    });
+        const availabilities =
+          await tx.professionalAvailabilities.createManyAndReturn({
+            data: establishmentAvailabilities.map(
+              ({ establishmentId: _, ...availability }) => {
+                return {
+                  ...availability,
+                  professionalId,
+                };
+              },
+            ),
+            skipDuplicates: true,
+          });
 
-    return {
-      name: params.name,
-      bio: params.bio,
-      member: {
-        user: userMember!,
-      },
-      services,
-      avatarUrl,
-    };
-  }
-
-  private async createProfessional(
-    params: CreateProfessional.Params & {
-      professionalId: string;
-      avatarStorageKey: string | null;
-      userId: string;
-    },
-  ): Promise<void> {
-    await this.db.$transaction(async (tx) => {
-      await tx.professionals.create({
-        data: {
-          id: params.professionalId,
-          name: params.name,
-          memberId: params.memberId,
-          bio: params.bio,
-          avatarStorageKey: params.avatarStorageKey,
-        },
-      });
-
-      const establishmentAvailabilities =
-        await tx.establishmentAvailabilities.findMany();
-
-      await tx.professionalAvailabilities.createMany({
-        data: establishmentAvailabilities.map(
-          ({ establishmentId: _, ...availability }) => {
-            return {
-              ...availability,
-              professionalId: params.professionalId,
-            };
+        const services = await tx.professionalServices.createManyAndReturn({
+          select: {
+            services: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
-        ),
-        skipDuplicates: true,
-      });
-
-      if (params.servicesIds?.length) {
-        await tx.professionalServices.createMany({
-          data: params.servicesIds.map((service) => {
+          data: params.servicesIds.map((serviceId) => {
             return {
-              professionalId: params.professionalId,
-              serviceId: service,
+              organizationId: params.organizationId,
+              professionalId,
+              serviceId,
             };
           }),
         });
-      }
-    });
+
+        return { professional, availabilities, services };
+      })
+      .catch(async (error: any) => {
+        if (avatarStorageKey) {
+          await this.storage.deleteByKey({
+            key: avatarStorageKey,
+          });
+        }
+
+        this.log("warn", "Error occurred in create professional.");
+        throw new BadRequestError(
+          error?.message ?? "Ocorreu um erro ao criar o profissional",
+        );
+      });
+
+    const avatarUrl = await this.getSignedUrl({ key: avatarStorageKey });
+
+    return {
+      professional: {
+        ...professionalCreated,
+        avatarUrl,
+        user: {
+          email: hasMember.users.email,
+          phoneNumber: hasMember.users.phoneNumber,
+        },
+      },
+      availabilities: availabilitiesCreated,
+      services: servicesCreated.map((service) => {
+        return {
+          id: service.services.id,
+          name: service.services.name,
+        };
+      }),
+    };
   }
 
   private async uploadAvatar(

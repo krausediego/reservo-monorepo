@@ -45,8 +45,6 @@ export class UpdateProfileService
       image: params.image,
     });
 
-    console.log("IMAGE", params);
-
     const userUpdated = await this.db.users
       .update({
         data: {

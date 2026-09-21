@@ -32,7 +32,7 @@ export class ListProfessionalsService
     });
 
     const where: ProfessionalsWhereInput = {
-      isActive: true,
+      deleted: false,
       name: {
         contains: params.name,
         mode: "insensitive",
@@ -53,6 +53,16 @@ export class ListProfessionalsService
               },
             },
           },
+          members: {
+            select: {
+              users: {
+                select: {
+                  email: true,
+                  phoneNumber: true,
+                },
+              },
+            },
+          },
         },
         where,
         take: pagination.limit,
@@ -69,11 +79,16 @@ export class ListProfessionalsService
         async ({
           professionalAvailabilities,
           professionalServices,
+          members,
           ...professional
         }) => {
           return {
             professional: {
               ...professional,
+              user: {
+                email: members.users.email,
+                phoneNumber: members.users.phoneNumber,
+              },
               avatarUrl:
                 professional.avatarStorageKey &&
                 (await this.storage

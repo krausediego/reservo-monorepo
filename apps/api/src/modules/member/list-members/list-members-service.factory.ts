@@ -1,7 +1,7 @@
-import { makeLogging, makeDatabase } from "@/infra";
+import { makeLogging, makeDatabase, makeStorage } from "@/infra";
 
 import { ListMembersService, type IListMembers } from ".";
 
 export const makeListMembersService = (): IListMembers => {
-  return new ListMembersService(makeLogging(), makeDatabase());
+  return new ListMembersService(makeLogging(), makeDatabase(), makeStorage());
 };

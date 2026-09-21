@@ -1,20 +1,10 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { listUsersApi } from "../api";
-import { usersKeys } from "../users.keys";
-import { useSearch } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import type { IListMembersSchema } from "@reservo/types";
+import { listUsersQueryOptions } from "../use.queries";
 
-export function useListUsersQuery(params: IListMembersSchema.GetParams) {
-  const search = useSearch({ from: "/_app/users/" });
-
-  const param = {
-    ...params,
-    ...search,
-    roles: search.roles as string[] | undefined,
-  };
-
-  return useSuspenseQuery({
-    queryFn: () => listUsersApi(param),
-    queryKey: usersKeys.users(param),
-  });
+export function useListUsersQuery(
+  params: IListMembersSchema.GetParams,
+  options?: Partial<ReturnType<typeof listUsersQueryOptions>>,
+) {
+  return useQuery({ ...listUsersQueryOptions(params), ...options });
 }

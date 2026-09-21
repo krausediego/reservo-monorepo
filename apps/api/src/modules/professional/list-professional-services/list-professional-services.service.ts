@@ -28,7 +28,7 @@ export class ListProfessionalServicesService
       },
       where: {
         id: params.id,
-        isActive: true,
+        deleted: false,
       },
     });
 

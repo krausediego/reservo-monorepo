@@ -11,6 +11,8 @@ import {
 } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { UsersActions } from "./actions";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserRound } from "lucide-react";
 
 export const usersFeatures = tableFeatures({
   rowSelectionFeature,
@@ -54,6 +56,17 @@ export const usersColumns: Array<
   {
     accessorKey: "user.name",
     header: "Nome",
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        <Avatar>
+          <AvatarImage src={row.original.user.imageUrl ?? undefined} />
+          <AvatarFallback>
+            <UserRound className="size-4" />
+          </AvatarFallback>
+        </Avatar>
+        <p>{row.original.user.name}</p>
+      </div>
+    ),
   },
   {
     accessorKey: "user.email",

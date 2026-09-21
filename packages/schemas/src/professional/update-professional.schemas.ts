@@ -31,7 +31,9 @@ export const updateProfessionalSchema = z.object({
       .min(10, { error: "A bio deve conter ao menos 10 caracteres" })
       .max(1800, { error: "A bio está muito longa" }),
 
-    avatar: singleFileSchema(5, "avatar"),
+    isActive: z.boolean({ error: "O status é obrigatório" }),
+
+    avatar: z.instanceof(File).optional(),
   }),
 });
 

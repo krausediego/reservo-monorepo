@@ -232,6 +232,7 @@ model Professionals {
   name             String
   bio              String
   isActive         Boolean @default(true) @map("is_active")
+  deleted          Boolean @default(false)
   avatarStorageKey String? @map("avatar_storage_key")
 
   createdAt DateTime @default(now())
@@ -293,7 +294,7 @@ model ProfessionalAvailabilities {
   dayOfWeek      Int     @map("day_of_week")
   startMinutes   Int     @map("start_minutes")
   endMinutes     Int     @map("end_minutes")
-  closed         Boolean @default(false)
+  opened         Boolean @default(false)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

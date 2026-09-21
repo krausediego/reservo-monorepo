@@ -25,6 +25,8 @@ export function useCreateServiceMutation() {
           };
         },
       );
+
+      queryClient.invalidateQueries({ queryKey: servicesKeys.all() });
     },
     onError: ({ message }) => {
       toast.error(message);

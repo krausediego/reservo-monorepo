@@ -37,7 +37,7 @@ export function ConfirmDialog({
   icon: Icon,
   confirmLabel,
   cancelLabel = "Cancelar",
-  variant,
+  variant = "destructive",
   size,
   isPending,
 }: ConfirmDialogProps) {

@@ -12,11 +12,12 @@ import {
   authAdmin,
   enforceAccess,
   enforceLimit,
+  normalizeFiles,
   validateRequest,
   validateRole,
 } from "@/routes/middlewares";
 import {
-  createProfessionalSchema,
+  backCreateProfessionalSchema,
   deleteProfessionalSchema,
   getProfessionalSchema,
   listProfessionalServicesSchema,
@@ -31,9 +32,10 @@ export default (router: Router) => {
     authAdmin,
     validateRole("MANAGER"),
     upload.single("avatar"),
+    normalizeFiles(),
     enforceAccess("WRITE"),
     enforceLimit("professionals"),
-    validateRequest(createProfessionalSchema),
+    validateRequest(backCreateProfessionalSchema),
     adaptRoute(makeCreateProfessionalController()),
   );
 

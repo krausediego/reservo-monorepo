@@ -1,4 +1,4 @@
-import { Pattern } from "@/components/examples/c-file-upload-2";
+import { AvatarUpload } from "@/components/ui/avatar-upload";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -50,8 +50,8 @@ export function SettingsProfileForm() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid} className="items-center">
-              <Pattern
-                defaultAvatar={data.user.imageUrl}
+              <AvatarUpload
+                defaultAvatar={data?.user.imageUrl ?? undefined}
                 onFileChange={(e) => {
                   if (e && e.file) {
                     field.onChange(e.file);
@@ -100,7 +100,7 @@ export function SettingsProfileForm() {
                 <InputGroupInput
                   {...field}
                   id="phone"
-                  value={field.value && masked.celPhone(field.value)}
+                  value={field.value ? masked.celPhone(field.value) : undefined}
                   aria-invalid={fieldState.invalid}
                   placeholder="(99) 99999-9999"
                   autoComplete="off"

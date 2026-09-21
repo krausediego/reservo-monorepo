@@ -19,7 +19,7 @@ export const professionalAvailabilitiesSchema = z.object({
   dayOfWeek: z.number().int(),
   startMinutes: z.number(),
   endMinutes: z.number(),
-  closed: z.boolean(),
+  opened: z.boolean(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

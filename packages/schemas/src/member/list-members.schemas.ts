@@ -3,7 +3,7 @@ import { paginatedResponse, paginationQuerySchema } from "../helpers";
 import { userSchema } from "../user";
 import { memberSchema } from "./member.schemas";
 
-const ROLES = ["OWNER", "MANAGER"] as const;
+const ROLES = ["OWNER", "MANAGER", "PROFESSIONAL"] as const;
 
 export const listMembersSchema = z.object({
   query: paginationQuerySchema.extend({
@@ -13,6 +13,7 @@ export const listMembersSchema = z.object({
       .transform((val) => (Array.isArray(val) ? val : val.split(",")))
       .pipe(z.array(z.enum(ROLES)).min(1))
       .optional(),
+    availableLinkProfessional: z.stringbool().optional(),
     orderBy: z
       .union([z.literal("asc"), z.literal("desc")])
       .optional()

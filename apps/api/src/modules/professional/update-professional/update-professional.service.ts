@@ -36,7 +36,7 @@ export class UpdateProfessionalService
       },
       where: {
         id: params.id,
-        isActive: true,
+        deleted: false,
       },
     });
 
@@ -61,6 +61,7 @@ export class UpdateProfessionalService
           bio: params.bio,
           avatarStorageKey:
             avatarStorageKey ?? hasProfessional.avatarStorageKey,
+          isActive: params.isActive,
         },
         where: {
           id: hasProfessional.id,

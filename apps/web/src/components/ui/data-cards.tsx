@@ -39,7 +39,9 @@ export function DataCards<
           )}
         >
           {rows.map((row) => (
-            <div key={row.id}>{renderCard(row)}</div>
+            <div key={row.id} className="min-w-0">
+              {renderCard(row)}
+            </div>
           ))}
         </div>
       ) : (

@@ -26,7 +26,7 @@ export function UsersCard({ row }: UsersCardProps) {
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -38,11 +38,11 @@ export function UsersCard({ row }: UsersCardProps) {
               <UserRound className="size-4" />
             </AvatarFallback>
           </Avatar>
-          <div>
+          <div className="min-w-0">
             <h3 className="font-semibold text-sm leading-none">
               {item.user.name}
             </h3>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-1 truncate">
               {item.user.email}
             </p>
           </div>

@@ -34,7 +34,7 @@ export class UpdateProfessionalServicesService
     const hasProfessional = await this.db.professionals.findFirst({
       where: {
         id: params.id,
-        isActive: true,
+        deleted: false,
       },
     });
 

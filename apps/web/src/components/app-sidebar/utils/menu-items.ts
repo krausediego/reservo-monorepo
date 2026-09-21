@@ -2,6 +2,7 @@ import type { LinkProps } from "@tanstack/react-router";
 import {
   HandCoins,
   LayoutDashboard,
+  Scissors,
   Settings,
   Users2,
   type LucideIcon,
@@ -35,6 +36,11 @@ export function getMenuList(): AppSidebarGroup[] {
     {
       groupLabel: "Comercial",
       menus: [
+        {
+          to: "/professionals",
+          name: "Profissionais",
+          icon: Scissors,
+        },
         {
           to: "/services",
           name: "Serviços",

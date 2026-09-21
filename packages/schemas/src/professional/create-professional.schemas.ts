@@ -1,16 +1,18 @@
 import { z } from "zod";
+import {
+  professionalAvailabilitiesSchema,
+  professionalSchema,
+} from "./professional.schemas";
+import { serviceSchema } from "../service";
+import { fromJson } from "../helpers";
+import { userSchema } from "../user";
 
-const singleFileSchema = (maxSizeMb: number, fieldLabel: string) =>
-  z
-    .object({
-      mimetype: z.enum(["image/jpeg", "image/png", "image/webp"], {
-        error: `Formato de ${fieldLabel} inválido`,
-      }),
-      size: z.number().max(maxSizeMb * 1024 * 1024, {
-        error: `${fieldLabel} deve ter no máximo ${maxSizeMb}MB`,
-      }),
-    })
-    .optional();
+export const servicesIdsSchema = z
+  .array(z.cuid2({ error: "Formato inválido" }), {
+    error: "Serviços em formato inválido",
+  })
+  .min(1, { error: "Deve haver ao menos 1 serviço vinculado ao profissional." })
+  .transform((ids) => [...new Set(ids)]);
 
 export const createProfessionalSchema = z.object({
   body: z.object({
@@ -29,36 +31,25 @@ export const createProfessionalSchema = z.object({
       .min(10, { error: "A bio deve conter ao menos 10 caracteres" })
       .max(1800, { error: "A bio está muito longa" }),
 
-    servicesIds: z
-      .array(z.cuid2({ error: "Formato inválido" }), {
-        error: "Serviços em formato inválido",
-      })
-      .refine((services) => {
-        return [...new Set(services)];
-      })
-      .optional(),
+    servicesIds: servicesIdsSchema,
 
-    avatar: singleFileSchema(5, "avatar"),
+    avatar: z.instanceof(File).optional(),
+  }),
+});
+
+export const backCreateProfessionalSchema = createProfessionalSchema.extend({
+  body: createProfessionalSchema.shape.body.extend({
+    servicesIds: fromJson(servicesIdsSchema),
   }),
 });
 
 export const createProfessionalResponseSchema = z.object({
-  name: z.string(),
-  bio: z.string(),
-  member: z.object({
-    user: z.object({
-      id: z.string(),
-      name: z.string(),
-      email: z.email(),
+  professional: professionalSchema.extend({
+    user: userSchema.pick({
+      email: true,
+      phoneNumber: true,
     }),
   }),
-  services: z
-    .array(
-      z.object({
-        id: z.cuid2(),
-        name: z.string(),
-      }),
-    )
-    .optional(),
-  avatarUrl: z.url().nullable(),
+  availabilities: z.array(professionalAvailabilitiesSchema),
+  services: z.array(serviceSchema.pick({ id: true, name: true })),
 });

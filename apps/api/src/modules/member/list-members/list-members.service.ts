@@ -7,7 +7,12 @@ import {
   getPaginationOffset,
   buildPaginationMeta,
 } from "@/helpers";
-import { type ILoggingManager, type IDatabase, basePrisma } from "@/infra";
+import {
+  type ILoggingManager,
+  type IDatabase,
+  basePrisma,
+  IStorage,
+} from "@/infra";
 import { BaseDatabaseService } from "@/modules/shared";
 import { FieldRef } from "@prisma/client/runtime/client";
 
@@ -20,6 +25,7 @@ export class ListMembersService
   constructor(
     protected readonly logger: ILoggingManager,
     protected readonly database: IDatabase,
+    private readonly storage: IStorage,
   ) {
     super(logger, database);
   }
@@ -48,6 +54,18 @@ export class ListMembersService
           mode: "insensitive",
         },
       },
+      ...(params.availableLinkProfessional && {
+        OR: [
+          {
+            professionals: null,
+          },
+          {
+            professionals: {
+              is: { deleted: true },
+            },
+          },
+        ],
+      }),
     };
 
     const [data, total] = await Promise.all([
@@ -71,12 +89,21 @@ export class ListMembersService
       basePrisma.members.count({ where }),
     ]);
 
-    const membersSerialized = data.map(({ users, ...member }) => {
-      return {
-        member,
-        user: users,
-      };
-    });
+    const membersSerialized = await Promise.all(
+      data.map(async ({ users, ...member }) => {
+        return {
+          member,
+          user: {
+            ...users,
+            imageUrl:
+              users.image &&
+              (await this.storage
+                .getSignedUrl({ key: users.image })
+                .catch(() => null)),
+          },
+        };
+      }),
+    );
 
     return {
       data: membersSerialized,

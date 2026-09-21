@@ -28,19 +28,19 @@ export function ServicesCard({ row }: ServicesCardProps) {
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-3">
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select service"
-          />
-
-          <div>
-            <h3 className="font-semibold text-sm leading-none">{item.name}</h3>
-            <p className="text-xs text-muted-foreground mt-1">
-              {item.description}
-            </p>
+        <div className="min-w-0 space-y-2">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={row.getIsSelected()}
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              aria-label="Select service"
+            />
+            <h3 className="font-semibold text-lg leading-none">{item.name}</h3>
           </div>
+
+          <p className="text-xs text-muted-foreground mt-1 truncate">
+            {item.description}
+          </p>
         </div>
         <ServicesActions service={item} />
       </div>

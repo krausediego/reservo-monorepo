@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import type { IListProfessionalsSchema } from "@reservo/types";
 import { listProfessionalsQueryOptions } from "../professionals.queries";
 
-export function useListProfessionalsQuery(
+export function useListProfessionalsSuspenseQuery(
   params: IListProfessionalsSchema.GetParams,
 ) {
-  return useQuery(listProfessionalsQueryOptions(params));
+  return useSuspenseQuery(listProfessionalsQueryOptions(params));
 }

@@ -2,9 +2,10 @@ import { useTable, type PaginationState } from "@tanstack/react-table";
 import * as React from "react";
 import { useListProfessionalsSuspenseQuery } from "../hooks";
 import { professionalsColumns, professionalsFeatures } from "./columns";
-import { DataTable } from "@/components/ui/data-table";
+import { DataCards } from "@/components/ui/data-cards";
+import { ProfessionalsCard } from "./card";
 
-export function ProfessionalsDataTable() {
+export function ProfessionalsDataCard() {
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -27,10 +28,9 @@ export function ProfessionalsDataTable() {
   });
 
   return (
-    <DataTable
+    <DataCards
       table={table}
-      columnsCount={professionalsColumns?.length}
-      noResultsMessage="Sem profissionais"
+      renderCard={(row) => <ProfessionalsCard row={row} />}
     />
   );
 }

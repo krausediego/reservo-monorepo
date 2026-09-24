@@ -1,5 +1,6 @@
 import type { LinkProps } from "@tanstack/react-router";
 import {
+  CalendarCheck,
   HandCoins,
   LayoutDashboard,
   Scissors,
@@ -30,6 +31,11 @@ export function getMenuList(): AppSidebarGroup[] {
           to: "/dashboard",
           name: "Dashboard",
           icon: LayoutDashboard,
+        },
+        {
+          to: "/schedule",
+          name: "Agenda",
+          icon: CalendarCheck,
         },
       ],
     },

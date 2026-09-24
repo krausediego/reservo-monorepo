@@ -26,7 +26,11 @@ type DataTableProps<
 export function DataTable<
   TData extends RowData,
   TFeatures extends TableFeatures = TableFeatures,
->({ table, columnsCount, noResultsMessage }: DataTableProps<TData, TFeatures>) {
+>({
+  table,
+  columnsCount,
+  noResultsMessage = "Nenhum resultado encontrado.",
+}: DataTableProps<TData, TFeatures>) {
   return (
     <div className="flex flex-col w-full gap-4">
       <div className="w-full overflow-hidden rounded-md border">

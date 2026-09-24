@@ -16,6 +16,7 @@ import { Route as OnboardingLayoutRouteImport } from './routes/_onboarding/layou
 import { Route as AppSettingsLayoutRouteImport } from './routes/_app/settings/layout'
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
 import { Route as AppProfessionalsIndexRouteImport } from './routes/_app/professionals/index'
+import { Route as AppScheduleIndexRouteImport } from './routes/_app/schedule/index'
 import { Route as AppServicesIndexRouteImport } from './routes/_app/services/index'
 import { Route as AppUsersIndexRouteImport } from './routes/_app/users/index'
 import { Route as AuthSignInIndexRouteImport } from './routes/_auth/sign-in/index'
@@ -55,6 +56,11 @@ const AppProfessionalsIndexRoute = AppProfessionalsIndexRouteImport.update({
   path: '/professionals/',
   getParentRoute: () => AppLayoutRoute,
 } as any)
+const AppScheduleIndexRoute = AppScheduleIndexRouteImport.update({
+  id: '/schedule/',
+  path: '/schedule/',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
 const AppServicesIndexRoute = AppServicesIndexRouteImport.update({
   id: '/services/',
   path: '/services/',
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AppSettingsLayoutRouteWithChildren
   '/dashboard/': typeof AppDashboardIndexRoute
   '/professionals/': typeof AppProfessionalsIndexRoute
+  '/schedule/': typeof AppScheduleIndexRoute
   '/services/': typeof AppServicesIndexRoute
   '/users/': typeof AppUsersIndexRoute
   '/sign-in/': typeof AuthSignInIndexRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AppSettingsLayoutRouteWithChildren
   '/dashboard': typeof AppDashboardIndexRoute
   '/professionals': typeof AppProfessionalsIndexRoute
+  '/schedule': typeof AppScheduleIndexRoute
   '/services': typeof AppServicesIndexRoute
   '/users': typeof AppUsersIndexRoute
   '/sign-in': typeof AuthSignInIndexRoute
@@ -120,6 +128,7 @@ export interface FileRoutesById {
   '/_app/settings': typeof AppSettingsLayoutRouteWithChildren
   '/_app/dashboard/': typeof AppDashboardIndexRoute
   '/_app/professionals/': typeof AppProfessionalsIndexRoute
+  '/_app/schedule/': typeof AppScheduleIndexRoute
   '/_app/services/': typeof AppServicesIndexRoute
   '/_app/users/': typeof AppUsersIndexRoute
   '/_auth/sign-in/': typeof AuthSignInIndexRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/dashboard/'
     | '/professionals/'
+    | '/schedule/'
     | '/services/'
     | '/users/'
     | '/sign-in/'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/dashboard'
     | '/professionals'
+    | '/schedule'
     | '/services'
     | '/users'
     | '/sign-in'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/_app/settings'
     | '/_app/dashboard/'
     | '/_app/professionals/'
+    | '/_app/schedule/'
     | '/_app/services/'
     | '/_app/users/'
     | '/_auth/sign-in/'
@@ -227,6 +239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfessionalsIndexRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/schedule/': {
+      id: '/_app/schedule/'
+      path: '/schedule'
+      fullPath: '/schedule/'
+      preLoaderRoute: typeof AppScheduleIndexRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
     '/_app/services/': {
       id: '/_app/services/'
       path: '/services'
@@ -287,6 +306,7 @@ interface AppLayoutRouteChildren {
   AppSettingsLayoutRoute: typeof AppSettingsLayoutRouteWithChildren
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
   AppProfessionalsIndexRoute: typeof AppProfessionalsIndexRoute
+  AppScheduleIndexRoute: typeof AppScheduleIndexRoute
   AppServicesIndexRoute: typeof AppServicesIndexRoute
   AppUsersIndexRoute: typeof AppUsersIndexRoute
 }
@@ -295,6 +315,7 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppSettingsLayoutRoute: AppSettingsLayoutRouteWithChildren,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
   AppProfessionalsIndexRoute: AppProfessionalsIndexRoute,
+  AppScheduleIndexRoute: AppScheduleIndexRoute,
   AppServicesIndexRoute: AppServicesIndexRoute,
   AppUsersIndexRoute: AppUsersIndexRoute,
 }

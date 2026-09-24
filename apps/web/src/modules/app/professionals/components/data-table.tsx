@@ -27,10 +27,6 @@ export function ProfessionalsDataTable() {
   });
 
   return (
-    <DataTable
-      table={table}
-      columnsCount={professionalsColumns?.length}
-      noResultsMessage="Sem profissionais"
-    />
+    <DataTable table={table} columnsCount={professionalsColumns?.length} />
   );
 }

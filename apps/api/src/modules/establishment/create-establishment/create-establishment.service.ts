@@ -1,3 +1,5 @@
+import { find } from "geo-tz";
+
 import { generateUniqueSlug, setTraceId } from "@/helpers";
 import {
   BadRequestError,
@@ -85,6 +87,8 @@ export class CreateEstablishmentService
       image: params.cover,
     });
 
+    const [timezone] = find(params.latitude, params.longitude);
+
     try {
       const { establishment } = await basePrisma.$transaction(async (tx) => {
         const { id } = await tx.organizations.create({
@@ -118,6 +122,7 @@ export class CreateEstablishmentService
             zipCode: params.zipCode,
             latitude: params.latitude,
             longitude: params.longitude,
+            timezone,
             phone: params.phone,
             logoStorageKey,
             coverStorageKey,

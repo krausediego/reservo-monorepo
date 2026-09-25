@@ -6,3 +6,4 @@ export * from "./member";
 export * from "./auth";
 export * from "./admin";
 export * from "./invitation";
+export * from "./appointment";

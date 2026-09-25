@@ -30,13 +30,11 @@ function RouteComponent() {
         </Marker>
 
         <Dialog>
-          <DialogTrigger
-            render={
-              <Button className="w-full max-w-150" size="lg" variant="outline">
-                Criar novo estabelecimento
-              </Button>
-            }
-          />
+          <DialogTrigger asChild>
+            <Button className="w-full max-w-150" size="lg" variant="outline">
+              Criar novo estabelecimento
+            </Button>
+          </DialogTrigger>
           <DialogContent className="lg:min-w-2xl">
             <CreateEstablishmentProvider>
               <CreateEstablishmentDialog />

@@ -10,9 +10,9 @@ http:
     type: json
     data: |-
       {
-        "professionalId": "q0pern9rctt0d0h27i9jbm02",
-        "serviceId": "cmu5l70nv0001mok5mh12uice",
-        "startsAt": "2026-09-25T13:31:27.124Z",
+        "professionalId": "oz9ll3qktz8f6aj3tms73slo",
+        "serviceId": "cmu44y5r50001ys7sxv94higx",
+        "startsAt": "2026-09-28T13:31:27.124Z",
         "customer": {
           "type": "new",
           "name": "Cleitinho do vrau",
@@ -29,3 +29,4 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true

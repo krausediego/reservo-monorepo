@@ -1,12 +1,18 @@
 "use client";
 
 import { useDrop } from "react-dnd";
-import { parseISO, differenceInMilliseconds } from "date-fns";
+import {
+  parseISO,
+  differenceInMilliseconds,
+  differenceInMinutes,
+} from "date-fns";
 
 import { cn } from "@/lib/utils";
 import { useUpdateEvent } from "../../hooks";
 import { ItemTypes } from "./draggable-event";
 import type { IEvent } from "../../types";
+import { fits } from "../../helpers";
+import { useCalendar } from "../../contexts";
 
 type DroppableTimeBlockProps = {
   date: Date;
@@ -22,6 +28,7 @@ export function DroppableTimeBlock({
   children,
 }: DroppableTimeBlockProps) {
   const { updateEvent } = useUpdateEvent();
+  const { establishmentAvailability, professionalAvailability } = useCalendar();
 
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
@@ -48,6 +55,29 @@ export function DroppableTimeBlock({
         });
 
         return { moved: true };
+      },
+      canDrop: (item) => {
+        const duration = differenceInMinutes(
+          parseISO(item.event.endDate),
+          parseISO(item.event.startDate),
+        );
+        const from = hour * 60 * minute;
+
+        return (
+          fits({
+            day: date,
+            fromMin: from,
+            toMin: from + duration,
+            hours: establishmentAvailability,
+          }) &&
+          (!professionalAvailability ||
+            fits({
+              day: date,
+              fromMin: from,
+              toMin: from + duration,
+              hours: professionalAvailability,
+            }))
+        );
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),

@@ -1,0 +1,31 @@
+info:
+  name: Create Manual Appointment
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/manual-appointment"
+  body:
+    type: json
+    data: |-
+      {
+        "professionalId": "q0pern9rctt0d0h27i9jbm02",
+        "serviceId": "cmu5l70nv0001mok5mh12uice",
+        "startsAt": "2026-09-25T13:31:27.124Z",
+        "customer": {
+          "type": "new",
+          "name": "Cleitinho do vrau",
+          "phone": "(47) 99999-9999",
+          "email": "ana.babiela@gmail.com"
+        },
+        "notes": "",
+        "internalNotes": ""
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

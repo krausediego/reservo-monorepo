@@ -12,12 +12,13 @@ import {
   getEventBlockStyle,
   getVisibleHours,
   groupEvents,
-  isWorkingHour,
+  isSlotAvailable,
 } from "../../helpers";
 import { DayViewMultiDayEventsRow } from "./day-view-multi-day-events-row";
 import { EventBlock } from "./event-block";
 import { CalendarTimeline } from "./calendar-time-line";
 import { Calendar } from "@/components/ui/calendar";
+import { DroppableTimeBlock } from "../dnd/droppable-time-block";
 
 type CalendarDayViewProps = {
   singleDayEvents: IEvent[];
@@ -28,8 +29,14 @@ export function CalendarDayView({
   singleDayEvents,
   multiDayEvents,
 }: CalendarDayViewProps) {
-  const { selectedDate, setSelectedDate, users, visibleHours, workingHours } =
-    useCalendar();
+  const {
+    selectedDate,
+    setSelectedDate,
+    users,
+    visibleHours,
+    establishmentAvailability,
+    professionalAvailability,
+  } = useCalendar();
   const [, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -97,78 +104,44 @@ export function CalendarDayView({
             <div className="relative flex-1 border-l">
               <div className="relative">
                 {hours.map((hour, index) => {
-                  const isDisabled = !isWorkingHour({
-                    day: selectedDate,
-                    hour,
-                    workingHours,
-                  });
-
                   return (
-                    <div
-                      key={hour}
-                      className={cn(
-                        "relative",
-                        isDisabled && "bg-calendar-disabled-hour",
-                      )}
-                      style={{ height: "96px" }}
-                    >
+                    <div key={hour} className="relative h-24">
                       {index !== 0 && (
-                        <div className="pointer-events-none absolute inset-x-0 top-0 border-b"></div>
+                        <div className="pointer-events-none absolute inset-x-0 top-0 border-b" />
                       )}
 
-                      {/* <DroppableTimeBlock
-                        date={selectedDate}
-                        hour={hour}
-                        minute={0}
-                      >
-                        <AddEventDialog
-                          startDate={selectedDate}
-                          startTime={{ hour, minute: 0 }}
-                        >
-                          <div className="absolute inset-x-0 top-0 h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                        </AddEventDialog>
-                      </DroppableTimeBlock>
+                      {[0, 15, 30, 45].map((minute, i) => {
+                        const available = isSlotAvailable({
+                          day: selectedDate,
+                          hour,
+                          minute,
+                          establishment: establishmentAvailability,
+                          professional: professionalAvailability,
+                        });
 
-                      <DroppableTimeBlock
-                        date={selectedDate}
-                        hour={hour}
-                        minute={15}
-                      >
-                        <AddEventDialog
-                          startDate={selectedDate}
-                          startTime={{ hour, minute: 15 }}
-                        >
-                          <div className="absolute inset-x-0 top-[24px] h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                        </AddEventDialog>
-                      </DroppableTimeBlock> */}
+                        const slot = (
+                          <div
+                            className={cn(
+                              "absolute inset-x-0 h-6",
+                              available
+                                ? "cursor-pointer transition-colors hover:bg-accent"
+                                : "bg-calendar-disabled-hour cursor-not-allowed",
+                            )}
+                            style={{ top: `${i * 24}px` }}
+                          />
+                        );
 
-                      <div className="pointer-events-none absolute inset-x-0 top-1/2 border-b border-dashed"></div>
-
-                      {/* <DroppableTimeBlock
-                        date={selectedDate}
-                        hour={hour}
-                        minute={30}
-                      >
-                        <AddEventDialog
-                          startDate={selectedDate}
-                          startTime={{ hour, minute: 30 }}
-                        >
-                          <div className="absolute inset-x-0 top-[48px] h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                        </AddEventDialog>
-                      </DroppableTimeBlock>
-
-                      <DroppableTimeBlock
-                        date={selectedDate}
-                        hour={hour}
-                        minute={45}
-                      >
-                        <AddEventDialog
-                          startDate={selectedDate}
-                          startTime={{ hour, minute: 45 }}
-                        >
-                          <div className="absolute inset-x-0 top-[72px] h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                        </AddEventDialog>
-                      </DroppableTimeBlock> */}
+                        return (
+                          <DroppableTimeBlock
+                            key={minute}
+                            date={selectedDate}
+                            hour={hour}
+                            minute={minute}
+                          >
+                            {slot}
+                          </DroppableTimeBlock>
+                        );
+                      })}
                     </div>
                   );
                 })}

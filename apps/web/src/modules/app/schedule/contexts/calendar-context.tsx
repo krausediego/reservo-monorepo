@@ -1,4 +1,5 @@
 import type {
+  Availability,
   BadgeVariant,
   IEvent,
   IUser,
@@ -27,6 +28,8 @@ type CalendarContext = {
   setVisibleHours: Dispatch<SetStateAction<VisibleHours>>;
   events: IEvent[];
   setLocalEvents: Dispatch<SetStateAction<IEvent[]>>;
+  establishmentAvailability: Availability[];
+  professionalAvailability: Availability[];
 };
 
 const CalendarContext = createContext({} as CalendarContext);
@@ -47,10 +50,14 @@ export function CalendarProvider({
   children,
   users,
   events,
+  establishmentAvailability,
+  professionalAvailability,
 }: {
   children: React.ReactNode;
   users: IUser[];
   events: IEvent[];
+  establishmentAvailability: Availability[];
+  professionalAvailability: Availability[];
 }) {
   const [badgeVariant, setBadgeVariant] = useState<BadgeVariant>("colored");
   const [visibleHours, setVisibleHours] = useState<VisibleHours>(VISIBLE_HOURS);
@@ -86,6 +93,8 @@ export function CalendarProvider({
         setVisibleHours,
         workingHours,
         setWorkingHours,
+        establishmentAvailability,
+        professionalAvailability,
         // If you go to the refetch approach, you can remove the localEvents and pass the events directly
         events: localEvents,
         setLocalEvents,

@@ -21,7 +21,26 @@ function RouteComponent() {
   const search = useSearch({ from: "/_app/schedule/" });
 
   return (
-    <CalendarProvider users={users} events={events}>
+    <CalendarProvider
+      users={users}
+      events={events}
+      establishmentAvailability={[
+        {
+          dayOfWeek: 0,
+          opened: true,
+          startMinutes: 480,
+          endMinutes: 1080,
+        },
+      ]}
+      professionalAvailability={[
+        {
+          dayOfWeek: 0,
+          opened: true,
+          startMinutes: 480,
+          endMinutes: 1080,
+        },
+      ]}
+    >
       <ContentLayout title="Agenda" description="Crie agendamentos">
         <ClientContainer view={search.view} />
       </ContentLayout>

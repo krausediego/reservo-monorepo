@@ -44,3 +44,10 @@ export type CalendarCell = {
   currentMonth: boolean;
   date: Date;
 };
+
+export type Availability = {
+  dayOfWeek: number;
+  startMinutes: number;
+  endMinutes: number;
+  opened: boolean;
+};

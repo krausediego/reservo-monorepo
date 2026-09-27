@@ -29,8 +29,53 @@ import type {
   IEvent,
   EventColor,
   IUser,
+  Availability,
 } from "@/modules/app/schedule/types";
 import { ptBR } from "date-fns/locale";
+
+export function fits({
+  day,
+  fromMin,
+  toMin,
+  hours,
+}: {
+  day: Date;
+  fromMin: number;
+  toMin: number;
+  hours: Availability[];
+}) {
+  const dow = day.getDay();
+  return hours.some(
+    (h) =>
+      h.opened &&
+      h.dayOfWeek === dow &&
+      fromMin >= h.startMinutes &&
+      toMin <= h.endMinutes,
+  );
+}
+
+export function isSlotAvailable({
+  day,
+  hour,
+  minute,
+  establishment,
+  slot = 15,
+  professional,
+}: {
+  day: Date;
+  hour: number;
+  minute: number;
+  establishment: Availability[];
+  professional?: Availability[];
+  slot?: number;
+}) {
+  const fromMin = hour * 60 + minute;
+  const toMin = fromMin + slot;
+  if (!fits({ day, fromMin, toMin, hours: establishment })) return false;
+  if (professional && !fits({ day, fromMin, toMin, hours: professional }))
+    return false;
+  return true;
+}
 
 export function rangeText({
   view,

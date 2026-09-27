@@ -35,8 +35,12 @@ export class ListAppointmentsService
     });
 
     const where: AppointmentsWhereInput = {
-      startsAt: params.startsAt,
-      endsAt: params.endsAt,
+      startsAt: {
+        lt: params.endsAt,
+      },
+      endsAt: {
+        gt: params.startsAt,
+      },
       status: {
         in: params.status,
       },

@@ -55,10 +55,14 @@ export class MeService extends BaseDatabaseService implements IMe {
           imageUrl: userImageUrl,
         },
         establishment: null,
+        establishmentAvailabilities: null,
       };
     }
 
     const hasEstablishment = await this.db.establishments.findFirst({
+      include: {
+        establishmentAvailabilities: true,
+      },
       where: {
         organizationId: members[0]?.organizationId,
       },
@@ -76,6 +80,7 @@ export class MeService extends BaseDatabaseService implements IMe {
       coverStorageKey,
       latitude,
       longitude,
+      establishmentAvailabilities,
       ...establishment
     } = hasEstablishment;
 
@@ -95,6 +100,7 @@ export class MeService extends BaseDatabaseService implements IMe {
         logoUrl: logoSignedUrl,
         coverUrl: coverSignedUrl,
       },
+      establishmentAvailabilities,
     };
   }
 

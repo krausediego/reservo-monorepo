@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { userSchema } from "../user";
-import { establishmentSchema } from "../establishment";
+import {
+  establishmentAvailabilitiesSchema,
+  establishmentSchema,
+} from "../establishment";
 import { memberSchema } from "../member/member.schemas";
 
 export const meResponseSchema = z.object({
@@ -8,4 +11,7 @@ export const meResponseSchema = z.object({
     memberRole: memberSchema.shape.role.optional(),
   }),
   establishment: establishmentSchema.nullable(),
+  establishmentAvailabilities: z
+    .array(establishmentAvailabilitiesSchema)
+    .nullable(),
 });

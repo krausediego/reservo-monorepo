@@ -77,6 +77,41 @@ export function isSlotAvailable({
   return true;
 }
 
+export function getUnavailableRanges({
+  day,
+  visible,
+  establishment,
+  professional,
+}: {
+  day: Date;
+  visible: { from: number; to: number };
+  establishment: Availability[];
+  professional?: Availability[];
+}) {
+  const start = visible.from * 60;
+  const end = visible.to * 60;
+  const ranges: { from: number; to: number }[] = [];
+  let open: number | null = null;
+
+  for (let m = start; m < end; m += 15) {
+    const ok = isSlotAvailable({
+      day,
+      hour: Math.floor(m / 60),
+      minute: m % 60,
+      establishment,
+      professional,
+    });
+    if (!ok && open === null) open = m;
+    if (ok && open !== null) {
+      ranges.push({ from: open, to: m });
+      open = null;
+    }
+  }
+  if (open !== null) ranges.push({ from: open, to: end });
+
+  return ranges;
+}
+
 export function rangeText({
   view,
   date,

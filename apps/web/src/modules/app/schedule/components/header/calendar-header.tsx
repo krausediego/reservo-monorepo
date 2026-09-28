@@ -82,7 +82,7 @@ export function CalendarHeader({ view, events }: CalendarHeaderProps) {
         {/* <AddEventDialog> */}
         <Button className="w-full sm:w-auto">
           <Plus />
-          Add Event
+          Novo agendamento
         </Button>
         {/* </AddEventDialog> */}
       </div>

@@ -55,6 +55,12 @@
   --color-success-foreground: var(--success-foreground);
   --color-success: var(--success);
   --color-destructive-foreground: var(--destructive-foreground);
+
+  --background-image-calendar-disabled-hour: repeating-linear-gradient(
+    -60deg,
+    color-mix(in oklch, var(--color-ring) 25%, transparent) 0 2px,
+    transparent 2px 8px
+  );
 }
 
 :root {

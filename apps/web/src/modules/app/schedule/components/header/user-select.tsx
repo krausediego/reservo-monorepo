@@ -14,7 +14,7 @@ import {
 import { useCalendar } from "../../contexts";
 
 export function UserSelect() {
-  const { users, selectedUserId, setSelectedUserId } = useCalendar();
+  const { professionals, selectedUserId, setSelectedUserId } = useCalendar();
 
   return (
     <Select value={selectedUserId} onValueChange={setSelectedUserId}>
@@ -26,14 +26,14 @@ export function UserSelect() {
         <SelectItem value="all">
           <div className="flex items-center gap-1">
             <AvatarGroup>
-              {users.map((user) => (
-                <Avatar key={user.id} className="size-6 text-xxs">
+              {professionals.map(({ professional }) => (
+                <Avatar key={professional.id} className="size-6 text-xxs">
                   <AvatarImage
-                    src={user.picturePath ?? undefined}
-                    alt={user.name}
+                    src={professional.avatarUrl ?? undefined}
+                    alt={professional.name}
                   />
                   <AvatarFallback className="text-xxs">
-                    {user.name[0]}
+                    {professional.name[0]}
                   </AvatarFallback>
                 </Avatar>
               ))}
@@ -42,20 +42,24 @@ export function UserSelect() {
           </div>
         </SelectItem>
 
-        {users.map((user) => (
-          <SelectItem key={user.id} value={user.id} className="flex-1">
+        {professionals.map(({ professional }) => (
+          <SelectItem
+            key={professional.id}
+            value={professional.id}
+            className="flex-1"
+          >
             <div className="flex items-center gap-2">
-              <Avatar key={user.id} className="size-6">
+              <Avatar key={professional.id} className="size-6">
                 <AvatarImage
-                  src={user.picturePath ?? undefined}
-                  alt={user.name}
+                  src={professional.avatarUrl ?? undefined}
+                  alt={professional.name}
                 />
                 <AvatarFallback className="text-xxs">
-                  {user.name[0]}
+                  {professional.name[0]}
                 </AvatarFallback>
               </Avatar>
 
-              <p className="truncate">{user.name}</p>
+              <p className="truncate">{professional.name}</p>
             </div>
           </SelectItem>
         ))}

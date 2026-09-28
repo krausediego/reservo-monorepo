@@ -1,7 +1,10 @@
 import { ContentLayout } from "@/components/content-layout";
+import { useMeQuery } from "@/hooks";
+import { useListProfessionalsQuery } from "@/modules/app/professionals/hooks";
 import { listEventsApi, listUsersApi } from "@/modules/app/schedule/api";
 import { ClientContainer } from "@/modules/app/schedule/components/client-container";
 import { CalendarProvider } from "@/modules/app/schedule/contexts";
+import { useListUsersQuery } from "@/modules/app/users/hooks";
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 import z from "zod";
 
@@ -15,31 +18,22 @@ export const Route = createFileRoute("/_app/schedule/")({
 });
 
 const events = await listEventsApi();
-const users = await listUsersApi();
 
 function RouteComponent() {
   const search = useSearch({ from: "/_app/schedule/" });
+  const { data: me } = useMeQuery();
+  const { data: professionals } = useListProfessionalsQuery({
+    page: 1,
+    limit: 100,
+    orderBy: "desc",
+  });
 
   return (
     <CalendarProvider
-      users={users}
+      professionals={professionals?.data ?? []}
       events={events}
-      establishmentAvailability={[
-        {
-          dayOfWeek: 0,
-          opened: true,
-          startMinutes: 480,
-          endMinutes: 1080,
-        },
-      ]}
-      professionalAvailability={[
-        {
-          dayOfWeek: 0,
-          opened: true,
-          startMinutes: 480,
-          endMinutes: 1080,
-        },
-      ]}
+      establishmentAvailability={me?.establishmentAvailabilities ?? []}
+      professionalAvailability={me?.establishmentAvailabilities ?? []}
     >
       <ContentLayout title="Agenda" description="Crie agendamentos">
         <ClientContainer view={search.view} />

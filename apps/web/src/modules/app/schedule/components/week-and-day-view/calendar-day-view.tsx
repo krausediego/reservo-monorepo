@@ -10,6 +10,7 @@ import { useCalendar } from "../../contexts";
 import {
   getCurrentEvents,
   getEventBlockStyle,
+  getUnavailableRanges,
   getVisibleHours,
   groupEvents,
   isSlotAvailable,
@@ -32,7 +33,7 @@ export function CalendarDayView({
   const {
     selectedDate,
     setSelectedDate,
-    users,
+    professionals,
     visibleHours,
     establishmentAvailability,
     professionalAvailability,
@@ -61,6 +62,14 @@ export function CalendarDayView({
   });
 
   const groupedEvents = groupEvents({ dayEvents });
+
+  const unavailable = getUnavailableRanges({
+    day: selectedDate,
+    visible: { from: earliestEventHour, to: latestEventHour },
+    establishment: establishmentAvailability,
+    professional: professionalAvailability,
+  });
+  const totalMin = (latestEventHour - earliestEventHour) * 60;
 
   return (
     <div className="flex">
@@ -92,7 +101,7 @@ export function CalendarDayView({
                   <div className="absolute -top-3 right-2 flex h-6 items-center">
                     {index !== 0 && (
                       <span className="text-xs text-muted-foreground">
-                        {format(new Date().setHours(hour, 0, 0, 0), "hh a")}
+                        {format(new Date().setHours(hour, 0, 0, 0), "HH:mm")}
                       </span>
                     )}
                   </div>
@@ -125,7 +134,7 @@ export function CalendarDayView({
                               "absolute inset-x-0 h-6",
                               available
                                 ? "cursor-pointer transition-colors hover:bg-accent"
-                                : "bg-calendar-disabled-hour cursor-not-allowed",
+                                : "cursor-not-allowed",
                             )}
                             style={{ top: `${i * 24}px` }}
                           />
@@ -145,6 +154,17 @@ export function CalendarDayView({
                     </div>
                   );
                 })}
+
+                {unavailable.map((r) => (
+                  <div
+                    key={r.from}
+                    className="pointer-events-none absolute inset-x-0 bg-calendar-disabled-hour"
+                    style={{
+                      top: `${((r.from - earliestEventHour * 60) / totalMin) * 100}%`,
+                      height: `${((r.to - r.from) / totalMin) * 100}%`,
+                    }}
+                  />
+                ))}
 
                 {groupedEvents.map((group, groupIndex) =>
                   group.map((event) => {
@@ -230,7 +250,9 @@ export function CalendarDayView({
             <ScrollArea className="h-105.5 px-4" type="always">
               <div className="space-y-6 pb-4">
                 {currentEvents.map((event) => {
-                  const user = users.find((user) => user.id === event.user.id);
+                  const professional = professionals.find(
+                    ({ professional }) => professional.id === event.user.id,
+                  )?.professional;
 
                   return (
                     <div key={event.id} className="space-y-1.5">
@@ -238,10 +260,10 @@ export function CalendarDayView({
                         {event.title}
                       </p>
 
-                      {user && (
+                      {professional && (
                         <div className="flex items-center gap-1.5 text-muted-foreground">
                           <User className="size-3.5" />
-                          <span className="text-sm">{user.name}</span>
+                          <span className="text-sm">{professional.name}</span>
                         </div>
                       )}
 

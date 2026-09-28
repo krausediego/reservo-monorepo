@@ -6,6 +6,7 @@ import type {
   VisibleHours,
   WorkingHours,
 } from "@/modules/app/schedule/types";
+import type { IListProfessionalsSchema } from "@reservo/types";
 import {
   createContext,
   useContext,
@@ -21,7 +22,7 @@ type CalendarContext = {
   setSelectedUserId: (userId: IUser["id"] | "all") => void;
   badgeVariant: BadgeVariant;
   setBadgeVariant: (variant: BadgeVariant) => void;
-  users: IUser[];
+  professionals: IListProfessionalsSchema.GetResponse["data"];
   workingHours: WorkingHours;
   setWorkingHours: Dispatch<SetStateAction<WorkingHours>>;
   visibleHours: VisibleHours;
@@ -44,17 +45,17 @@ const WORKING_HOURS = {
   6: { from: 8, to: 12 },
 };
 
-const VISIBLE_HOURS = { from: 7, to: 18 };
+const VISIBLE_HOURS = { from: 1, to: 23 };
 
 export function CalendarProvider({
   children,
-  users,
+  professionals,
   events,
   establishmentAvailability,
   professionalAvailability,
 }: {
   children: React.ReactNode;
-  users: IUser[];
+  professionals: IListProfessionalsSchema.GetResponse["data"];
   events: IEvent[];
   establishmentAvailability: Availability[];
   professionalAvailability: Availability[];
@@ -88,7 +89,7 @@ export function CalendarProvider({
         setSelectedUserId,
         badgeVariant,
         setBadgeVariant,
-        users,
+        professionals,
         visibleHours,
         setVisibleHours,
         workingHours,

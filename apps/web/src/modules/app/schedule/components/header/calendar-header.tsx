@@ -1,4 +1,4 @@
-import { Columns, List, Plus, Grid2x2, CalendarRange } from "lucide-react";
+import { Columns, List, Grid2x2, CalendarRange, Calendar } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import type { CalendarView, IEvent } from "../../types";
@@ -6,6 +6,8 @@ import { TodayButton } from "./today-button";
 import { DateNavigator } from "./date-navigator";
 import { UserSelect } from "./user-select";
 import { useNavigate } from "@tanstack/react-router";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { CreateAppointmentDialog } from "../dialogs/create-appointment";
 
 type CalendarHeaderProps = {
   view: CalendarView;
@@ -79,12 +81,18 @@ export function CalendarHeader({ view, events }: CalendarHeaderProps) {
           <UserSelect />
         </div>
 
-        {/* <AddEventDialog> */}
-        <Button className="w-full sm:w-auto">
-          <Plus />
-          Novo agendamento
-        </Button>
-        {/* </AddEventDialog> */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="w-full sm:w-auto">
+              <Calendar />
+              Novo agendamento
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent className="lg:min-w-3xl">
+            <CreateAppointmentDialog />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

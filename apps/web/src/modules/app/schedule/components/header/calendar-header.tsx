@@ -7,7 +7,7 @@ import { DateNavigator } from "./date-navigator";
 import { UserSelect } from "./user-select";
 import { useNavigate } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { CreateAppointmentDialog } from "../dialogs/create-appointment";
+import { CreateAppointmentDialog } from "../dialogs/create-appointment-dialog";
 
 type CalendarHeaderProps = {
   view: CalendarView;
@@ -89,7 +89,7 @@ export function CalendarHeader({ view, events }: CalendarHeaderProps) {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="lg:min-w-3xl">
+          <DialogContent className="lg:min-w-xl">
             <CreateAppointmentDialog />
           </DialogContent>
         </Dialog>

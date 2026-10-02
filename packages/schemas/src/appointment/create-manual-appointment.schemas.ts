@@ -12,8 +12,8 @@ const newCustomerSchema = z.object({
     .string({ error: "O nome é obrigatório" })
     .min(2, { error: "O nome deve conter ao menos 2 caracteres" })
     .max(120, { error: "O nome deve conter no máximo 120 caracteres" }),
-  phone: z.string().optional(),
-  email: z.email({ error: "Informe um e-mail válido" }).optional(),
+  phone: z.string(),
+  email: z.string().optional(),
 });
 
 export const createManualAppointmentSchema = z.object({

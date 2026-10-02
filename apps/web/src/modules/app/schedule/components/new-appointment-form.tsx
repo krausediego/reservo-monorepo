@@ -1,0 +1,342 @@
+import {
+  AsyncCombobox,
+  type AsyncComboboxValue,
+} from "@/components/ui/async-combobox";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import type { ICreateManualAppointmentSchema } from "@reservo/types";
+import { Controller, useFormContext } from "react-hook-form";
+import type { Customer } from "./dialogs/create-appointment-dialog";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useListCustomersQuery } from "../../customers/hooks";
+import { useListServicesQuery } from "../../services/hooks";
+import { useListProfessionalsQuery } from "../../professionals/hooks";
+import { Separator } from "@/components/ui/separator";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { addDays, format, isSameDay, subDays } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+
+export function NewAppointmentForm() {
+  const [search, setSearch] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const form = useFormContext<ICreateManualAppointmentSchema.GetInput>();
+  const today = new Date();
+
+  const customer = form.watch("customer");
+  const isNew = customer.type === "new";
+  const comboboxValue: AsyncComboboxValue<Customer> | null =
+    customer.type === "existing"
+      ? selectedCustomer && { type: "existing", item: selectedCustomer }
+      : customer.name
+        ? { type: "new", name: customer.name }
+        : null;
+
+  const {
+    data: customers,
+    isFetching,
+    isError,
+    refetch,
+  } = useListCustomersQuery({
+    page: 1,
+    limit: 100,
+    name: search,
+    orderBy: "asc",
+  });
+
+  const { data: services } = useListServicesQuery({
+    page: 1,
+    limit: 100,
+    orderBy: "asc",
+  });
+
+  const { data: professionals } = useListProfessionalsQuery({
+    page: 1,
+    limit: 100,
+    orderBy: "asc",
+  });
+
+  return (
+    <>
+      <FieldGroup>
+        <Controller
+          name="customer.customerId"
+          control={form.control}
+          render={({ fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="customer">Cliente</FieldLabel>
+              <AsyncCombobox<Customer>
+                value={comboboxValue}
+                onChange={(v) => {
+                  if (!v) {
+                    setSelectedCustomer(null);
+                    form.setValue("customer", {
+                      type: "new",
+                      name: "",
+                      phone: "",
+                      email: "",
+                    });
+                  } else if (v.type === "existing") {
+                    setSelectedCustomer(v.item);
+                    form.setValue("customer", {
+                      type: "existing",
+                      customerId: v.item.id,
+                    });
+                  } else {
+                    setSelectedCustomer(null);
+                    form.setValue("customer", {
+                      type: "new",
+                      name: v.name,
+                      phone: "",
+                      email: "",
+                    });
+                  }
+                  form.trigger("customer");
+                }}
+                onSearchChange={setSearch}
+                options={customers?.data ?? []}
+                isLoading={isFetching}
+                isError={isError}
+                onRetry={refetch}
+                getValue={(c) => c.id}
+                getLabel={(c) => c.name}
+                renderOption={(c) => (
+                  <div className="flex flex-col">
+                    <span>{c.name}</span>
+                    {c.phone && (
+                      <span className="text-xs text-muted-foreground">
+                        {c.phone}
+                      </span>
+                    )}
+                  </div>
+                )}
+                createLabel={(name) => `Novo cliente "${name}"`}
+                placeholder="Buscar cliente"
+                searchPlaceholder="Nome ou telefone"
+                minChars={2}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+      </FieldGroup>
+
+      {comboboxValue && (
+        <>
+          <FieldGroup className="grid grid-cols-2">
+            <FieldGroup className="grid col-span-2 grid-cols-2 bg-muted border rounded-md p-4">
+              <Controller
+                name="customer.phone"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="customer.phone">Telefone</FieldLabel>
+                    <Input
+                      {...field}
+                      id="customer.phone"
+                      aria-invalid={fieldState.invalid}
+                      disabled={!isNew}
+                      placeholder="Número de telefone"
+                      type="tel"
+                      autoComplete="off"
+                      autoCapitalize="off"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="customer.email"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="customer.email">
+                      E-mail
+                      {isNew && (
+                        <span className="text-muted-foreground text-xs">
+                          · opcional
+                        </span>
+                      )}
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="customer.email"
+                      aria-invalid={fieldState.invalid}
+                      disabled={!isNew}
+                      placeholder="Número de telefone"
+                      type="email"
+                      autoComplete="off"
+                      autoCapitalize="off"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              {isNew && (
+                <span className="col-span-2 text-xs text-muted-foreground">
+                  Usamos o telefone para reconhecer essa pessoa quando ela
+                  agendar pelo app.
+                </span>
+              )}
+            </FieldGroup>
+
+            <Controller
+              name="professionalId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="professional">Profissional</FieldLabel>
+                  <Select
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger
+                      id="professional"
+                      aria-invalid={fieldState.invalid}
+                    >
+                      <SelectValue placeholder="Profissional" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      {professionals?.data?.map(({ professional }) => (
+                        <SelectItem
+                          key={professional.id}
+                          value={professional.id}
+                        >
+                          {professional.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="serviceId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="service">Serviço</FieldLabel>
+                  <Select
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger
+                      id="service"
+                      aria-invalid={fieldState.invalid}
+                    >
+                      <SelectValue placeholder="Serviço" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      {services?.data?.map((service) => (
+                        <SelectItem key={service.id} value={service.id}>
+                          {service.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
+
+          <Separator />
+
+          <div className="flex w-full gap-2">
+            <Button
+              className="border-input"
+              variant="secondary"
+              onClick={() => {
+                setSelectedDate((prev) => subDays(prev, 1));
+              }}
+            >
+              <ChevronLeft />
+            </Button>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  className="flex-1 border-input justify-between"
+                  variant="secondary"
+                >
+                  <span className="flex items-center gap-2">
+                    <Calendar />
+                    {format(selectedDate, "EEE, dd 'de' LLLL", {
+                      locale: ptBR,
+                    })}
+                  </span>
+                  {isSameDay(selectedDate, today) && (
+                    <span className="text-muted-foreground text-xs">Hoje</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+            </Popover>
+
+            <Button
+              className="border-input"
+              variant="secondary"
+              onClick={() => {
+                setSelectedDate((prev) => addDays(prev, 1));
+              }}
+            >
+              <ChevronRight />
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* <Controller
+            name="notes"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid} className="col-span-2">
+                <FieldLabel htmlFor="notes">Observações</FieldLabel>
+                <Textarea
+                  {...field}
+                  id="notes"
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Observações"
+                  autoComplete="off"
+                  autoCapitalize="off"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          /> */}
+    </>
+  );
+}

@@ -1,8 +1,10 @@
 import { Router } from "express";
 
+import { makeAvailabilitySlotsController } from "@/modules/appointment/availability-slots";
 import { makeCreateManualAppointmentController } from "@/modules/appointment/create-manual-appointment";
 import { makeListAppointmentsController } from "@/modules/appointment/list-appointments";
 import {
+  availabilitySlotsSchema,
   createManualAppointmentSchema,
   listAppointmentsSchema,
 } from "@reservo/schemas";
@@ -31,5 +33,12 @@ export default (router: Router) => {
     enforceAccess("READ"),
     validateRequest(listAppointmentsSchema),
     adaptRoute(makeListAppointmentsController()),
+  );
+
+  router.get(
+    "/availability-slots",
+    authAdmin,
+    validateRequest(availabilitySlotsSchema),
+    adaptRoute(makeAvailabilitySlotsController()),
   );
 };

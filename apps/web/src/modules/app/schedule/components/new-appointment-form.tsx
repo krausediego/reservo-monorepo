@@ -29,7 +29,9 @@ import { Button } from "@/components/ui/button";
 import { addDays, format, isSameDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { useAvailabilitySlots } from "../hooks";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { formatInTimeZone } from "date-fns-tz";
 
 export function NewAppointmentForm() {
   const [search, setSearch] = useState("");
@@ -73,6 +75,31 @@ export function NewAppointmentForm() {
     limit: 100,
     orderBy: "asc",
   });
+
+  const professionalId = form.watch("professionalId");
+  const serviceId = form.watch("serviceId");
+
+  const { data: availabilitySlots } = useAvailabilitySlots(
+    {
+      professionalId,
+      serviceId,
+      date: format(selectedDate, "yyyy-MM-dd"),
+    },
+    {
+      enabled: !!professionalId && !!serviceId,
+    },
+  );
+
+  const slots =
+    availabilitySlots &&
+    (availabilitySlots?.slots ?? []).map((iso) => ({
+      iso,
+      label: formatInTimeZone(iso, availabilitySlots.timezone, "HH:mm"),
+      period:
+        Number(formatInTimeZone(iso, availabilitySlots.timezone, "H")) < 12
+          ? "manha"
+          : "tarde",
+    }));
 
   return (
     <>
@@ -314,6 +341,37 @@ export function NewAppointmentForm() {
               <ChevronRight />
             </Button>
           </div>
+
+          <ToggleGroup
+            type="single"
+            value={form.watch("startsAt") ?? ""}
+            onValueChange={(v) =>
+              form.setValue("startsAt", v || null, { shouldValidate: true })
+            }
+            className="flex flex-wrap"
+          >
+            <div>
+              <p>Manhã</p>
+              {slots
+                ?.filter((slot) => slot.period === "manha")
+                .map((s) => (
+                  <ToggleGroupItem key={s.iso} value={s.iso} variant="outline">
+                    {s.label}
+                  </ToggleGroupItem>
+                ))}
+            </div>
+
+            <div>
+              <p>Tarde</p>
+              {slots
+                ?.filter((slot) => slot.period === "tarde")
+                .map((s) => (
+                  <ToggleGroupItem key={s.iso} value={s.iso} variant="outline">
+                    {s.label}
+                  </ToggleGroupItem>
+                ))}
+            </div>
+          </ToggleGroup>
         </>
       )}
 

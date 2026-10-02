@@ -4,7 +4,7 @@ export const availabilitySlotsSchema = z.object({
   query: z.object({
     professionalId: z.cuid2({ error: "O ID do profissional é obrigatório" }),
     serviceId: z.cuid2({ error: "O ID do serviço é obrigatório" }),
-    date: z.date({ error: "A data é obrigatória" }),
+    date: z.string({ error: "A data é obrigatória" }),
   }),
 });
 

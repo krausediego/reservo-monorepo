@@ -12,7 +12,7 @@ const newCustomerSchema = z.object({
     .string({ error: "O nome é obrigatório" })
     .min(2, { error: "O nome deve conter ao menos 2 caracteres" })
     .max(120, { error: "O nome deve conter no máximo 120 caracteres" }),
-  phone: z.string(),
+  phone: z.string().min(11),
   email: z.string().optional(),
 });
 

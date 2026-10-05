@@ -6,6 +6,11 @@ export const listServicesSchema = z.object({
   query: paginationQuerySchema.extend({
     name: z.string().optional(),
     isActive: z.stringbool().optional(),
+    professionals: z
+      .union([z.string(), z.array(z.string())])
+      .transform((val) => (Array.isArray(val) ? val : val.split(",")))
+      .pipe(z.array(z.cuid2().min(1)))
+      .optional(),
     orderBy: z
       .union([z.literal("asc"), z.literal("desc")])
       .optional()

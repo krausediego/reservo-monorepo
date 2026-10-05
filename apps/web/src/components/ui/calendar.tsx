@@ -6,6 +6,7 @@ import {
   type DayButton,
   type Locale,
 } from "react-day-picker";
+import { ptBR } from "react-day-picker/locale/pt-BR";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -20,7 +21,6 @@ function Calendar({
   showOutsideDays = true,
   captionLayout = "label",
   buttonVariant = "ghost",
-  locale,
   formatters,
   components,
   ...props
@@ -39,10 +39,10 @@ function Calendar({
         className,
       )}
       captionLayout={captionLayout}
-      locale={locale}
+      locale={ptBR}
       formatters={{
         formatMonthDropdown: (date) =>
-          date.toLocaleString(locale?.code, { month: "short" }),
+          date.toLocaleString(ptBR?.code, { month: "short" }),
         ...formatters,
       }}
       classNames={{
@@ -167,7 +167,7 @@ function Calendar({
           );
         },
         DayButton: ({ ...props }) => (
-          <CalendarDayButton locale={locale} {...props} />
+          <CalendarDayButton locale={ptBR} {...props} />
         ),
         WeekNumber: ({ children, ...props }) => {
           return (

@@ -18,7 +18,6 @@ export function useAvailabilitySlots(
   return useQuery({
     queryFn: () => availabilitySlotsApi(params),
     queryKey: ["availability-slots", params],
-    staleTime: 0,
     ...config,
   });
 }

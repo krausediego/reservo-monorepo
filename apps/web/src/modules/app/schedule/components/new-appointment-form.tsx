@@ -1,7 +1,4 @@
-import {
-  AsyncCombobox,
-  type AsyncComboboxValue,
-} from "@/components/ui/async-combobox";
+import { AsyncCombobox } from "@/components/ui/async-combobox";
 import {
   Field,
   FieldError,
@@ -11,7 +8,6 @@ import {
 import type { ICreateManualAppointmentSchema } from "@reservo/types";
 import { Controller, useFormContext } from "react-hook-form";
 import type { Customer } from "./dialogs/create-appointment-dialog";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -20,86 +16,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useListCustomersQuery } from "../../customers/hooks";
-import { useListServicesQuery } from "../../services/hooks";
-import { useListProfessionalsQuery } from "../../professionals/hooks";
 import { Separator } from "@/components/ui/separator";
-import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { addDays, format, isSameDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
-import { useAvailabilitySlots } from "../hooks";
+import {
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { formatInTimeZone } from "date-fns-tz";
+import { InputMask } from "@/helpers";
+import { useAppointment } from "../hooks";
+import { Calendar } from "@/components/ui/calendar";
 
 export function NewAppointmentForm() {
-  const [search, setSearch] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
-    null,
-  );
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-
   const form = useFormContext<ICreateManualAppointmentSchema.GetInput>();
+
   const today = new Date();
 
-  const customer = form.watch("customer");
-  const isNew = customer.type === "new";
-  const comboboxValue: AsyncComboboxValue<Customer> | null =
-    customer.type === "existing"
-      ? selectedCustomer && { type: "existing", item: selectedCustomer }
-      : customer.name
-        ? { type: "new", name: customer.name }
-        : null;
-
   const {
-    data: customers,
-    isFetching,
-    isError,
-    refetch,
-  } = useListCustomersQuery({
-    page: 1,
-    limit: 100,
-    name: search,
-    orderBy: "asc",
-  });
+    comboboxValue,
+    setSelectedCustomer,
+    setSelectedDate,
+    selectedDate,
+    setSearch,
+    customers,
+    isCustomersFetching,
+    isCustomersError,
+    customersRefetch,
+    isNew,
+    professionals,
+    services,
+    slots,
+    professionalId,
+  } = useAppointment({ form });
 
-  const { data: services } = useListServicesQuery({
-    page: 1,
-    limit: 100,
-    orderBy: "asc",
-  });
-
-  const { data: professionals } = useListProfessionalsQuery({
-    page: 1,
-    limit: 100,
-    orderBy: "asc",
-  });
-
-  const professionalId = form.watch("professionalId");
-  const serviceId = form.watch("serviceId");
-
-  const { data: availabilitySlots } = useAvailabilitySlots(
-    {
-      professionalId,
-      serviceId,
-      date: format(selectedDate, "yyyy-MM-dd"),
-    },
-    {
-      enabled: !!professionalId && !!serviceId,
-    },
-  );
-
-  const slots =
-    availabilitySlots &&
-    (availabilitySlots?.slots ?? []).map((iso) => ({
-      iso,
-      label: formatInTimeZone(iso, availabilitySlots.timezone, "HH:mm"),
-      period:
-        Number(formatInTimeZone(iso, availabilitySlots.timezone, "H")) < 12
-          ? "manha"
-          : "tarde",
-    }));
+  const masked = new InputMask();
 
   return (
     <>
@@ -127,6 +85,8 @@ export function NewAppointmentForm() {
                       type: "existing",
                       customerId: v.item.id,
                     });
+                    form.setValue("customer.phone", v.item.phone ?? "");
+                    form.setValue("customer.email", v.item.email ?? "");
                   } else {
                     setSelectedCustomer(null);
                     form.setValue("customer", {
@@ -140,9 +100,9 @@ export function NewAppointmentForm() {
                 }}
                 onSearchChange={setSearch}
                 options={customers?.data ?? []}
-                isLoading={isFetching}
-                isError={isError}
-                onRetry={refetch}
+                isLoading={isCustomersFetching}
+                isError={isCustomersError}
+                onRetry={customersRefetch}
                 getValue={(c) => c.id}
                 getLabel={(c) => c.name}
                 renderOption={(c) => (
@@ -179,6 +139,7 @@ export function NewAppointmentForm() {
                     <Input
                       {...field}
                       id="customer.phone"
+                      value={field.value && masked.celPhone(field.value)}
                       aria-invalid={fieldState.invalid}
                       disabled={!isNew}
                       placeholder="Número de telefone"
@@ -241,6 +202,7 @@ export function NewAppointmentForm() {
                     name={field.name}
                     value={field.value}
                     onValueChange={field.onChange}
+                    disabled={!professionals?.data?.length}
                   >
                     <SelectTrigger
                       id="professional"
@@ -276,6 +238,7 @@ export function NewAppointmentForm() {
                     name={field.name}
                     value={field.value}
                     onValueChange={field.onChange}
+                    disabled={!professionalId || !services?.data?.length}
                   >
                     <SelectTrigger
                       id="service"
@@ -319,7 +282,7 @@ export function NewAppointmentForm() {
                   variant="secondary"
                 >
                   <span className="flex items-center gap-2">
-                    <Calendar />
+                    <CalendarIcon />
                     {format(selectedDate, "EEE, dd 'de' LLLL", {
                       locale: ptBR,
                     })}
@@ -329,6 +292,15 @@ export function NewAppointmentForm() {
                   )}
                 </Button>
               </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  required
+                  selected={selectedDate}
+                  defaultMonth={selectedDate}
+                  onSelect={setSelectedDate}
+                />
+              </PopoverContent>
             </Popover>
 
             <Button
@@ -342,36 +314,36 @@ export function NewAppointmentForm() {
             </Button>
           </div>
 
-          <ToggleGroup
-            type="single"
-            value={form.watch("startsAt") ?? ""}
-            onValueChange={(v) =>
-              form.setValue("startsAt", v || null, { shouldValidate: true })
-            }
-            className="flex flex-wrap"
-          >
-            <div>
-              <p>Manhã</p>
-              {slots
-                ?.filter((slot) => slot.period === "manha")
-                .map((s) => (
-                  <ToggleGroupItem key={s.iso} value={s.iso} variant="outline">
-                    {s.label}
-                  </ToggleGroupItem>
-                ))}
-            </div>
-
-            <div>
-              <p>Tarde</p>
-              {slots
-                ?.filter((slot) => slot.period === "tarde")
-                .map((s) => (
-                  <ToggleGroupItem key={s.iso} value={s.iso} variant="outline">
-                    {s.label}
-                  </ToggleGroupItem>
-                ))}
-            </div>
-          </ToggleGroup>
+          <Controller
+            name="startsAt"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel>Horário</FieldLabel>
+                <ToggleGroup
+                  type="single"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  className="flex flex-wrap"
+                >
+                  <div className="grid grid-cols-6 lg:grid-cols-8 gap-2">
+                    {slots?.map((s) => (
+                      <ToggleGroupItem
+                        key={s.iso}
+                        value={s.iso}
+                        variant="outline"
+                      >
+                        {s.label}
+                      </ToggleGroupItem>
+                    ))}
+                  </div>
+                </ToggleGroup>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
         </>
       )}
 

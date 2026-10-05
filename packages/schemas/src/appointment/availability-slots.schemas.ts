@@ -9,7 +9,7 @@ export const availabilitySlotsSchema = z.object({
 });
 
 export const availabilitySlotsResponseSchema = z.object({
-  date: z.date(),
+  date: z.string(),
   timezone: z.string(),
   durationMin: z.number(),
   slots: z.array(z.iso.datetime()),

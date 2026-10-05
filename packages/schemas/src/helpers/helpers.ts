@@ -2,7 +2,7 @@ import z from "zod";
 import { parsePhoneNumberWithError } from "libphonenumber-js";
 
 export const isoWithTimezone = z.iso
-  .datetime({ offset: true })
+  .datetime({ error: "O horário é obrigatório", offset: true })
   .transform((value) => new Date(value));
 
 export const phoneSchema = z

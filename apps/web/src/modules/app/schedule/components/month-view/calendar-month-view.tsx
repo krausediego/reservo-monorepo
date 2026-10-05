@@ -1,37 +1,37 @@
 import { useMemo } from "react";
-import type { IEvent } from "../../types";
 import { useCalendar } from "../../contexts";
 import { calculateMonthEventPositions, getCalendarCells } from "../../helpers";
 import { DayCell } from "./day-cell";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type CalendarMonthViewProps = {
-  singleDayEvents: IEvent[];
-  multiDayEvents: IEvent[];
+  singleDayAppointments: IListAppointmentsSchema.GetResponse["data"];
+  multiDayAppointments: IListAppointmentsSchema.GetResponse["data"];
 };
 
 const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export function CalendarMonthView({
-  singleDayEvents,
-  multiDayEvents,
+  singleDayAppointments,
+  multiDayAppointments,
 }: CalendarMonthViewProps) {
   const { selectedDate } = useCalendar();
 
-  const allEvents = [...multiDayEvents, ...singleDayEvents];
+  const allAppointments = [...multiDayAppointments, ...singleDayAppointments];
 
   const cells = useMemo(
     () => getCalendarCells({ selectedDate }),
     [selectedDate],
   );
 
-  const eventPositions = useMemo(
+  const appointmentPositions = useMemo(
     () =>
       calculateMonthEventPositions({
-        multiDayEvents,
-        singleDayEvents,
+        multiDayAppointments,
+        singleDayAppointments,
         selectedDate,
       }),
-    [multiDayEvents, singleDayEvents, selectedDate],
+    [multiDayAppointments, singleDayAppointments, selectedDate],
   );
 
   return (
@@ -51,8 +51,8 @@ export function CalendarMonthView({
           <DayCell
             key={cell.date.toISOString()}
             cell={cell}
-            events={allEvents}
-            eventPositions={eventPositions}
+            appointments={allAppointments}
+            appointmentPositions={appointmentPositions}
           />
         ))}
       </div>

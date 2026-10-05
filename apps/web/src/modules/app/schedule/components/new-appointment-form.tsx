@@ -29,6 +29,7 @@ import {
   Calendar as CalendarIcon,
   ChevronLeft,
   ChevronRight,
+  Clock,
 } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { InputMask } from "@/helpers";
@@ -55,6 +56,7 @@ export function NewAppointmentForm() {
     services,
     slots,
     professionalId,
+    serviceId,
   } = useAppointment({ form });
 
   const masked = new InputMask();
@@ -262,88 +264,105 @@ export function NewAppointmentForm() {
             />
           </FieldGroup>
 
-          <Separator />
+          {!!professionalId && (
+            <>
+              <Separator />
 
-          <div className="flex w-full gap-2">
-            <Button
-              className="border-input"
-              variant="secondary"
-              onClick={() => {
-                setSelectedDate((prev) => subDays(prev, 1));
-              }}
-            >
-              <ChevronLeft />
-            </Button>
-
-            <Popover>
-              <PopoverTrigger asChild>
+              <div className="flex w-full gap-2">
                 <Button
-                  className="flex-1 border-input justify-between"
+                  className="border-input"
                   variant="secondary"
+                  onClick={() => {
+                    setSelectedDate((prev) => subDays(prev, 1));
+                  }}
                 >
-                  <span className="flex items-center gap-2">
-                    <CalendarIcon />
-                    {format(selectedDate, "EEE, dd 'de' LLLL", {
-                      locale: ptBR,
-                    })}
-                  </span>
-                  {isSameDay(selectedDate, today) && (
-                    <span className="text-muted-foreground text-xs">Hoje</span>
-                  )}
+                  <ChevronLeft />
                 </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  required
-                  selected={selectedDate}
-                  defaultMonth={selectedDate}
-                  onSelect={setSelectedDate}
-                />
-              </PopoverContent>
-            </Popover>
 
-            <Button
-              className="border-input"
-              variant="secondary"
-              onClick={() => {
-                setSelectedDate((prev) => addDays(prev, 1));
-              }}
-            >
-              <ChevronRight />
-            </Button>
-          </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      className="flex-1 border-input justify-between"
+                      variant="secondary"
+                    >
+                      <span className="flex items-center gap-2">
+                        <CalendarIcon />
+                        {format(selectedDate, "EEE, dd 'de' LLLL", {
+                          locale: ptBR,
+                        })}
+                      </span>
+                      {isSameDay(selectedDate, today) && (
+                        <span className="text-muted-foreground text-xs">
+                          Hoje
+                        </span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      required
+                      selected={selectedDate}
+                      defaultMonth={selectedDate}
+                      onSelect={setSelectedDate}
+                    />
+                  </PopoverContent>
+                </Popover>
 
-          <Controller
-            name="startsAt"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field>
-                <FieldLabel>Horário</FieldLabel>
-                <ToggleGroup
-                  type="single"
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  className="flex flex-wrap"
+                <Button
+                  className="border-input"
+                  variant="secondary"
+                  onClick={() => {
+                    setSelectedDate((prev) => addDays(prev, 1));
+                  }}
                 >
-                  <div className="grid grid-cols-6 lg:grid-cols-8 gap-2">
-                    {slots?.map((s) => (
-                      <ToggleGroupItem
-                        key={s.iso}
-                        value={s.iso}
-                        variant="outline"
+                  <ChevronRight />
+                </Button>
+              </div>
+
+              <Controller
+                name="startsAt"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel>Horário</FieldLabel>
+                    {!serviceId ? (
+                      <div className="text-muted-foreground w-full h-32 gap-1.5 rounded-md border border-dashed flex flex-col justify-center items-center">
+                        <Clock className="size-4" />
+                        <h3 className="font-medium">Escolha um serviço</h3>
+                        <p className="text-xs">
+                          A duração do serviço define quais horários ficam
+                          livres neste dia.
+                        </p>
+                      </div>
+                    ) : (
+                      <ToggleGroup
+                        type="single"
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        className="flex flex-wrap"
                       >
-                        {s.label}
-                      </ToggleGroupItem>
-                    ))}
-                  </div>
-                </ToggleGroup>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
+                        <div className="grid grid-cols-6 lg:grid-cols-8 gap-2">
+                          {slots?.map((s) => (
+                            <ToggleGroupItem
+                              key={s.iso}
+                              value={s.iso}
+                              variant="outline"
+                            >
+                              {s.label}
+                            </ToggleGroupItem>
+                          ))}
+                        </div>
+                      </ToggleGroup>
+                    )}
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
                 )}
-              </Field>
-            )}
-          />
+              />
+            </>
+          )}
         </>
       )}
 

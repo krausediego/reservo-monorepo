@@ -1,20 +1,20 @@
 /* eslint-disable react-hooks/refs */
 import { useEffect, useRef } from "react";
-import type { IEvent } from "../../types";
 import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import { cn } from "@/lib/utils";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 export const ItemTypes = {
   EVENT: "event",
 };
 
 type DraggableEventProps = {
-  event: IEvent;
+  appointment: IListAppointmentsSchema.GetResponse["data"][number];
   children: React.ReactNode;
 };
 
-export function DraggableEvent({ event, children }: DraggableEventProps) {
+export function DraggableEvent({ appointment, children }: DraggableEventProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   const [{ isDragging }, drag, preview] = useDrag(() => ({
@@ -23,7 +23,7 @@ export function DraggableEvent({ event, children }: DraggableEventProps) {
       const width = ref.current?.offsetWidth || 0;
       const height = ref.current?.offsetHeight || 0;
 
-      return { event, children, width, height };
+      return { appointment, children, width, height };
     },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   }));

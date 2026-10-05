@@ -1,13 +1,14 @@
 import { cva } from "class-variance-authority";
-import { endOfDay, format, isSameDay, parseISO, startOfDay } from "date-fns";
+import { endOfDay, isSameDay, startOfDay } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 
 import { cn } from "@/lib/utils";
 
 import type { VariantProps } from "class-variance-authority";
-import type { IEvent } from "../../types";
 import { useCalendar } from "../../contexts";
 import { DraggableEvent } from "../dnd/draggable-event";
 import { EventDetailsDialog } from "../dialogs/event-details-dialog";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 const eventBadgeVariants = cva(
   "mx-1 flex size-auto h-6.5 select-none items-center justify-between gap-1.5 truncate whitespace-nowrap rounded-md border px-2 text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
@@ -62,26 +63,26 @@ type MonthEventBadgeProps = Omit<
   VariantProps<typeof eventBadgeVariants>,
   "color" | "multiDayPosition"
 > & {
-  event: IEvent;
+  appointment: IListAppointmentsSchema.GetResponse["data"][number];
   cellDate: Date;
-  eventCurrentDay?: number;
-  eventTotalDays?: number;
+  appointmentCurrentDay?: number;
+  appointmentTotalDays?: number;
   className?: string;
   position?: "first" | "middle" | "last" | "none";
 };
 
 export function MonthEventBadge({
-  event,
+  appointment,
   cellDate,
-  eventCurrentDay,
-  eventTotalDays,
+  appointmentCurrentDay,
+  appointmentTotalDays,
   className,
   position: propPosition,
 }: MonthEventBadgeProps) {
-  const { badgeVariant } = useCalendar();
+  const { badgeVariant, timezone } = useCalendar();
 
-  const itemStart = startOfDay(parseISO(event.startDate));
-  const itemEnd = endOfDay(parseISO(event.endDate));
+  const itemStart = startOfDay(appointment.startsAt);
+  const itemEnd = endOfDay(appointment.endsAt);
 
   if (cellDate < itemStart || cellDate > itemEnd) return null;
 
@@ -89,7 +90,7 @@ export function MonthEventBadge({
 
   if (propPosition) {
     position = propPosition;
-  } else if (eventCurrentDay && eventTotalDays) {
+  } else if (appointmentCurrentDay && appointmentTotalDays) {
     position = "none";
   } else if (isSameDay(itemStart, itemEnd)) {
     position = "none";
@@ -103,9 +104,10 @@ export function MonthEventBadge({
 
   const renderBadgeText = ["first", "none"].includes(position);
 
-  const color = (
-    badgeVariant === "dot" ? `${event.color}-dot` : event.color
-  ) as VariantProps<typeof eventBadgeVariants>["color"];
+  // TODO: Add appointment/professional color
+  const color = (badgeVariant === "dot" ? "blue-dot" : "blue") as VariantProps<
+    typeof eventBadgeVariants
+  >["color"];
 
   const eventBadgeClasses = cn(
     eventBadgeVariants({ color, multiDayPosition: position, className }),
@@ -119,8 +121,8 @@ export function MonthEventBadge({
   };
 
   return (
-    <DraggableEvent event={event}>
-      <EventDetailsDialog event={event}>
+    <DraggableEvent appointment={appointment}>
+      <EventDetailsDialog appointment={appointment}>
         <div
           role="button"
           tabIndex={0}
@@ -142,18 +144,21 @@ export function MonthEventBadge({
 
             {renderBadgeText && (
               <p className="flex-1 truncate font-semibold">
-                {eventCurrentDay && (
+                {appointmentCurrentDay && (
                   <span className="text-xs">
-                    Day {eventCurrentDay} of {eventTotalDays} •{" "}
+                    Day {appointmentCurrentDay} of {appointmentTotalDays} •{" "}
                   </span>
                 )}
-                {event.title}
+                {/**TODO: Change dialog title to customer name */}
+                {appointment.status}
               </p>
             )}
           </div>
 
           {renderBadgeText && (
-            <span>{format(new Date(event.startDate), "h:mm a")}</span>
+            <span>
+              {formatInTimeZone(appointment.startsAt, timezone, "h:mm a")}
+            </span>
           )}
         </div>
       </EventDetailsDialog>

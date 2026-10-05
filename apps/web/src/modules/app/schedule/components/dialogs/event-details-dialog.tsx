@@ -1,4 +1,4 @@
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { Calendar, Clock, Text, User } from "lucide-react";
 
 import {
@@ -9,19 +9,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { IEvent } from "../../types";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type EventDetailsDialogProps = {
-  event: IEvent;
+  appointment: IListAppointmentsSchema.GetResponse["data"][number];
   children: React.ReactNode;
 };
 
 export function EventDetailsDialog({
-  event,
+  appointment,
   children,
 }: EventDetailsDialogProps) {
-  const startDate = parseISO(event.startDate);
-  const endDate = parseISO(event.endDate);
+  const startDate = appointment.startsAt;
+  const endDate = appointment.endsAt;
 
   return (
     <Dialog>
@@ -29,7 +29,8 @@ export function EventDetailsDialog({
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{event.title}</DialogTitle>
+          {/**TODO: Change dialog title to customer name */}
+          <DialogTitle>{appointment.status}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -37,7 +38,10 @@ export function EventDetailsDialog({
             <User className="mt-1 size-4 shrink-0" />
             <div>
               <p className="text-sm font-medium">Responsible</p>
-              <p className="text-sm text-muted-foreground">{event.user.name}</p>
+              {/**TODO: Change dialog title to customer name */}
+              <p className="text-sm text-muted-foreground">
+                {appointment.status}
+              </p>
             </div>
           </div>
 
@@ -66,13 +70,14 @@ export function EventDetailsDialog({
             <div>
               <p className="text-sm font-medium">Description</p>
               <p className="text-sm text-muted-foreground">
-                {event.description}
+                {appointment.notes}
               </p>
             </div>
           </div>
         </div>
 
         <DialogFooter>
+          {/**TODO: Add new appointment dialog */}
           {/* <EditEventDialog event={event}>
               <Button type="button" variant="outline">
                 Edit

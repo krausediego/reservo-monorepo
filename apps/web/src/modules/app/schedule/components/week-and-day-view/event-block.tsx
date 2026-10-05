@@ -1,14 +1,14 @@
 import { cva } from "class-variance-authority";
-import { format, differenceInMinutes, parseISO } from "date-fns";
+import { format, differenceInMinutes } from "date-fns";
 
 import { cn } from "@/lib/utils";
 
 import type { HTMLAttributes } from "react";
 import type { VariantProps } from "class-variance-authority";
-import type { IEvent } from "../../types";
 import { useCalendar } from "../../contexts";
 import { DraggableEvent } from "../dnd/draggable-event";
 import { EventDetailsDialog } from "../dialogs/event-details-dialog";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 const calendarWeekEventCardVariants = cva(
   "flex select-none flex-col gap-0.5 truncate whitespace-nowrap rounded-md border px-2 py-1.5 text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
@@ -53,20 +53,21 @@ const calendarWeekEventCardVariants = cva(
 
 type EventBlockProps = HTMLAttributes<HTMLDivElement> &
   Omit<VariantProps<typeof calendarWeekEventCardVariants>, "color"> & {
-    event: IEvent;
+    appointment: IListAppointmentsSchema.GetResponse["data"][number];
   };
 
-export function EventBlock({ event, className }: EventBlockProps) {
+export function EventBlock({ appointment, className }: EventBlockProps) {
   const { badgeVariant } = useCalendar();
 
-  const start = parseISO(event.startDate);
-  const end = parseISO(event.endDate);
+  const start = appointment.startsAt;
+  const end = appointment.endsAt;
   const durationInMinutes = differenceInMinutes(end, start);
   const heightInPixels = (durationInMinutes / 60) * 96 - 8;
 
-  const color = (
-    badgeVariant === "dot" ? `${event.color}-dot` : event.color
-  ) as VariantProps<typeof calendarWeekEventCardVariants>["color"];
+  const color = // TODO: Change color
+    (badgeVariant === "dot" ? `blue-dot` : "blue") as VariantProps<
+      typeof calendarWeekEventCardVariants
+    >["color"];
 
   const calendarWeekEventCardClasses = cn(
     calendarWeekEventCardVariants({ color, className }),
@@ -81,8 +82,8 @@ export function EventBlock({ event, className }: EventBlockProps) {
   };
 
   return (
-    <DraggableEvent event={event}>
-      <EventDetailsDialog event={event}>
+    <DraggableEvent appointment={appointment}>
+      <EventDetailsDialog appointment={appointment}>
         <div
           role="button"
           tabIndex={0}
@@ -102,7 +103,8 @@ export function EventBlock({ event, className }: EventBlockProps) {
               </svg>
             )}
 
-            <p className="truncate font-semibold">{event.title}</p>
+            {/** Add appointment title */}
+            <p className="truncate font-semibold">{appointment.status}</p>
           </div>
 
           {durationInMinutes > 25 && (

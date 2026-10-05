@@ -6,7 +6,12 @@ export async function listServicesApi(
 ): Promise<IListServicesSchema.GetResponse> {
   const { data } = await clientAPI.get<IListServicesSchema.GetResponse>(
     "/services",
-    { params },
+    {
+      params: {
+        ...params,
+        professionals: params.professionals?.join(","),
+      },
+    },
   );
 
   return data;

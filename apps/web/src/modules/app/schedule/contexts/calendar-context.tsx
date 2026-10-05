@@ -1,12 +1,14 @@
 import type {
   Availability,
   BadgeVariant,
-  IEvent,
   IUser,
   VisibleHours,
   WorkingHours,
 } from "@/modules/app/schedule/types";
-import type { IListProfessionalsSchema } from "@reservo/types";
+import type {
+  IListAppointmentsSchema,
+  IListProfessionalsSchema,
+} from "@reservo/types";
 import {
   createContext,
   useContext,
@@ -27,10 +29,10 @@ type CalendarContext = {
   setWorkingHours: Dispatch<SetStateAction<WorkingHours>>;
   visibleHours: VisibleHours;
   setVisibleHours: Dispatch<SetStateAction<VisibleHours>>;
-  events: IEvent[];
-  setLocalEvents: Dispatch<SetStateAction<IEvent[]>>;
+  appointments: IListAppointmentsSchema.GetResponse["data"];
   establishmentAvailability: Availability[];
   professionalAvailability: Availability[];
+  timezone: string;
 };
 
 const CalendarContext = createContext({} as CalendarContext);
@@ -50,15 +52,17 @@ const VISIBLE_HOURS = { from: 1, to: 23 };
 export function CalendarProvider({
   children,
   professionals,
-  events,
+  appointments,
   establishmentAvailability,
   professionalAvailability,
+  timezone,
 }: {
   children: React.ReactNode;
   professionals: IListProfessionalsSchema.GetResponse["data"];
-  events: IEvent[];
+  appointments: IListAppointmentsSchema.GetResponse["data"];
   establishmentAvailability: Availability[];
   professionalAvailability: Availability[];
+  timezone: string;
 }) {
   const [badgeVariant, setBadgeVariant] = useState<BadgeVariant>("colored");
   const [visibleHours, setVisibleHours] = useState<VisibleHours>(VISIBLE_HOURS);
@@ -68,12 +72,6 @@ export function CalendarProvider({
   const [selectedUserId, setSelectedUserId] = useState<IUser["id"] | "all">(
     "all",
   );
-
-  // This localEvents doesn't need to exists in a real scenario.
-  // It's used here just to simulate the update of the events.
-  // In a real scenario, the events would be updated in the backend
-  // and the request that fetches the events should be refetched
-  const [localEvents, setLocalEvents] = useState<IEvent[]>(events);
 
   const handleSelectDate = (date: Date | undefined) => {
     if (!date) return;
@@ -97,8 +95,8 @@ export function CalendarProvider({
         establishmentAvailability,
         professionalAvailability,
         // If you go to the refetch approach, you can remove the localEvents and pass the events directly
-        events: localEvents,
-        setLocalEvents,
+        appointments,
+        timezone,
       }}
     >
       {children}

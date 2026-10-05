@@ -1,12 +1,12 @@
 "use client";
 
 import { useDrop } from "react-dnd";
-import { parseISO, differenceInMilliseconds } from "date-fns";
 
 import { cn } from "@/lib/utils";
-import type { CalendarCell, IEvent } from "../../types";
+import type { CalendarCell } from "../../types";
 import { useUpdateEvent } from "../../hooks";
 import { ItemTypes } from "./draggable-event";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type DroppableDayCellProps = {
   cell: CalendarCell;
@@ -19,16 +19,18 @@ export function DroppableDayCell({ cell, children }: DroppableDayCellProps) {
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: ItemTypes.EVENT,
-      drop: (item: { event: IEvent }) => {
-        const droppedEvent = item.event;
+      drop: (item: {
+        appointment: IListAppointmentsSchema.GetResponse["data"][number];
+      }) => {
+        const droppedAppointment = item.appointment;
 
-        const eventStartDate = parseISO(droppedEvent.startDate);
-        const eventEndDate = parseISO(droppedEvent.endDate);
+        const eventStartDate = droppedAppointment.startsAt;
+        // const eventEndDate = droppedAppointment.endsAt;
 
-        const eventDurationMs = differenceInMilliseconds(
-          eventEndDate,
-          eventStartDate,
-        );
+        // const eventDurationMs = differenceInMilliseconds(
+        //   eventEndDate,
+        //   eventStartDate,
+        // );
 
         const newStartDate = new Date(cell.date);
         newStartDate.setHours(
@@ -37,13 +39,15 @@ export function DroppableDayCell({ cell, children }: DroppableDayCellProps) {
           eventStartDate.getSeconds(),
           eventStartDate.getMilliseconds(),
         );
-        const newEndDate = new Date(newStartDate.getTime() + eventDurationMs);
+        // TODO: Review tomorrow
 
-        updateEvent({
-          ...droppedEvent,
-          startDate: newStartDate.toISOString(),
-          endDate: newEndDate.toISOString(),
-        });
+        // const newEndDate = new Date(newStartDate.getTime() + eventDurationMs);
+
+        // updateEvent({
+        //   ...droppedAppointment,
+        //   startDate: newStartDate.toISOString(),
+        //   endDate: newEndDate.toISOString(),
+        // });
 
         return { moved: true };
       },

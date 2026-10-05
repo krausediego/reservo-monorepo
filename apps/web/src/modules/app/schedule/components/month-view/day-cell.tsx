@@ -2,31 +2,36 @@ import { useMemo } from "react";
 import { isToday, startOfDay } from "date-fns";
 
 import { cn } from "@/lib/utils";
-import type { CalendarCell, IEvent } from "../../types";
+import type { CalendarCell } from "../../types";
 import { useCalendar } from "../../contexts";
 import { getMonthCellEvents } from "../../helpers";
 import { DroppableDayCell } from "../dnd/droppable-day-cell";
 import { EventBullet } from "./event-bullet";
 import { MonthEventBadge } from "./month-event-badge";
 import { useRouter } from "@tanstack/react-router";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type DayCellProps = {
   cell: CalendarCell;
-  events: IEvent[];
-  eventPositions: Record<string, number>;
+  appointments: IListAppointmentsSchema.GetResponse["data"];
+  appointmentPositions: Record<string, number>;
 };
 
 const MAX_VISIBLE_EVENTS = 3;
 
-export function DayCell({ cell, events, eventPositions }: DayCellProps) {
+export function DayCell({
+  cell,
+  appointments,
+  appointmentPositions,
+}: DayCellProps) {
   const { navigate } = useRouter();
   const { setSelectedDate } = useCalendar();
 
   const { day, currentMonth, date } = cell;
 
   const cellEvents = useMemo(
-    () => getMonthCellEvents({ date, events, eventPositions }),
-    [date, events, eventPositions],
+    () => getMonthCellEvents({ date, appointments, appointmentPositions }),
+    [date, appointments, appointmentPositions],
   );
   const isSunday = date.getDay() === 0;
 
@@ -62,24 +67,28 @@ export function DayCell({ cell, events, eventPositions }: DayCellProps) {
 
         <div
           className={cn(
-            "flex h-6 gap-1 px-2 lg:h-[94px] lg:flex-col lg:gap-2 lg:px-0",
+            "flex h-6 gap-1 px-2 lg:h-23.5 lg:flex-col lg:gap-2 lg:px-0",
             !currentMonth && "opacity-50",
           )}
         >
           {[0, 1, 2].map((position) => {
-            const event = cellEvents.find((e) => e.position === position);
-            const eventKey = event
-              ? `event-${event.id}-${position}`
+            const appointment = cellEvents.find((e) => e.position === position);
+            const appointmentKey = appointment
+              ? `appointment-${appointment.id}-${position}`
               : `empty-${position}`;
 
             return (
-              <div key={eventKey} className="lg:flex-1">
+              <div key={appointmentKey} className="lg:flex-1">
                 {event && (
                   <>
-                    <EventBullet className="lg:hidden" color={event.color} />
+                    {/** TODO: Add color */}
+                    <EventBullet className="lg:hidden" color="blue" />
+                    {/** TODO: This type is critical */}
                     <MonthEventBadge
                       className="hidden lg:flex"
-                      event={event}
+                      appointment={
+                        appointment as unknown as IListAppointmentsSchema.GetResponse["data"][number]
+                      }
                       cellDate={startOfDay(date)}
                     />
                   </>

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { CalendarIcon, Clock, User } from "lucide-react";
-import { parseISO, areIntervalsOverlapping, format } from "date-fns";
+import { areIntervalsOverlapping, format } from "date-fns";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { cn } from "@/lib/utils";
-import type { IEvent } from "../../types";
 import { useCalendar } from "../../contexts";
 import {
   getCurrentEvents,
@@ -20,15 +19,16 @@ import { EventBlock } from "./event-block";
 import { CalendarTimeline } from "./calendar-time-line";
 import { Calendar } from "@/components/ui/calendar";
 import { DroppableTimeBlock } from "../dnd/droppable-time-block";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type CalendarDayViewProps = {
-  singleDayEvents: IEvent[];
-  multiDayEvents: IEvent[];
+  singleDayAppointments: IListAppointmentsSchema.GetResponse["data"];
+  multiDayAppointments: IListAppointmentsSchema.GetResponse["data"];
 };
 
 export function CalendarDayView({
-  singleDayEvents,
-  multiDayEvents,
+  singleDayAppointments,
+  multiDayAppointments,
 }: CalendarDayViewProps) {
   const {
     selectedDate,
@@ -47,21 +47,23 @@ export function CalendarDayView({
 
   const { hours, earliestEventHour, latestEventHour } = getVisibleHours({
     visibleHours,
-    singleDayEvents,
+    singleDayAppointments,
   });
 
-  const currentEvents = getCurrentEvents({ events: singleDayEvents });
+  const currentEvents = getCurrentEvents({
+    appointments: singleDayAppointments,
+  });
 
-  const dayEvents = singleDayEvents.filter((event) => {
-    const eventDate = parseISO(event.startDate);
+  const dayAppointments = singleDayAppointments.filter((appointment) => {
+    const appointmentDate = appointment.startsAt;
     return (
-      eventDate.getDate() === selectedDate.getDate() &&
-      eventDate.getMonth() === selectedDate.getMonth() &&
-      eventDate.getFullYear() === selectedDate.getFullYear()
+      appointmentDate.getDate() === selectedDate.getDate() &&
+      appointmentDate.getMonth() === selectedDate.getMonth() &&
+      appointmentDate.getFullYear() === selectedDate.getFullYear()
     );
   });
 
-  const groupedEvents = groupEvents({ dayEvents });
+  const groupedEvents = groupEvents({ dayAppointments });
 
   const unavailable = getUnavailableRanges({
     day: selectedDate,
@@ -77,7 +79,7 @@ export function CalendarDayView({
         <div>
           <DayViewMultiDayEventsRow
             selectedDate={selectedDate}
-            multiDayEvents={multiDayEvents}
+            multiDayAppointments={multiDayAppointments}
           />
 
           {/* Day header */}
@@ -167,9 +169,9 @@ export function CalendarDayView({
                 ))}
 
                 {groupedEvents.map((group, groupIndex) =>
-                  group.map((event) => {
+                  group.map((appointment) => {
                     let style = getEventBlockStyle({
-                      event,
+                      appointment,
                       day: selectedDate,
                       groupIndex,
                       groupSize: groupedEvents.length,
@@ -181,15 +183,15 @@ export function CalendarDayView({
                     const hasOverlap = groupedEvents.some(
                       (otherGroup, otherIndex) =>
                         otherIndex !== groupIndex &&
-                        otherGroup.some((otherEvent) =>
+                        otherGroup.some((otherAppointment) =>
                           areIntervalsOverlapping(
                             {
-                              start: parseISO(event.startDate),
-                              end: parseISO(event.endDate),
+                              start: appointment.startsAt,
+                              end: appointment.endsAt,
                             },
                             {
-                              start: parseISO(otherEvent.startDate),
-                              end: parseISO(otherEvent.endDate),
+                              start: otherAppointment.startsAt,
+                              end: otherAppointment.endsAt,
                             },
                           ),
                         ),
@@ -200,11 +202,11 @@ export function CalendarDayView({
 
                     return (
                       <div
-                        key={event.id}
+                        key={appointment.id}
                         className="absolute p-1"
                         style={style}
                       >
-                        <EventBlock event={event} />
+                        <EventBlock appointment={appointment} />
                       </div>
                     );
                   }),
@@ -249,15 +251,17 @@ export function CalendarDayView({
           {currentEvents.length > 0 && (
             <ScrollArea className="h-105.5 px-4" type="always">
               <div className="space-y-6 pb-4">
-                {currentEvents.map((event) => {
+                {currentEvents.map((appointment) => {
                   const professional = professionals.find(
-                    ({ professional }) => professional.id === event.user.id,
+                    ({ professional }) =>
+                      professional.id === appointment.professionalId,
                   )?.professional;
 
                   return (
-                    <div key={event.id} className="space-y-1.5">
+                    <div key={appointment.id} className="space-y-1.5">
+                      {/** TODO: Add title */}
                       <p className="line-clamp-2 text-sm font-semibold">
-                        {event.title}
+                        {appointment.status}
                       </p>
 
                       {professional && (
@@ -277,8 +281,8 @@ export function CalendarDayView({
                       <div className="flex items-center gap-1.5 text-muted-foreground">
                         <Clock className="size-3.5" />
                         <span className="text-sm">
-                          {format(parseISO(event.startDate), "h:mm a")} -{" "}
-                          {format(parseISO(event.endDate), "h:mm a")}
+                          {format(appointment.startsAt, "h:mm a")} -{" "}
+                          {format(appointment.endsAt, "h:mm a")}
                         </span>
                       </div>
                     </div>

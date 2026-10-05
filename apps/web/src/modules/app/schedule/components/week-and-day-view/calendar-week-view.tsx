@@ -2,7 +2,6 @@ import {
   startOfWeek,
   addDays,
   format,
-  parseISO,
   isSameDay,
   areIntervalsOverlapping,
 } from "date-fns";
@@ -10,7 +9,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { cn } from "@/lib/utils";
-import type { IEvent } from "../../types";
 import { useCalendar } from "../../contexts";
 import {
   getEventBlockStyle,
@@ -21,21 +19,22 @@ import {
 import { WeekViewMultiDayEventsRow } from "./week-view-multi-day-events-row";
 import { EventBlock } from "./event-block";
 import { CalendarTimeline } from "./calendar-time-line";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type CalendarWeekViewProps = {
-  singleDayEvents: IEvent[];
-  multiDayEvents: IEvent[];
+  singleDayAppointments: IListAppointmentsSchema.GetResponse["data"];
+  multiDayAppointments: IListAppointmentsSchema.GetResponse["data"];
 };
 
 export function CalendarWeekView({
-  singleDayEvents,
-  multiDayEvents,
+  singleDayAppointments,
+  multiDayAppointments,
 }: CalendarWeekViewProps) {
   const { selectedDate, workingHours, visibleHours } = useCalendar();
 
   const { hours, earliestEventHour, latestEventHour } = getVisibleHours({
     visibleHours,
-    singleDayEvents,
+    singleDayAppointments,
   });
 
   const weekStart = startOfWeek(selectedDate);
@@ -52,7 +51,7 @@ export function CalendarWeekView({
         <div>
           <WeekViewMultiDayEventsRow
             selectedDate={selectedDate}
-            multiDayEvents={multiDayEvents}
+            multiDayAppointments={multiDayAppointments}
           />
 
           {/* Week header */}
@@ -95,12 +94,12 @@ export function CalendarWeekView({
             <div className="relative flex-1 border-l">
               <div className="grid grid-cols-7 divide-x">
                 {weekDays.map((day, dayIndex) => {
-                  const dayEvents = singleDayEvents.filter(
-                    (event) =>
-                      isSameDay(parseISO(event.startDate), day) ||
-                      isSameDay(parseISO(event.endDate), day),
+                  const dayAppointments = singleDayAppointments.filter(
+                    (appointment) =>
+                      isSameDay(appointment.startsAt, day) ||
+                      isSameDay(appointment.endsAt, day),
                   );
-                  const groupedEvents = groupEvents({ dayEvents });
+                  const groupedEvents = groupEvents({ dayAppointments });
 
                   return (
                     <div key={dayIndex} className="relative">
@@ -182,9 +181,9 @@ export function CalendarWeekView({
                       })}
 
                       {groupedEvents.map((group, groupIndex) =>
-                        group.map((event) => {
+                        group.map((appointment) => {
                           let style = getEventBlockStyle({
-                            event,
+                            appointment,
                             day,
                             groupIndex,
                             groupSize: groupedEvents.length,
@@ -196,15 +195,15 @@ export function CalendarWeekView({
                           const hasOverlap = groupedEvents.some(
                             (otherGroup, otherIndex) =>
                               otherIndex !== groupIndex &&
-                              otherGroup.some((otherEvent) =>
+                              otherGroup.some((otherAppointment) =>
                                 areIntervalsOverlapping(
                                   {
-                                    start: parseISO(event.startDate),
-                                    end: parseISO(event.endDate),
+                                    start: appointment.startsAt,
+                                    end: appointment.endsAt,
                                   },
                                   {
-                                    start: parseISO(otherEvent.startDate),
-                                    end: parseISO(otherEvent.endDate),
+                                    start: otherAppointment.startsAt,
+                                    end: otherAppointment.endsAt,
                                   },
                                 ),
                               ),
@@ -215,11 +214,11 @@ export function CalendarWeekView({
 
                           return (
                             <div
-                              key={event.id}
+                              key={appointment.id}
                               className="absolute p-1"
                               style={style}
                             >
-                              <EventBlock event={event} />
+                              <EventBlock appointment={appointment} />
                             </div>
                           );
                         }),

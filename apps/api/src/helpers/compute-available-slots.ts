@@ -15,6 +15,7 @@ export function computeAvailableSlots({
   busy,
   step = 15,
   now,
+  allowPast = true,
 }: {
   dayStart: Date;
   dayEnd: Date;
@@ -25,6 +26,7 @@ export function computeAvailableSlots({
   busy: { startsAt: Date; endsAt: Date }[];
   step?: number;
   now?: Date;
+  allowPast?: boolean;
 }): Date[] {
   const nowDate = now ?? new Date();
   const slots: Date[] = [];
@@ -36,7 +38,7 @@ export function computeAvailableSlots({
   ) {
     const end = addMinutes(start, durationMin);
 
-    if (isBefore(start, nowDate)) {
+    if (!allowPast && isBefore(start, nowDate)) {
       continue;
     }
     if (

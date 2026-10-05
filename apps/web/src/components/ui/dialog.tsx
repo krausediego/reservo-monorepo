@@ -116,7 +116,10 @@ function DialogForm<TFieldValues extends FieldValues>({
     <FormProvider {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className={cn("contents", className)}
+        className={cn(
+          "contents flex-col max-h-[80%] overflow-y-scroll",
+          className,
+        )}
         {...props}
       >
         {children}

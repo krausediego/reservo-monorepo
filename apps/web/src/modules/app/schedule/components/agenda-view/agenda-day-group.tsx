@@ -1,20 +1,20 @@
-import { differenceInDays, format, parseISO, startOfDay } from "date-fns";
-import type { IEvent } from "../../types";
+import { differenceInDays, format, startOfDay } from "date-fns";
 import { AgendaEventCard } from "./agenda-event-card";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type AgendaDayGroup = {
   date: Date;
-  events: IEvent[];
-  multiDayEvents: IEvent[];
+  appointments: IListAppointmentsSchema.GetResponse["data"];
+  multiDayAppointments: IListAppointmentsSchema.GetResponse["data"];
 };
 
 export function AgendaDayGroup({
   date,
-  events,
-  multiDayEvents,
+  appointments,
+  multiDayAppointments,
 }: AgendaDayGroup) {
-  const sortedEvents = [...events].sort(
-    (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+  const sortedAppointments = [...appointments].sort(
+    (a, b) => a.startsAt.getTime() - b.endsAt.getTime(),
   );
 
   return (
@@ -26,28 +26,29 @@ export function AgendaDayGroup({
       </div>
 
       <div className="space-y-2">
-        {multiDayEvents.length > 0 &&
-          multiDayEvents.map((event) => {
-            const eventStart = startOfDay(parseISO(event.startDate));
-            const eventEnd = startOfDay(parseISO(event.endDate));
+        {multiDayAppointments.length > 0 &&
+          multiDayAppointments.map((appointment) => {
+            const appointmentStart = startOfDay(appointment.startsAt);
+            const appointmentEnd = startOfDay(appointment.endsAt);
             const currentDate = startOfDay(date);
 
-            const eventTotalDays = differenceInDays(eventEnd, eventStart) + 1;
-            const eventCurrentDay =
-              differenceInDays(currentDate, eventStart) + 1;
+            const appointmentTotalDays =
+              differenceInDays(appointmentEnd, appointmentStart) + 1;
+            const appointmentCurrentDay =
+              differenceInDays(currentDate, appointmentStart) + 1;
             return (
               <AgendaEventCard
-                key={event.id}
-                event={event}
-                eventCurrentDay={eventCurrentDay}
-                eventTotalDays={eventTotalDays}
+                key={appointment.id}
+                appointment={appointment}
+                appointmentCurrentDay={appointmentCurrentDay}
+                appointmentTotalDays={appointmentTotalDays}
               />
             );
           })}
 
-        {sortedEvents.length > 0 &&
-          sortedEvents.map((event) => (
-            <AgendaEventCard key={event.id} event={event} />
+        {sortedAppointments.length > 0 &&
+          sortedAppointments.map((appointment) => (
+            <AgendaEventCard key={appointment.id} appointment={appointment} />
           ))}
       </div>
     </div>

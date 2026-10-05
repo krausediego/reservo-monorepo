@@ -50,14 +50,20 @@ export function useAppointment({ form }: UseAppointmentProps) {
     {
       gcTime: 0,
       refetchOnMount: true,
+      enabled: !!search,
     },
   );
 
-  const { data: professionals } = useListProfessionalsQuery({
-    page: 1,
-    limit: 100,
-    orderBy: "asc",
-  });
+  const { data: professionals } = useListProfessionalsQuery(
+    {
+      page: 1,
+      limit: 100,
+      orderBy: "asc",
+    },
+    {
+      enabled: !!customer,
+    },
+  );
 
   const professionalId = form.watch("professionalId");
   const serviceId = form.watch("serviceId");
@@ -112,5 +118,6 @@ export function useAppointment({ form }: UseAppointmentProps) {
     services,
     slots,
     professionalId,
+    serviceId,
   };
 }

@@ -5,24 +5,25 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { CalendarView, IEvent } from "../../types";
+import type { CalendarView } from "../../types";
 import { useCalendar } from "../../contexts";
 import { getEventsCount, navigateDate, rangeText } from "../../helpers";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type DateNavigatorProps = {
   view: CalendarView;
-  events: IEvent[];
+  appointments: IListAppointmentsSchema.GetResponse["data"];
 };
 
-export function DateNavigator({ view, events }: DateNavigatorProps) {
+export function DateNavigator({ view, appointments }: DateNavigatorProps) {
   const { selectedDate, setSelectedDate } = useCalendar();
 
   const month = formatDate(selectedDate, "MMMM", { locale: ptBR });
   const year = selectedDate.getFullYear();
 
   const eventCount = useMemo(
-    () => getEventsCount({ events, date: selectedDate, view }),
-    [events, selectedDate, view],
+    () => getEventsCount({ appointments, date: selectedDate, view }),
+    [appointments, selectedDate, view],
   );
 
   const handlePrevious = () =>

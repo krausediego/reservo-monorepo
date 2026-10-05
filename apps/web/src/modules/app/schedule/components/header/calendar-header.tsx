@@ -1,20 +1,21 @@
 import { Columns, List, Grid2x2, CalendarRange, Calendar } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import type { CalendarView, IEvent } from "../../types";
+import type { CalendarView } from "../../types";
 import { TodayButton } from "./today-button";
 import { DateNavigator } from "./date-navigator";
 import { UserSelect } from "./user-select";
 import { useNavigate } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { CreateAppointmentDialog } from "../dialogs/create-appointment-dialog";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type CalendarHeaderProps = {
   view: CalendarView;
-  events: IEvent[];
+  appointments: IListAppointmentsSchema.GetResponse["data"];
 };
 
-export function CalendarHeader({ view, events }: CalendarHeaderProps) {
+export function CalendarHeader({ view, appointments }: CalendarHeaderProps) {
   const navigate = useNavigate();
 
   const handleChangeView = (view: CalendarView) => {
@@ -31,7 +32,7 @@ export function CalendarHeader({ view, events }: CalendarHeaderProps) {
     <div className="flex flex-col gap-4 border-b p-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex items-center gap-3">
         <TodayButton />
-        <DateNavigator view={view} events={events} />
+        <DateNavigator view={view} appointments={appointments} />
       </div>
 
       <div className="flex flex-col items-center gap-1.5 sm:flex-row sm:justify-between">

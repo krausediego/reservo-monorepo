@@ -13,7 +13,6 @@ import {
   endOfMonth,
   endOfWeek,
   format,
-  parseISO,
   differenceInMinutes,
   eachDayOfInterval,
   startOfDay,
@@ -26,12 +25,14 @@ import type {
   CalendarView,
   VisibleHours,
   WorkingHours,
-  IEvent,
   EventColor,
-  IUser,
   Availability,
 } from "@/modules/app/schedule/types";
 import { ptBR } from "date-fns/locale";
+import type {
+  IListAppointmentsSchema,
+  IListProfessionalsSchema,
+} from "@reservo/types";
 
 export function fits({
   day,
@@ -165,11 +166,11 @@ export function navigateDate({
 }
 
 export function getEventsCount({
-  events,
+  appointments,
   date,
   view,
 }: {
-  events: IEvent[];
+  appointments: IListAppointmentsSchema.GetResponse["data"];
   date: Date;
   view: CalendarView;
 }): number {
@@ -183,65 +184,69 @@ export function getEventsCount({
     day: isSameDay,
   };
 
-  return events.filter((event) =>
-    compareFns[view](new Date(event.startDate), date),
+  return appointments.filter((appointment) =>
+    compareFns[view](appointment.startsAt, date),
   ).length;
 }
 
 // ================ Week and day view helper functions ================ //
 
-export function getCurrentEvents({ events }: { events: IEvent[] }): IEvent[] {
+export function getCurrentEvents({
+  appointments,
+}: {
+  appointments: IListAppointmentsSchema.GetResponse["data"];
+}): IListAppointmentsSchema.GetResponse["data"] {
   const now = new Date();
 
   return (
-    events.filter((event) =>
+    appointments.filter((appointment) =>
       isWithinInterval(now, {
-        start: parseISO(event.startDate),
-        end: parseISO(event.endDate),
+        start: appointment.startsAt,
+        end: appointment.endsAt,
       }),
     ) || null
   );
 }
 
 export function groupEvents({
-  dayEvents,
+  dayAppointments,
 }: {
-  dayEvents: IEvent[];
-}): IEvent[][] {
-  const sortedEvents = dayEvents.sort(
-    (a, b) => parseISO(a.startDate).getTime() - parseISO(b.startDate).getTime(),
+  dayAppointments: IListAppointmentsSchema.GetResponse["data"];
+}): IListAppointmentsSchema.GetResponse["data"][] {
+  const sortedAppointments = dayAppointments.sort(
+    (a, b) => a.startsAt.getTime() - b.startsAt.getTime(),
   );
-  const groups: IEvent[][] = [];
+  const groups: IListAppointmentsSchema.GetResponse["data"][] = [];
 
-  for (const event of sortedEvents) {
-    const eventStart = parseISO(event.startDate);
+  for (const appointment of sortedAppointments) {
+    const appointmentStart = appointment.startsAt;
 
     let placed = false;
     for (const group of groups) {
-      const lastEventInGroup = group[group.length - 1];
-      const lastEventEnd = parseISO(lastEventInGroup.endDate);
+      const lastAppointmentInGroup = group[group.length - 1];
+      const lastAppointmentEnd = lastAppointmentInGroup.endsAt;
 
-      if (eventStart >= lastEventEnd) {
-        group.push(event);
+      if (appointmentStart >= lastAppointmentEnd) {
+        group.push(appointment);
         placed = true;
         break;
       }
     }
 
-    if (!placed) groups.push([event]);
+    if (!placed) groups.push([appointment]);
   }
 
   return groups;
 }
 
 export function getEventBlockStyle({
-  event,
+  appointment,
   day,
   groupIndex,
   groupSize,
   visibleHoursRange,
 }: {
-  event: IEvent;
+  appointment: IListAppointmentsSchema.GetResponse["data"][number];
   day: Date;
   groupIndex: number;
   groupSize: number;
@@ -251,7 +256,7 @@ export function getEventBlockStyle({
   width: string;
   left: string;
 } {
-  const startDate = parseISO(event.startDate);
+  const startDate = appointment.startsAt;
   const dayStart = new Date(day.setHours(0, 0, 0, 0));
   const eventStart = startDate < dayStart ? dayStart : startDate;
   const startMinutes = differenceInMinutes(eventStart, dayStart);
@@ -290,10 +295,10 @@ export function isWorkingHour({
 
 export function getVisibleHours({
   visibleHours,
-  singleDayEvents,
+  singleDayAppointments,
 }: {
   visibleHours: VisibleHours;
-  singleDayEvents: IEvent[];
+  singleDayAppointments: IListAppointmentsSchema.GetResponse["data"];
 }): {
   hours: number[];
   earliestEventHour: number;
@@ -302,9 +307,9 @@ export function getVisibleHours({
   let earliestEventHour = visibleHours.from;
   let latestEventHour = visibleHours.to;
 
-  singleDayEvents.forEach((event) => {
-    const startHour = parseISO(event.startDate).getHours();
-    const endTime = parseISO(event.endDate);
+  singleDayAppointments.forEach((appointment) => {
+    const startHour = appointment.startsAt.getHours();
+    const endTime = appointment.endsAt;
     const endHour = endTime.getHours() + (endTime.getMinutes() > 0 ? 1 : 0);
 
     if (startHour < earliestEventHour) earliestEventHour = startHour;
@@ -370,12 +375,12 @@ export function getCalendarCells({
 }
 
 export function calculateMonthEventPositions({
-  multiDayEvents,
-  singleDayEvents,
+  multiDayAppointments,
+  singleDayAppointments,
   selectedDate,
 }: {
-  multiDayEvents: IEvent[];
-  singleDayEvents: IEvent[];
+  multiDayAppointments: IListAppointmentsSchema.GetResponse["data"];
+  singleDayAppointments: IListAppointmentsSchema.GetResponse["data"];
   selectedDate: Date;
 }): {
   [key: string]: number;
@@ -390,40 +395,32 @@ export function calculateMonthEventPositions({
     occupiedPositions[day.toISOString()] = [false, false, false];
   });
 
-  const sortedEvents = [
-    ...multiDayEvents.sort((a, b) => {
-      const aDuration = differenceInDays(
-        parseISO(a.endDate),
-        parseISO(a.startDate),
-      );
-      const bDuration = differenceInDays(
-        parseISO(b.endDate),
-        parseISO(b.startDate),
-      );
+  const sortedAppointments = [
+    ...multiDayAppointments.sort((a, b) => {
+      const aDuration = differenceInDays(a.endsAt, a.startsAt);
+      const bDuration = differenceInDays(b.endsAt, b.startsAt);
       return (
-        bDuration - aDuration ||
-        parseISO(a.startDate).getTime() - parseISO(b.startDate).getTime()
+        bDuration - aDuration || a.startsAt.getTime() - b.startsAt.getTime()
       );
     }),
-    ...singleDayEvents.sort(
-      (a, b) =>
-        parseISO(a.startDate).getTime() - parseISO(b.startDate).getTime(),
+    ...singleDayAppointments.sort(
+      (a, b) => a.startsAt.getTime() - b.startsAt.getTime(),
     ),
   ];
 
-  sortedEvents.forEach((event) => {
-    const eventStart = parseISO(event.startDate);
-    const eventEnd = parseISO(event.endDate);
-    const eventDays = eachDayOfInterval({
-      start: eventStart < monthStart ? monthStart : eventStart,
-      end: eventEnd > monthEnd ? monthEnd : eventEnd,
+  sortedAppointments.forEach((appointment) => {
+    const appointmentStart = appointment.startsAt;
+    const appointmentEnd = appointment.endsAt;
+    const appointmentDays = eachDayOfInterval({
+      start: appointmentStart < monthStart ? monthStart : appointmentStart,
+      end: appointmentEnd > monthEnd ? monthEnd : appointmentEnd,
     });
 
     let position = -1;
 
     for (let i = 0; i < 3; i++) {
       if (
-        eventDays.every((day) => {
+        appointmentDays.every((day) => {
           const dayPositions = occupiedPositions[startOfDay(day).toISOString()];
           return dayPositions && !dayPositions[i];
         })
@@ -434,11 +431,11 @@ export function calculateMonthEventPositions({
     }
 
     if (position !== -1) {
-      eventDays.forEach((day) => {
+      appointmentDays.forEach((day) => {
         const dayKey = startOfDay(day).toISOString();
         occupiedPositions[dayKey][position] = true;
       });
-      eventPositions[event.id] = position;
+      eventPositions[appointment.id] = position;
     }
   });
 
@@ -447,38 +444,41 @@ export function calculateMonthEventPositions({
 
 export function getMonthCellEvents({
   date,
-  events,
-  eventPositions,
+  appointments,
+  appointmentPositions,
 }: {
   date: Date;
-  events: IEvent[];
-  eventPositions: Record<string, number>;
+  appointments: IListAppointmentsSchema.GetResponse["data"];
+  appointmentPositions: Record<string, number>;
 }): {
   position: number;
   isMultiDay: boolean;
-  id: number;
-  startDate: string;
-  endDate: string;
+  id: string;
+  startsAt: Date;
+  endsAt: Date;
   title: string;
   color: EventColor;
-  description: string;
-  user: IUser;
+  description: string | null;
+  professionalId: IListProfessionalsSchema.GetResponse["data"][number]["professional"]["id"];
 }[] {
-  const eventsForDate = events.filter((event) => {
-    const eventStart = parseISO(event.startDate);
-    const eventEnd = parseISO(event.endDate);
+  const appointmentsForDate = appointments.filter((appointment) => {
+    const appointmentStart = appointment.startsAt;
+    const appointmentEnd = appointment.endsAt;
     return (
-      (date >= eventStart && date <= eventEnd) ||
-      isSameDay(date, eventStart) ||
-      isSameDay(date, eventEnd)
+      (date >= appointmentStart && date <= appointmentEnd) ||
+      isSameDay(date, appointmentStart) ||
+      isSameDay(date, appointmentEnd)
     );
   });
 
-  return eventsForDate
-    .map((event) => ({
-      ...event,
-      position: eventPositions[event.id] ?? -1,
-      isMultiDay: event.startDate !== event.endDate,
+  return appointmentsForDate
+    .map((appointment) => ({
+      ...appointment,
+      position: appointmentPositions[appointment.id] ?? -1,
+      isMultiDay: appointment.startsAt !== appointment.endsAt,
+      title: "",
+      color: "blue" as EventColor,
+      description: appointment.notes,
     }))
     .sort((a, b) => {
       if (a.isMultiDay && !b.isMultiDay) return -1;

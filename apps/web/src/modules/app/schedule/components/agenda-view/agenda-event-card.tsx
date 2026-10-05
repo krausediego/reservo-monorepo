@@ -1,13 +1,13 @@
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { cva } from "class-variance-authority";
 import { Clock, Text, User } from "lucide-react";
 
 // import { EventDetailsDialog } from "@/calendar/components/dialogs/event-details-dialog";
 
 import type { VariantProps } from "class-variance-authority";
-import type { IEvent } from "../../types";
 import { useCalendar } from "../../contexts";
 import { EventDetailsDialog } from "../dialogs/event-details-dialog";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 const agendaEventCardVariants = cva(
   "flex select-none items-center justify-between gap-3 rounded-md border p-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
@@ -51,24 +51,25 @@ const agendaEventCardVariants = cva(
 );
 
 interface IProps {
-  event: IEvent;
-  eventCurrentDay?: number;
-  eventTotalDays?: number;
+  appointment: IListAppointmentsSchema.GetResponse["data"][number];
+  appointmentCurrentDay?: number;
+  appointmentTotalDays?: number;
 }
 
 export function AgendaEventCard({
-  event,
-  eventCurrentDay,
-  eventTotalDays,
+  appointment,
+  appointmentCurrentDay,
+  appointmentTotalDays,
 }: IProps) {
   const { badgeVariant } = useCalendar();
 
-  const startDate = parseISO(event.startDate);
-  const endDate = parseISO(event.endDate);
+  const startDate = appointment.startsAt;
+  const endDate = appointment.endsAt;
 
-  const color = (
-    badgeVariant === "dot" ? `${event.color}-dot` : event.color
-  ) as VariantProps<typeof agendaEventCardVariants>["color"];
+  const color = // TODO: Add color
+    (badgeVariant === "dot" ? `blue-dot` : "blue") as VariantProps<
+      typeof agendaEventCardVariants
+    >["color"];
 
   const agendaEventCardClasses = agendaEventCardVariants({ color });
 
@@ -80,7 +81,7 @@ export function AgendaEventCard({
   };
 
   return (
-    <EventDetailsDialog event={event}>
+    <EventDetailsDialog appointment={appointment}>
       <div
         role="button"
         tabIndex={0}
@@ -101,18 +102,22 @@ export function AgendaEventCard({
             )}
 
             <p className="font-medium">
-              {eventCurrentDay && eventTotalDays && (
+              {appointmentCurrentDay && appointmentTotalDays && (
                 <span className="mr-1 text-xs">
-                  Day {eventCurrentDay} of {eventTotalDays} •{" "}
+                  Day {appointmentCurrentDay} of {appointmentTotalDays} •{" "}
                 </span>
               )}
-              {event.title}
+              {/** TODO: Add title */}
+              {appointment.status}
             </p>
           </div>
 
           <div className="mt-1 flex items-center gap-1">
             <User className="size-3 shrink-0" />
-            <p className="text-xs text-foreground">{event.user.name}</p>
+            {/** TODO: Add professional name */}
+            <p className="text-xs text-foreground">
+              {appointment.professionalId}
+            </p>
           </div>
 
           <div className="flex items-center gap-1">
@@ -124,7 +129,7 @@ export function AgendaEventCard({
 
           <div className="flex items-center gap-1">
             <Text className="size-3 shrink-0" />
-            <p className="text-xs text-foreground">{event.description}</p>
+            <p className="text-xs text-foreground">{appointment.notes}</p>
           </div>
         </div>
       </div>

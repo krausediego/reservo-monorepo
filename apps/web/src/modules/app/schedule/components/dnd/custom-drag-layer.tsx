@@ -1,9 +1,9 @@
 import { useDragLayer } from "react-dnd";
 
-import type { IEvent } from "../../types";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type DragItem = {
-  event: IEvent;
+  appointment: IListAppointmentsSchema.GetResponse["data"][number];
   children: React.ReactNode;
   width: number;
   height: number;

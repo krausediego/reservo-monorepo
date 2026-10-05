@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { isSameDay, parseISO } from "date-fns";
+import { isSameDay } from "date-fns";
 import type { CalendarView } from "../types";
 import { useCalendar } from "../contexts";
 import { CalendarHeader } from "./header/calendar-header";
@@ -16,12 +16,12 @@ type ClientContainerProps = {
 };
 
 export function ClientContainer({ view }: ClientContainerProps) {
-  const { selectedDate, selectedUserId, events } = useCalendar();
+  const { selectedDate, selectedUserId, appointments } = useCalendar();
 
-  const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
-      const eventStartDate = parseISO(event.startDate);
-      const eventEndDate = parseISO(event.endDate);
+  const filteredAppointments = useMemo(() => {
+    return appointments.filter((appointment) => {
+      const eventStartDate = appointment.startsAt;
+      const eventEndDate = appointment.endsAt;
 
       if (view === "month" || view === "agenda") {
         const monthStart = new Date(
@@ -41,7 +41,8 @@ export function ClientContainer({ view }: ClientContainerProps) {
         const isInSelectedMonth =
           eventStartDate <= monthEnd && eventEndDate >= monthStart;
         const isUserMatch =
-          selectedUserId === "all" || event.user.id === selectedUserId;
+          selectedUserId === "all" ||
+          appointment.professionalId === selectedUserId;
         return isInSelectedMonth && isUserMatch;
       }
 
@@ -59,7 +60,8 @@ export function ClientContainer({ view }: ClientContainerProps) {
         const isInSelectedWeek =
           eventStartDate <= weekEnd && eventEndDate >= weekStart;
         const isUserMatch =
-          selectedUserId === "all" || event.user.id === selectedUserId;
+          selectedUserId === "all" ||
+          appointment.professionalId === selectedUserId;
         return isInSelectedWeek && isUserMatch;
       }
 
@@ -83,51 +85,52 @@ export function ClientContainer({ view }: ClientContainerProps) {
         const isInSelectedDay =
           eventStartDate <= dayEnd && eventEndDate >= dayStart;
         const isUserMatch =
-          selectedUserId === "all" || event.user.id === selectedUserId;
+          selectedUserId === "all" ||
+          appointment.professionalId === selectedUserId;
         return isInSelectedDay && isUserMatch;
       }
     });
-  }, [selectedDate, selectedUserId, events, view]);
+  }, [selectedDate, selectedUserId, appointments, view]);
 
-  const singleDayEvents = filteredEvents.filter((event) => {
-    const startDate = parseISO(event.startDate);
-    const endDate = parseISO(event.endDate);
+  const singleDayAppointments = filteredAppointments.filter((appointment) => {
+    const startDate = appointment.startsAt;
+    const endDate = appointment.endsAt;
     return isSameDay(startDate, endDate);
   });
 
-  const multiDayEvents = filteredEvents.filter((event) => {
-    const startDate = parseISO(event.startDate);
-    const endDate = parseISO(event.endDate);
+  const multiDayAppointments = filteredAppointments.filter((appointment) => {
+    const startDate = appointment.startsAt;
+    const endDate = appointment.endsAt;
     return !isSameDay(startDate, endDate);
   });
 
   return (
     <div className="w-full overflow-hidden rounded-xl border">
-      <CalendarHeader view={view} events={filteredEvents} />
+      <CalendarHeader view={view} appointments={filteredAppointments} />
 
       <DndProviderWrapper>
         {view === "day" && (
           <CalendarDayView
-            singleDayEvents={singleDayEvents}
-            multiDayEvents={multiDayEvents}
+            singleDayAppointments={singleDayAppointments}
+            multiDayAppointments={multiDayAppointments}
           />
         )}
         {view === "month" && (
           <CalendarMonthView
-            singleDayEvents={singleDayEvents}
-            multiDayEvents={multiDayEvents}
+            singleDayAppointments={singleDayAppointments}
+            multiDayAppointments={multiDayAppointments}
           />
         )}
         {view === "week" && (
           <CalendarWeekView
-            singleDayEvents={singleDayEvents}
-            multiDayEvents={multiDayEvents}
+            singleDayAppointments={singleDayAppointments}
+            multiDayAppointments={multiDayAppointments}
           />
         )}
         {view === "agenda" && (
           <CalendarAgendaView
-            singleDayEvents={singleDayEvents}
-            multiDayEvents={multiDayEvents}
+            singleDayAppointments={singleDayAppointments}
+            multiDayAppointments={multiDayAppointments}
           />
         )}
       </DndProviderWrapper>

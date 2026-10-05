@@ -2,7 +2,6 @@
 /* eslint-disable react-hooks/preserve-manual-memoization */
 import { useMemo } from "react";
 import {
-  parseISO,
   startOfDay,
   startOfWeek,
   endOfWeek,
@@ -11,34 +10,34 @@ import {
   isBefore,
   isAfter,
 } from "date-fns";
-import type { IEvent } from "../../types";
 import { MonthEventBadge } from "../month-view/month-event-badge";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type WeekViewMultiDayEventsRowProps = {
   selectedDate: Date;
-  multiDayEvents: IEvent[];
+  multiDayAppointments: IListAppointmentsSchema.GetResponse["data"];
 };
 
 export function WeekViewMultiDayEventsRow({
   selectedDate,
-  multiDayEvents,
+  multiDayAppointments,
 }: WeekViewMultiDayEventsRowProps) {
   const weekStart = startOfWeek(selectedDate);
   const weekEnd = endOfWeek(selectedDate);
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   const processedEvents = useMemo(() => {
-    return multiDayEvents
-      .map((event) => {
-        const start = parseISO(event.startDate);
-        const end = parseISO(event.endDate);
+    return multiDayAppointments
+      .map((appointment) => {
+        const start = appointment.startsAt;
+        const end = appointment.endsAt;
         const adjustedStart = isBefore(start, weekStart) ? weekStart : start;
         const adjustedEnd = isAfter(end, weekEnd) ? weekEnd : end;
         const startIndex = differenceInDays(adjustedStart, weekStart);
         const endIndex = differenceInDays(adjustedEnd, weekStart);
 
         return {
-          ...event,
+          ...appointment,
           adjustedStart,
           adjustedEnd,
           startIndex,
@@ -50,9 +49,9 @@ export function WeekViewMultiDayEventsRow({
         if (startDiff !== 0) return startDiff;
         return b.endIndex - b.startIndex - (a.endIndex - a.startIndex);
       });
-  }, [multiDayEvents, weekStart, weekEnd]);
+  }, [multiDayAppointments, weekStart, weekEnd]);
 
-  const eventRows = useMemo(() => {
+  const appointmentRows = useMemo(() => {
     const rows: (typeof processedEvents)[] = [];
 
     processedEvents.forEach((event) => {
@@ -74,9 +73,9 @@ export function WeekViewMultiDayEventsRow({
   }, [processedEvents]);
 
   const hasEventsInWeek = useMemo(() => {
-    return multiDayEvents.some((event) => {
-      const start = parseISO(event.startDate);
-      const end = parseISO(event.endDate);
+    return multiDayAppointments.some((appointment) => {
+      const start = appointment.startsAt;
+      const end = appointment.endsAt;
 
       return (
         // Event starts within the week
@@ -87,7 +86,7 @@ export function WeekViewMultiDayEventsRow({
         (start <= weekStart && end >= weekEnd)
       );
     });
-  }, [multiDayEvents, weekStart, weekEnd]);
+  }, [multiDayAppointments, weekStart, weekEnd]);
 
   if (!hasEventsInWeek) {
     return null;
@@ -102,12 +101,12 @@ export function WeekViewMultiDayEventsRow({
             key={day.toISOString()}
             className="flex h-full flex-col gap-1 py-1"
           >
-            {eventRows.map((row, rowIndex) => {
-              const event = row.find(
+            {appointmentRows.map((row, rowIndex) => {
+              const appointment = row.find(
                 (e) => e.startIndex <= dayIndex && e.endIndex >= dayIndex,
               );
 
-              if (!event) {
+              if (!appointment) {
                 return (
                   <div key={`${rowIndex}-${dayIndex}`} className="h-6.5" />
                 );
@@ -116,13 +115,13 @@ export function WeekViewMultiDayEventsRow({
               let position: "first" | "middle" | "last" | "none" = "none";
 
               if (
-                dayIndex === event.startIndex &&
-                dayIndex === event.endIndex
+                dayIndex === appointment.startIndex &&
+                dayIndex === appointment.endIndex
               ) {
                 position = "none";
-              } else if (dayIndex === event.startIndex) {
+              } else if (dayIndex === appointment.startIndex) {
                 position = "first";
-              } else if (dayIndex === event.endIndex) {
+              } else if (dayIndex === appointment.endIndex) {
                 position = "last";
               } else {
                 position = "middle";
@@ -130,8 +129,8 @@ export function WeekViewMultiDayEventsRow({
 
               return (
                 <MonthEventBadge
-                  key={`${event.id}-${dayIndex}`}
-                  event={event}
+                  key={`${appointment.id}-${dayIndex}`}
+                  appointment={appointment}
                   cellDate={startOfDay(day)}
                   position={position}
                 />

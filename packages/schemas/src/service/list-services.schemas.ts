@@ -9,7 +9,7 @@ export const listServicesSchema = z.object({
     professionals: z
       .union([z.string(), z.array(z.string())])
       .transform((val) => (Array.isArray(val) ? val : val.split(",")))
-      .pipe(z.array(z.cuid2().min(1)))
+      .pipe(z.array(z.cuid2()))
       .optional(),
     orderBy: z
       .union([z.literal("asc"), z.literal("desc")])

@@ -1,31 +1,35 @@
 import { useMemo } from "react";
 import { CalendarX2 } from "lucide-react";
-import { parseISO, format, endOfDay, startOfDay, isSameMonth } from "date-fns";
+import { format, endOfDay, startOfDay, isSameMonth } from "date-fns";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { IEvent } from "../../types";
 import { useCalendar } from "../../contexts";
 import { AgendaDayGroup } from "./agenda-day-group";
+import type { IListAppointmentsSchema } from "@reservo/types";
 
 type CalendarAgendaViewProps = {
-  singleDayEvents: IEvent[];
-  multiDayEvents: IEvent[];
+  singleDayAppointments: IListAppointmentsSchema.GetResponse["data"];
+  multiDayAppointments: IListAppointmentsSchema.GetResponse["data"];
 };
 
 export function CalendarAgendaView({
-  singleDayEvents,
-  multiDayEvents,
+  singleDayAppointments,
+  multiDayAppointments,
 }: CalendarAgendaViewProps) {
   const { selectedDate } = useCalendar();
 
   const eventsByDay = useMemo(() => {
     const allDates = new Map<
       string,
-      { date: Date; events: IEvent[]; multiDayEvents: IEvent[] }
+      {
+        date: Date;
+        appointments: IListAppointmentsSchema.GetResponse["data"];
+        multiDayAppointments: IListAppointmentsSchema.GetResponse["data"];
+      }
     >();
 
-    singleDayEvents.forEach((event) => {
-      const eventDate = parseISO(event.startDate);
+    singleDayAppointments.forEach((appointment) => {
+      const eventDate = appointment.startsAt;
       if (!isSameMonth(eventDate, selectedDate)) return;
 
       const dateKey = format(eventDate, "yyyy-MM-dd");
@@ -33,20 +37,20 @@ export function CalendarAgendaView({
       if (!allDates.has(dateKey)) {
         allDates.set(dateKey, {
           date: startOfDay(eventDate),
-          events: [],
-          multiDayEvents: [],
+          appointments: [],
+          multiDayAppointments: [],
         });
       }
 
-      allDates.get(dateKey)?.events.push(event);
+      allDates.get(dateKey)?.appointments.push(appointment);
     });
 
-    multiDayEvents.forEach((event) => {
-      const eventStart = parseISO(event.startDate);
-      const eventEnd = parseISO(event.endDate);
+    multiDayAppointments.forEach((appointment) => {
+      const appointmentStart = appointment.startsAt;
+      const appointmentEnd = appointment.endsAt;
 
-      let currentDate = startOfDay(eventStart);
-      const lastDate = endOfDay(eventEnd);
+      let currentDate = startOfDay(appointmentStart);
+      const lastDate = endOfDay(appointmentEnd);
 
       while (currentDate <= lastDate) {
         if (isSameMonth(currentDate, selectedDate)) {
@@ -55,12 +59,12 @@ export function CalendarAgendaView({
           if (!allDates.has(dateKey)) {
             allDates.set(dateKey, {
               date: new Date(currentDate),
-              events: [],
-              multiDayEvents: [],
+              appointments: [],
+              multiDayAppointments: [],
             });
           }
 
-          allDates.get(dateKey)?.multiDayEvents.push(event);
+          allDates.get(dateKey)?.multiDayAppointments.push(appointment);
         }
         currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
       }
@@ -69,20 +73,21 @@ export function CalendarAgendaView({
     return Array.from(allDates.values()).sort(
       (a, b) => a.date.getTime() - b.date.getTime(),
     );
-  }, [singleDayEvents, multiDayEvents, selectedDate]);
+  }, [singleDayAppointments, multiDayAppointments, selectedDate]);
 
-  const hasAnyEvents = singleDayEvents.length > 0 || multiDayEvents.length > 0;
+  const hasAnyEvents =
+    singleDayAppointments.length > 0 || multiDayAppointments.length > 0;
 
   return (
-    <div className="h-[800px]">
+    <div className="h-200">
       <ScrollArea className="h-full" type="always">
         <div className="space-y-6 p-4">
           {eventsByDay.map((dayGroup) => (
             <AgendaDayGroup
               key={format(dayGroup.date, "yyyy-MM-dd")}
               date={dayGroup.date}
-              events={dayGroup.events}
-              multiDayEvents={dayGroup.multiDayEvents}
+              appointments={dayGroup.appointments}
+              multiDayAppointments={dayGroup.multiDayAppointments}
             />
           ))}
 

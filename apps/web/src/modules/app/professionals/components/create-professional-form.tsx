@@ -19,6 +19,8 @@ import { Controller, useFormContext } from "react-hook-form";
 import { useListUsersQuery } from "../../users/hooks";
 import { useListServicesQuery } from "../../services/hooks";
 import { MultiSelect } from "@/components/ui/multiple-select";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Phone, UserRound } from "lucide-react";
 
 export function CreateProfessionalForm() {
   const form = useFormContext<ICreateProfessionalSchema.GetParams>();
@@ -119,9 +121,26 @@ export function CreateProfessionalForm() {
               </SelectTrigger>
               <SelectContent position="popper">
                 {users?.data?.length ? (
-                  users?.data?.map((user) => (
-                    <SelectItem value={user.member.id}>
-                      {user.user.name}
+                  users?.data?.map(({ user, member }) => (
+                    <SelectItem value={member.id}>
+                      <div className="flex items-center gap-2">
+                        <Avatar>
+                          <AvatarImage src={user.imageUrl ?? undefined} />
+                          <AvatarFallback>
+                            <UserRound className="size-4" />
+                          </AvatarFallback>
+                        </Avatar>
+
+                        <div>
+                          <h5>{user.name}</h5>
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <Phone className="size-3" />
+                            <p className="text-xs">
+                              {user?.phoneNumber ?? "-"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </SelectItem>
                   ))
                 ) : (

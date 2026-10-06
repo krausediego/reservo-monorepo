@@ -16,6 +16,9 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
+import { useListAppointmentsQuery } from "../hooks";
+import { useSearch } from "@tanstack/react-router";
+import { format } from "date-fns";
 
 type CalendarContext = {
   selectedDate: Date;
@@ -52,26 +55,35 @@ const VISIBLE_HOURS = { from: 1, to: 23 };
 export function CalendarProvider({
   children,
   professionals,
-  appointments,
   establishmentAvailability,
   professionalAvailability,
   timezone,
 }: {
   children: React.ReactNode;
   professionals: IListProfessionalsSchema.GetResponse["data"];
-  appointments: IListAppointmentsSchema.GetResponse["data"];
   establishmentAvailability: Availability[];
   professionalAvailability: Availability[];
   timezone: string;
 }) {
+  const { view } = useSearch({ from: "/_app/schedule/" });
+
   const [badgeVariant, setBadgeVariant] = useState<BadgeVariant>("colored");
   const [visibleHours, setVisibleHours] = useState<VisibleHours>(VISIBLE_HOURS);
   const [workingHours, setWorkingHours] = useState<WorkingHours>(WORKING_HOURS);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedUserId, setSelectedUserId] = useState<IUser["id"] | "all">(
-    "all",
-  );
+  const [selectedUserId, setSelectedUserId] = useState<
+    | IListProfessionalsSchema.GetResponse["data"][number]["professional"]["id"]
+    | "all"
+  >("all");
+
+  const { data: appointments } = useListAppointmentsQuery({
+    page: 1,
+    limit: 100,
+    date: format(selectedDate, "yyyy-MM-dd"),
+    view,
+    professionals: selectedUserId === "all" ? undefined : [selectedUserId],
+  });
 
   const handleSelectDate = (date: Date | undefined) => {
     if (!date) return;
@@ -94,8 +106,7 @@ export function CalendarProvider({
         setWorkingHours,
         establishmentAvailability,
         professionalAvailability,
-        // If you go to the refetch approach, you can remove the localEvents and pass the events directly
-        appointments,
+        appointments: appointments?.data ?? [],
         timezone,
       }}
     >

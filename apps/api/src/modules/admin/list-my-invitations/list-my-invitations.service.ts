@@ -75,6 +75,9 @@ export class ListMyInvitationsService
       where: {
         email: user.email,
         status: "PENDING",
+        expiresAt: {
+          gte: new Date(),
+        },
       },
     });
 

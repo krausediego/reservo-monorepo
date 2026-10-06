@@ -9,7 +9,9 @@ export async function listServicesApi(
     {
       params: {
         ...params,
-        professionals: params.professionals?.join(","),
+        professionals: Array.isArray(params.professionals)
+          ? params.professionals?.join(",")
+          : params.professionals,
       },
     },
   );

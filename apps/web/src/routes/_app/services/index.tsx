@@ -14,6 +14,14 @@ import z from "zod";
 
 const servicesSearchSchema = z.object({
   name: z.string().optional(),
+  professionals: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      if (Array.isArray(val)) return val.join(",");
+      return val;
+    }),
 });
 
 export const Route = createFileRoute("/_app/services/")({

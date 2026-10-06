@@ -6,7 +6,12 @@ export async function listAppointmentsApi(
 ): Promise<IListAppointmentsSchema.GetResponse> {
   const { data } = await clientAPI.get<IListAppointmentsSchema.GetResponse>(
     "/appointments",
-    { params },
+    {
+      params: {
+        ...params,
+        professionals: params.professionals?.join(","),
+      },
+    },
   );
 
   return {

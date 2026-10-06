@@ -7,6 +7,6 @@ export function useListAppointmentsQuery(
 ) {
   return useQuery({
     queryFn: () => listAppointmentsApi(params),
-    queryKey: ["appointments"],
+    queryKey: ["appointments", params],
   });
 }

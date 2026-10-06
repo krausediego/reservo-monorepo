@@ -1,15 +1,16 @@
 import { z } from "zod";
-import {
-  isoWithTimezone,
-  paginatedResponse,
-  paginationQuerySchema,
-} from "../helpers";
+import { paginatedResponse, paginationQuerySchema } from "../helpers";
 import { APPOINTMENT_STATUS, appointmentSchema } from "./appointment.schemas";
 
 export const listAppointmentsSchema = z.object({
   query: paginationQuerySchema.extend({
-    startsAt: isoWithTimezone,
-    endsAt: isoWithTimezone,
+    date: z.string(),
+    view: z.union([
+      z.literal("day"),
+      z.literal("week"),
+      z.literal("month"),
+      z.literal("agenda"),
+    ]),
     professionals: z
       .union([z.string(), z.array(z.string())])
       .transform((val) => (Array.isArray(val) ? val : val.split(",")))

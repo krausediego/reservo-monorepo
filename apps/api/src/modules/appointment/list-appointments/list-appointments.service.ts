@@ -5,6 +5,7 @@ import {
   setDatabaseContext,
   getPaginationOffset,
   buildPaginationMeta,
+  getRangeAppointment,
 } from "@/helpers";
 import type { ILoggingManager, IDatabase } from "@/infra";
 import { BaseDatabaseService } from "@/modules/shared";
@@ -36,10 +37,10 @@ export class ListAppointmentsService
 
     const where: AppointmentsWhereInput = {
       startsAt: {
-        lt: params.endsAt,
+        lt: getRangeAppointment(params.view, params.date).endsAt,
       },
       endsAt: {
-        gt: params.startsAt,
+        gt: getRangeAppointment(params.view, params.date).startsAt,
       },
       status: {
         in: params.status,

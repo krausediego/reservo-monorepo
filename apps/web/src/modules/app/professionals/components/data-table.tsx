@@ -13,7 +13,7 @@ export function ProfessionalsDataTable() {
   const { data } = useListProfessionalsSuspenseQuery({
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
-    orderBy: "desc",
+    orderBy: "asc",
   });
 
   const table = useTable({

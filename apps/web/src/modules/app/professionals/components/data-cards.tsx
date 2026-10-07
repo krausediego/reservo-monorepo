@@ -13,11 +13,16 @@ export function ProfessionalsDataCard() {
     pageSize: 10,
   });
 
+  const params = {
+    ...search,
+    services: search.services as unknown as string[],
+  };
+
   const { data } = useListProfessionalsSuspenseQuery({
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
     orderBy: "asc",
-    ...search,
+    ...params,
   });
 
   const table = useTable({

@@ -33,6 +33,16 @@ export class ListProfessionalsService
 
     const where: ProfessionalsWhereInput = {
       deleted: false,
+      isActive: params.isActive,
+      ...(params.services?.length && {
+        professionalServices: {
+          some: {
+            serviceId: {
+              in: params.services,
+            },
+          },
+        },
+      }),
       name: {
         contains: params.name,
         mode: "insensitive",

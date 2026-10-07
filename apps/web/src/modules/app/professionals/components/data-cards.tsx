@@ -4,8 +4,10 @@ import { useListProfessionalsSuspenseQuery } from "../hooks";
 import { professionalsColumns, professionalsFeatures } from "./columns";
 import { DataCards } from "@/components/ui/data-cards";
 import { ProfessionalsCard } from "./card";
+import { useSearch } from "@tanstack/react-router";
 
 export function ProfessionalsDataCard() {
+  const search = useSearch({ from: "/_app/professionals/" });
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -15,6 +17,7 @@ export function ProfessionalsDataCard() {
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
     orderBy: "asc",
+    ...search,
   });
 
   const table = useTable({

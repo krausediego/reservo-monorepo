@@ -10,6 +10,12 @@ import { userSchema } from "../user";
 export const listProfessionalsSchema = z.object({
   query: paginationQuerySchema.extend({
     name: z.string().optional(),
+    isActive: z.stringbool().optional(),
+    services: z
+      .union([z.string(), z.array(z.string())])
+      .transform((val) => (Array.isArray(val) ? val : val.split(",")))
+      .pipe(z.array(z.cuid2()))
+      .optional(),
     orderBy: z
       .union([z.literal("asc"), z.literal("desc")])
       .optional()

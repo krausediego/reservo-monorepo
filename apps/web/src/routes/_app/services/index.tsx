@@ -14,6 +14,7 @@ import z from "zod";
 
 const servicesSearchSchema = z.object({
   name: z.string().optional(),
+  isActive: z.boolean().optional(),
   professionals: z
     .union([z.string(), z.array(z.string())])
     .optional()

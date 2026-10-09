@@ -22,6 +22,8 @@ import { Route as AppUsersIndexRouteImport } from './routes/_app/users/index'
 import { Route as AuthSignInIndexRouteImport } from './routes/_auth/sign-in/index'
 import { Route as AuthSignUpIndexRouteImport } from './routes/_auth/sign-up/index'
 import { Route as OnboardingOnboardingIndexRouteImport } from './routes/_onboarding/onboarding/index'
+import { Route as AppSettingsEstablishmentIndexRouteImport } from './routes/_app/settings/establishment/index'
+import { Route as AppSettingsNotificationsIndexRouteImport } from './routes/_app/settings/notifications/index'
 import { Route as AppSettingsProfileIndexRouteImport } from './routes/_app/settings/profile/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -87,6 +89,18 @@ const OnboardingOnboardingIndexRoute =
     path: '/onboarding/',
     getParentRoute: () => OnboardingLayoutRoute,
   } as any)
+const AppSettingsEstablishmentIndexRoute =
+  AppSettingsEstablishmentIndexRouteImport.update({
+    id: '/establishment/',
+    path: '/establishment/',
+    getParentRoute: () => AppSettingsLayoutRoute,
+  } as any)
+const AppSettingsNotificationsIndexRoute =
+  AppSettingsNotificationsIndexRouteImport.update({
+    id: '/notifications/',
+    path: '/notifications/',
+    getParentRoute: () => AppSettingsLayoutRoute,
+  } as any)
 const AppSettingsProfileIndexRoute = AppSettingsProfileIndexRouteImport.update({
   id: '/profile/',
   path: '/profile/',
@@ -104,6 +118,8 @@ export interface FileRoutesByFullPath {
   '/sign-in/': typeof AuthSignInIndexRoute
   '/sign-up/': typeof AuthSignUpIndexRoute
   '/onboarding/': typeof OnboardingOnboardingIndexRoute
+  '/settings/establishment/': typeof AppSettingsEstablishmentIndexRoute
+  '/settings/notifications/': typeof AppSettingsNotificationsIndexRoute
   '/settings/profile/': typeof AppSettingsProfileIndexRoute
 }
 export interface FileRoutesByTo {
@@ -117,6 +133,8 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInIndexRoute
   '/sign-up': typeof AuthSignUpIndexRoute
   '/onboarding': typeof OnboardingOnboardingIndexRoute
+  '/settings/establishment': typeof AppSettingsEstablishmentIndexRoute
+  '/settings/notifications': typeof AppSettingsNotificationsIndexRoute
   '/settings/profile': typeof AppSettingsProfileIndexRoute
 }
 export interface FileRoutesById {
@@ -134,6 +152,8 @@ export interface FileRoutesById {
   '/_auth/sign-in/': typeof AuthSignInIndexRoute
   '/_auth/sign-up/': typeof AuthSignUpIndexRoute
   '/_onboarding/onboarding/': typeof OnboardingOnboardingIndexRoute
+  '/_app/settings/establishment/': typeof AppSettingsEstablishmentIndexRoute
+  '/_app/settings/notifications/': typeof AppSettingsNotificationsIndexRoute
   '/_app/settings/profile/': typeof AppSettingsProfileIndexRoute
 }
 export interface FileRouteTypes {
@@ -149,6 +169,8 @@ export interface FileRouteTypes {
     | '/sign-in/'
     | '/sign-up/'
     | '/onboarding/'
+    | '/settings/establishment/'
+    | '/settings/notifications/'
     | '/settings/profile/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -162,6 +184,8 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/onboarding'
+    | '/settings/establishment'
+    | '/settings/notifications'
     | '/settings/profile'
   id:
     | '__root__'
@@ -178,6 +202,8 @@ export interface FileRouteTypes {
     | '/_auth/sign-in/'
     | '/_auth/sign-up/'
     | '/_onboarding/onboarding/'
+    | '/_app/settings/establishment/'
+    | '/_app/settings/notifications/'
     | '/_app/settings/profile/'
   fileRoutesById: FileRoutesById
 }
@@ -281,6 +307,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingOnboardingIndexRouteImport
       parentRoute: typeof OnboardingLayoutRoute
     }
+    '/_app/settings/establishment/': {
+      id: '/_app/settings/establishment/'
+      path: '/establishment'
+      fullPath: '/settings/establishment/'
+      preLoaderRoute: typeof AppSettingsEstablishmentIndexRouteImport
+      parentRoute: typeof AppSettingsLayoutRoute
+    }
+    '/_app/settings/notifications/': {
+      id: '/_app/settings/notifications/'
+      path: '/notifications'
+      fullPath: '/settings/notifications/'
+      preLoaderRoute: typeof AppSettingsNotificationsIndexRouteImport
+      parentRoute: typeof AppSettingsLayoutRoute
+    }
     '/_app/settings/profile/': {
       id: '/_app/settings/profile/'
       path: '/profile'
@@ -292,10 +332,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppSettingsLayoutRouteChildren {
+  AppSettingsEstablishmentIndexRoute: typeof AppSettingsEstablishmentIndexRoute
+  AppSettingsNotificationsIndexRoute: typeof AppSettingsNotificationsIndexRoute
   AppSettingsProfileIndexRoute: typeof AppSettingsProfileIndexRoute
 }
 
 const AppSettingsLayoutRouteChildren: AppSettingsLayoutRouteChildren = {
+  AppSettingsEstablishmentIndexRoute: AppSettingsEstablishmentIndexRoute,
+  AppSettingsNotificationsIndexRoute: AppSettingsNotificationsIndexRoute,
   AppSettingsProfileIndexRoute: AppSettingsProfileIndexRoute,
 }
 

@@ -5,6 +5,16 @@ import { LogOut, UserRound } from "lucide-react";
 import { memberRoleToText } from "@/helpers";
 import { authClient } from "@/lib/better-auth";
 import { useNavigate } from "@tanstack/react-router";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 
 export function AppSidebarFooter() {
   const { data } = useMeQuery();
@@ -12,33 +22,50 @@ export function AppSidebarFooter() {
 
   const handleSignOut = async () => {
     await authClient.signOut();
-    navigate({ to: "/sign-in" });
+    navigate({ to: "/sign-in", replace: true });
   };
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton size="lg" onClick={handleSignOut}>
-          <Avatar>
-            <AvatarImage src={data?.user?.imageUrl ?? undefined} />
-            <AvatarFallback>
-              <UserRound className="size-4" />
-            </AvatarFallback>
-          </Avatar>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <SidebarMenuButton size="lg">
+              <Avatar>
+                <AvatarImage src={data?.user?.imageUrl ?? undefined} />
+                <AvatarFallback>
+                  <UserRound className="size-4" />
+                </AvatarFallback>
+              </Avatar>
 
-          <div>
-            <h1 className="text-sm font-medium">{data?.user?.name}</h1>
-            <p className="font-light text-xs text-muted-foreground">
-              {
-                memberRoleToText[
-                  data?.user?.memberRole as keyof typeof memberRoleToText
-                ]
-              }
-            </p>
-          </div>
+              <div>
+                <h1 className="text-sm font-medium">{data?.user?.name}</h1>
+                <p className="font-light text-xs text-muted-foreground">
+                  {
+                    memberRoleToText[
+                      data?.user?.memberRole as keyof typeof memberRoleToText
+                    ]
+                  }
+                </p>
+              </div>
 
-          <LogOut className="text-muted-foreground ml-auto" />
-        </SidebarMenuButton>
+              <LogOut className="text-muted-foreground ml-auto" />
+            </SidebarMenuButton>
+          </AlertDialogTrigger>
+
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Tem certeza que deseja sair?</AlertDialogTitle>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction variant="destructive" onClick={handleSignOut}>
+                Sair
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </SidebarMenuItem>
     </SidebarMenu>
   );

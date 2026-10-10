@@ -1,4 +1,4 @@
-import { useLocation, useRouter } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -10,7 +10,6 @@ import { getMenuList } from "./utils/menu-items";
 
 export function AppSidebarNav() {
   const { pathname } = useLocation();
-  const router = useRouter();
 
   const menuList = getMenuList();
 
@@ -21,16 +20,18 @@ export function AppSidebarNav() {
         {menu.menus.map(({ name, icon: Icon, to }) => (
           <SidebarMenuItem key={name}>
             <SidebarMenuButton
-              onClick={() => router.navigate({ to })}
               variant={
                 pathname.split("/")[1] === to.split("/")[1]
                   ? "secondary"
                   : "default"
               }
               tooltip={name}
+              asChild
             >
-              <Icon />
-              <span>{name}</span>
+              <Link to={to}>
+                <Icon />
+                <span>{name}</span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}

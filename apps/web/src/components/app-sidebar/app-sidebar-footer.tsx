@@ -15,13 +15,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
+import { toast } from "sonner";
 
 export function AppSidebarFooter() {
   const { data } = useMeQuery();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    await authClient.signOut();
+    const { error } = await authClient.signOut();
+
+    if (error) {
+      return toast.error("Ocorreu um erro ao sair.");
+    }
+
     navigate({ to: "/sign-in", replace: true });
   };
 

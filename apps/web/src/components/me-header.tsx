@@ -11,7 +11,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Bell, LogOut, Settings, User2 } from "lucide-react";
 import { memberRoleToText } from "@/helpers";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@/lib/better-auth";
 import {
   AlertDialog,
@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
 } from "./ui/alert-dialog";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function MeHeader() {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +32,12 @@ export function MeHeader() {
   const { data } = useMeQuery();
 
   const handleSignOut = async () => {
-    await authClient.signOut();
+    const { error } = await authClient.signOut();
+
+    if (error) {
+      return toast.error("Ocorreu um erro ao sair.");
+    }
+
     navigate({ to: "/sign-in", replace: true });
   };
 
@@ -50,38 +56,37 @@ export function MeHeader() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-40">
           <DropdownMenuGroup>
-            <DropdownMenuItem
-              className="focus:bg-transparent"
-              onClick={() => navigate({ to: "/settings/profile" })}
-            >
-              <div>
-                <h1 className="text-sm font-medium">{data?.user?.name}</h1>
-                <p className="font-light text-xs text-muted-foreground">
-                  {
-                    memberRoleToText[
-                      data?.user?.memberRole as keyof typeof memberRoleToText
-                    ]
-                  }
-                </p>
-              </div>
+            <DropdownMenuItem className="focus:bg-transparent" asChild>
+              <Link to="/settings/profile">
+                <div>
+                  <h1 className="text-sm font-medium">{data?.user?.name}</h1>
+                  <p className="font-light text-xs text-muted-foreground">
+                    {
+                      memberRoleToText[
+                        data?.user?.memberRole as keyof typeof memberRoleToText
+                      ]
+                    }
+                  </p>
+                </div>
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
 
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem
-              onClick={() => navigate({ to: "/settings/establishment" })}
-            >
-              <Settings />
-              Configurações
+            <DropdownMenuItem asChild>
+              <Link to="/settings/establishment">
+                <Settings />
+                Configurações
+              </Link>
             </DropdownMenuItem>
 
-            <DropdownMenuItem
-              onClick={() => navigate({ to: "/settings/notifications" })}
-            >
-              <Bell />
-              Notificações
+            <DropdownMenuItem asChild>
+              <Link to="/settings/notifications">
+                <Bell />
+                Notificações
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
 

@@ -6,6 +6,7 @@ import {
   ServicesDataCard,
   ServicesDataTable,
   ServicesFilters,
+  ServicesOverview,
   ServicesPageActions,
 } from "@/modules/app/services/components";
 import { createFileRoute } from "@tanstack/react-router";
@@ -23,6 +24,10 @@ const servicesSearchSchema = z.object({
       if (Array.isArray(val)) return val.join(",");
       return val;
     }),
+  orderBy: z
+    .union([z.literal("asc"), z.literal("desc")])
+    .optional()
+    .default("desc"),
 });
 
 export const Route = createFileRoute("/_app/services/")({
@@ -39,6 +44,8 @@ function RouteComponent() {
         description="Crie serviços e atribua a seus profissionais "
         action={<ServicesPageActions />}
       >
+        <ServicesOverview />
+
         <ServicesFilters />
 
         <TabsContent value="card">

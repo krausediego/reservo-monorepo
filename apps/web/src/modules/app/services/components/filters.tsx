@@ -1,6 +1,7 @@
 import { DataFilters } from "@/components/ui/data-filters";
 import type { FilterDefinition } from "@/types";
 import { useListProfessionalsQuery } from "../../professionals/hooks";
+import { ListSortAscending, ListSortDescending } from "lucide-react";
 
 export function ServicesFilters() {
   const { data: professionals } = useListProfessionalsQuery({
@@ -38,6 +39,15 @@ export function ServicesFilters() {
       key: "professionals",
       title: "Profissional",
       options: PROFESSIONAL_OPTIONS ?? [],
+    },
+    {
+      type: "select",
+      key: "orderBy",
+      title: "...",
+      options: [
+        { label: "Mais recentes", value: "desc", icon: ListSortDescending },
+        { label: "Mais antigos", value: "asc", icon: ListSortAscending },
+      ],
     },
   ];
 

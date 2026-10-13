@@ -17,6 +17,8 @@ function emptyValue(def: FilterDefinition): FilterValue {
       return String(def.defaultValue ?? def.options[0]?.value ?? "");
     case "search":
       return "";
+    case "select":
+      return String(def.options[0]?.value ?? "");
   }
 }
 
@@ -137,7 +139,8 @@ export function useUrlFilters(definitions: FilterDefinition[]) {
   const isFiltered = definitions.some(
     (d) =>
       isResettable(d) &&
-      (!isEmpty(d, values[d.key]) || !isEmpty(d, urlValues[d.key])),
+      (!isEmpty(d, values[d.key]) || !isEmpty(d, urlValues[d.key])) &&
+      d.key !== "orderBy",
   );
 
   return { values, setFilter, reset, isFiltered };

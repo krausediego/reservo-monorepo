@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ServicesActions } from "./actions";
 import { formatCents, minutesToTime } from "@/helpers";
-import { Clock } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
@@ -23,7 +23,7 @@ export function ServicesCard({ row }: ServicesCardProps) {
   return (
     <div
       className={cn(
-        "relative flex flex-col justify-between rounded-lg gap-8 border p-4 shadow-sm transition-colors hover:border-foreground/30",
+        "relative flex flex-col justify-between rounded-lg gap-8 p-4 shadow-sm transition-colors",
         row.getIsSelected() ? "border-primary bg-primary/5" : "bg-card",
       )}
     >
@@ -45,23 +45,27 @@ export function ServicesCard({ row }: ServicesCardProps) {
         <ServicesActions service={item} />
       </div>
       <div className="space-y-4">
-        <div className="flex justify-between">
-          <h4 className="text-xl font-bold">{formatCents(item.priceCents)}</h4>
+        <div className="flex justify-between bg-muted p-4 items-end rounded-md">
+          <div className="space-y-1">
+            <h1 className="text-muted-foreground">Valor do Serviço</h1>
+            <h4 className="text-xl font-bold">
+              {formatCents(item.priceCents)}
+            </h4>
+          </div>
 
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Clock className="size-3" />
+          <div className="flex items-center gap-1.5 rounded-md text-muted-foreground bg-background/40 p-1.5">
+            <Clock className="size-4" />
             <p>{minutesToTime(item.durationMinutes)}</p>
           </div>
         </div>
-
-        <Separator />
 
         <div className="flex items-center justify-between">
           <Badge variant={item.isActive ? "success" : "destructive"}>
             {item.isActive ? "Ativo" : "Inativo"}
           </Badge>
 
-          <p className="text-muted-foreground">
+          <p className="flex items-center gap-1.5 text-muted-foreground">
+            <Calendar className="size-4" />
             {format(item.createdAt, "dd/MM/yyyy")}
           </p>
         </div>

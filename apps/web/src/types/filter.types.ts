@@ -1,6 +1,9 @@
+import type { LucideIcon } from "lucide-react";
+
 export type FilterOption = {
   label: string;
   value: string;
+  icon?: LucideIcon;
 };
 
 export type SearchFilterDef = {
@@ -12,6 +15,13 @@ export type SearchFilterDef = {
 
 export type FacetedFilterDef = {
   type: "faceted";
+  key: string;
+  title: string;
+  options: FilterOption[];
+};
+
+export type SelectFilterDef = {
+  type: "select";
   key: string;
   title: string;
   options: FilterOption[];
@@ -34,7 +44,8 @@ export type TabsFilterDef = {
 export type FilterDefinition =
   | SearchFilterDef
   | FacetedFilterDef
-  | TabsFilterDef;
+  | TabsFilterDef
+  | SelectFilterDef;
 
 export type FilterValue = string | string[];
 

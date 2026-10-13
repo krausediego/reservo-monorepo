@@ -2,18 +2,26 @@ import type { FilterDefinition, FilterValue } from "@/types";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./input-group";
 import { Search, X } from "lucide-react";
 import { FacetedFilter } from "./faceted-filter";
-import { useUrlFilters } from "@/hooks";
+import { useIsMobile, useUrlFilters } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { Tabs, TabsList, TabsTrigger } from "./tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./select";
 
 type FilterFieldProps = {
   def: FilterDefinition;
   onChange: (value: FilterValue) => void;
   value?: FilterValue;
+  isMobile?: boolean;
 };
 
-function FilterField({ def, onChange, value }: FilterFieldProps) {
+function FilterField({ def, onChange, value, isMobile }: FilterFieldProps) {
   switch (def.type) {
     case "search":
       return (
@@ -55,6 +63,29 @@ function FilterField({ def, onChange, value }: FilterFieldProps) {
         </Tabs>
       );
 
+    case "select":
+      return (
+        <Select
+          value={typeof value === "string" ? value : undefined}
+          onValueChange={onChange}
+        >
+          <SelectTrigger
+            className={cn(def.key === "orderBy" && !isMobile && "ml-auto")}
+          >
+            <SelectValue />
+          </SelectTrigger>
+
+          <SelectContent position="popper">
+            {def.options.map(({ icon: Icon, ...opt }) => (
+              <SelectItem value={opt.value}>
+                {Icon && <Icon className="size-4" />}
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
+
     default: {
       const _exhaustive: never = def;
       return _exhaustive;
@@ -73,6 +104,7 @@ export function DataFilters({
   resetLabel = "Limpar",
   className,
 }: DataFiltersProps) {
+  const isMobile = useIsMobile();
   const { values, setFilter, reset, isFiltered } = useUrlFilters(definitions);
 
   const tabs = definitions.filter((d) => d.type === "tabs");
@@ -84,6 +116,7 @@ export function DataFilters({
       def={def}
       value={values[def.key]}
       onChange={(value) => setFilter(def.key, value)}
+      isMobile={isMobile}
     />
   );
 
@@ -94,7 +127,7 @@ export function DataFilters({
       )}
 
       {(inline.length > 0 || isFiltered) && (
-        <div className="flex w-full gap-2">
+        <div className="flex flex-wrap w-full gap-2">
           {inline.map(renderField)}
 
           {isFiltered && (

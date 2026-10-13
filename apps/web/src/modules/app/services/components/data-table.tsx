@@ -21,7 +21,6 @@ export function ServicesDataTable() {
   const { data } = useListServicesSuspenseQuery({
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
-    orderBy: "desc",
     ...params,
   });
 

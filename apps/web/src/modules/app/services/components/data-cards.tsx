@@ -11,12 +11,13 @@ export function ServicesDataCard() {
 
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 9,
   });
 
   const params = {
     ...search,
     professionals: search.professionals as unknown as string[],
+    categories: search.categories as unknown as string[],
   };
 
   const { data } = useListServicesSuspenseQuery({

@@ -22,6 +22,7 @@ export const makeDatabase = (): IDatabase => {
       "Members",
       "Invitations",
       "Sessions",
+      "ServiceCategories",
     ]),
     skipAudit: new Set(["AuditLogs", "Invitations", "Members", "Sessions"]),
   });

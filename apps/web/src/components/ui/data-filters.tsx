@@ -33,6 +33,7 @@ function FilterField({ def, onChange, value, isMobile }: FilterFieldProps) {
             placeholder={def.placeholder}
             value={typeof value === "string" ? value : ""}
             onChange={(e) => onChange(e.target.value)}
+            className={cn(isMobile && "w-full")}
           />
         </InputGroup>
       );
@@ -69,9 +70,7 @@ function FilterField({ def, onChange, value, isMobile }: FilterFieldProps) {
           value={typeof value === "string" ? value : undefined}
           onValueChange={onChange}
         >
-          <SelectTrigger
-            className={cn(def.key === "orderBy" && !isMobile && "ml-auto")}
-          >
+          <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
 
@@ -108,7 +107,10 @@ export function DataFilters({
   const { values, setFilter, reset, isFiltered } = useUrlFilters(definitions);
 
   const tabs = definitions.filter((d) => d.type === "tabs");
-  const inline = definitions.filter((d) => d.type !== "tabs");
+  const orderBy = definitions.find((d) => d.key === "orderBy");
+  const inline = definitions.filter(
+    (d) => d.type !== "tabs" && d.key !== "orderBy",
+  );
 
   const renderField = (def: FilterDefinition) => (
     <FilterField
@@ -121,13 +123,13 @@ export function DataFilters({
   );
 
   return (
-    <div className={cn("flex flex-col w-full gap-3", className)}>
+    <div className={cn("flex w-full flex-col gap-3", className)}>
       {tabs.length > 0 && (
         <div className="flex gap-2">{tabs.map(renderField)}</div>
       )}
 
-      {(inline.length > 0 || isFiltered) && (
-        <div className="flex flex-wrap w-full gap-2">
+      {(inline.length > 0 || orderBy || isFiltered) && (
+        <div className="flex w-full flex-wrap items-center gap-2">
           {inline.map(renderField)}
 
           {isFiltered && (
@@ -135,6 +137,12 @@ export function DataFilters({
               {resetLabel}
               <X />
             </Button>
+          )}
+
+          {orderBy && (
+            <div className={cn(!isMobile && "ml-auto")}>
+              {renderField(orderBy)}
+            </div>
           )}
         </div>
       )}

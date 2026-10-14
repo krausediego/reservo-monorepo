@@ -3,3 +3,4 @@ export * from "./create-service.api";
 export * from "./remove-service.api";
 export * from "./update-service.api";
 export * from "./overview-service.api";
+export * from "./list-categories-service.api";

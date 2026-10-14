@@ -27,7 +27,7 @@ export function ServicesPageActions() {
           </Button>
         </DialogTrigger>
 
-        <DialogContent className="lg:min-w-lg">
+        <DialogContent className="md:min-w-2xl lg:min-w-4xl">
           <CreateServiceDialog />
         </DialogContent>
       </Dialog>

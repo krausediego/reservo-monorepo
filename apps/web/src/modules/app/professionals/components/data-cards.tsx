@@ -10,7 +10,7 @@ export function ProfessionalsDataCard() {
   const search = useSearch({ from: "/_app/professionals/" });
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 9,
   });
 
   const params = {

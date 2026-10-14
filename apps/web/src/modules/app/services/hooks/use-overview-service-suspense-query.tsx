@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { servicesKeys } from "../services.keys";
 import { overviewServiceApi } from "../api";
 
-export function useOverviewServiceQuery() {
-  return useQuery({
+export function useOverviewServiceSuspenseQuery() {
+  return useSuspenseQuery({
     queryKey: servicesKeys.overview(),
     queryFn: overviewServiceApi,
   });

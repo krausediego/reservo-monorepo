@@ -16,6 +16,7 @@ export function ServicesDataTable() {
   const params = {
     ...search,
     professionals: search.professionals as unknown as string[],
+    categories: search.categories as unknown as string[],
   };
 
   const { data } = useListServicesSuspenseQuery({

@@ -2,7 +2,9 @@ import { Router } from "express";
 
 import { makeCreateServiceController } from "@/modules/service/create-service";
 import { makeGetServiceController } from "@/modules/service/get-service";
+import { makeListCategoriesServiceController } from "@/modules/service/list-categories-service";
 import { makeListServicesController } from "@/modules/service/list-services";
+import { makeOverviewServiceController } from "@/modules/service/overview-service";
 import { makeRemoveServiceController } from "@/modules/service/remove-service";
 import { makeUpdateServiceController } from "@/modules/service/update-service";
 import {
@@ -65,5 +67,17 @@ export default (router: Router) => {
     enforceAccess("WRITE"),
     validateRequest(removeServiceSchema),
     adaptRoute(makeRemoveServiceController()),
+  );
+
+  router.get(
+    "/service-overview",
+    authAdmin,
+    adaptRoute(makeOverviewServiceController()),
+  );
+
+  router.get(
+    "/service-categories",
+    authAdmin,
+    adaptRoute(makeListCategoriesServiceController()),
   );
 };

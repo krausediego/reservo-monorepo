@@ -2,6 +2,7 @@ import { DataFilters } from "@/components/ui/data-filters";
 import type { FilterDefinition } from "@/types";
 import { useListProfessionalsQuery } from "../../professionals/hooks";
 import { ListSortAscending, ListSortDescending } from "lucide-react";
+import { useListCategoriesServiceQuery } from "../hooks";
 
 export function ServicesFilters() {
   const { data: professionals } = useListProfessionalsQuery({
@@ -13,6 +14,16 @@ export function ServicesFilters() {
   const PROFESSIONAL_OPTIONS = professionals?.data?.map(({ professional }) => {
     return { label: professional.name, value: professional.id };
   });
+
+  const { data: categoriesService } = useListCategoriesServiceQuery();
+
+  const CATEGORIES_OPTIONS =
+    categoriesService?.groups.flatMap((group) =>
+      group.categories!.map((category) => ({
+        label: category.name,
+        value: category.id,
+      })),
+    ) ?? [];
 
   const SERVICE_FILTERS: FilterDefinition[] = [
     {
@@ -34,6 +45,12 @@ export function ServicesFilters() {
       ],
     },
     { type: "search", key: "name", placeholder: "Buscar serviços..." },
+    {
+      type: "faceted",
+      key: "categories",
+      title: "Categorias",
+      options: CATEGORIES_OPTIONS ?? [],
+    },
     {
       type: "faceted",
       key: "professionals",

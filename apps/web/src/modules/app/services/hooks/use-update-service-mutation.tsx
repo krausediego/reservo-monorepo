@@ -21,12 +21,14 @@ export function useUpdateServiceMutation() {
 
           return {
             ...cache,
-            data: cache.data.map((data) =>
+            data: cache?.data?.map((data) =>
               data.id === service.id ? service : data,
             ),
           };
         },
       );
+
+      queryClient.resetQueries({ queryKey: servicesKeys.overview() });
     },
     onError: ({ message }) => {
       toast.error(message);

@@ -29,6 +29,8 @@ export function useRemoveServiceMutation() {
           };
         },
       );
+
+      queryClient.resetQueries({ queryKey: servicesKeys.overview() });
     },
     onError: ({ message }) => {
       toast.error(message);

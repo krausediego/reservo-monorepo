@@ -57,6 +57,13 @@ export const servicesColumns: Array<
     header: "Nome",
   },
   {
+    accessorKey: "categoryName",
+    header: "Categoria",
+    cell: ({ row }) => (
+      <Badge variant="secondary">{row.original.categoryName}</Badge>
+    ),
+  },
+  {
     accessorKey: "description",
     header: "Descrição",
     cell: ({ row }) => (

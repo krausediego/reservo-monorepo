@@ -1,6 +1,7 @@
 import { ContentLayout } from "@/components/content-layout";
 import { DataCardsSkeleton } from "@/components/ui/data-cards-skeleton";
 import { DataTableSkeleton } from "@/components/ui/data-table-skeleton";
+import { OverviewSkeleton } from "@/components/ui/overview-skeleton";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   ServicesDataCard,
@@ -17,6 +18,14 @@ const servicesSearchSchema = z.object({
   name: z.string().optional(),
   isActive: z.boolean().optional(),
   professionals: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      if (Array.isArray(val)) return val.join(",");
+      return val;
+    }),
+  categories: z
     .union([z.string(), z.array(z.string())])
     .optional()
     .transform((val) => {
@@ -44,7 +53,9 @@ function RouteComponent() {
         description="Crie serviços e atribua a seus profissionais "
         action={<ServicesPageActions />}
       >
-        <ServicesOverview />
+        <Suspense fallback={<OverviewSkeleton />}>
+          <ServicesOverview />
+        </Suspense>
 
         <ServicesFilters />
 

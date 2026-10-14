@@ -5,4 +5,5 @@ export const servicesKeys = {
   services: (params: IListServicesSchema.GetParams) =>
     [...servicesKeys.all(), { ...params }] as const,
   overview: () => [...servicesKeys.all(), "overview"],
+  categories: () => [...servicesKeys.all(), "categories"],
 };

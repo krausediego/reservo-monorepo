@@ -75,11 +75,15 @@ export const weekDayEnum = {
   6: "Sábado",
 };
 
-export const durationOptions = (
+export const durationOptions = ({
   minMinutes = 5,
   maxMinutes = 3 * 60,
   stepMinutes = 5,
-): Array<{ value: number; label: string }> => {
+}: {
+  minMinutes?: number;
+  maxMinutes?: number;
+  stepMinutes?: number;
+}): Array<{ value: number; label: string }> => {
   const options: Array<{ value: number; label: string }> = [];
 
   for (

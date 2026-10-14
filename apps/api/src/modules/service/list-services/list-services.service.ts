@@ -44,6 +44,11 @@ export class ListServicesService
           },
         },
       }),
+      ...(params.categories?.length && {
+        categoryId: {
+          in: params.categories,
+        },
+      }),
       name: {
         contains: params.name,
         mode: "insensitive",
@@ -52,18 +57,32 @@ export class ListServicesService
 
     const [data, total] = await Promise.all([
       this.db.services.findMany({
+        include: {
+          serviceCategories: {
+            select: {
+              name: true,
+            },
+          },
+        },
         where,
         take: pagination.limit,
         skip: offset,
         orderBy: {
-          name: params.orderBy,
+          createdAt: params.orderBy,
         },
       }),
       this.db.services.count({ where }),
     ]);
 
+    const services = data.map((service) => {
+      return {
+        ...service,
+        categoryName: service.serviceCategories.name,
+      };
+    });
+
     return {
-      data,
+      data: services,
       meta: buildPaginationMeta({ total, ...pagination }),
     };
   }

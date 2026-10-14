@@ -13,15 +13,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CreateServiceForm } from "./create-service-form";
+import { CheckCircle2 } from "lucide-react";
 
 export function CreateServiceDialog() {
   const form = useForm<ICreateServiceSchema.GetParams>({
     resolver: zodResolver(createServiceSchema.shape.body),
     defaultValues: {
       name: "",
+      categoryId: "",
       description: "",
-      durationInMinutes: 10,
+      professionals: [],
+      durationMinutes: 0,
       priceCents: 0,
+      isActive: true,
     },
   });
 
@@ -30,9 +34,10 @@ export function CreateServiceDialog() {
   return (
     <DialogForm form={form} onSubmit={createServiceMutationFn}>
       <DialogHeader>
-        <DialogTitle>Criar um novo serviço</DialogTitle>
+        <DialogTitle>Cadastrar novo serviço</DialogTitle>
         <DialogDescription>
-          Crie um novo serviço e atribua-o a um profissional
+          Preencha as informações do procedimento para disponibilizar no
+          catálogo interno e agendamento online dos clientes
         </DialogDescription>
       </DialogHeader>
 
@@ -42,7 +47,10 @@ export function CreateServiceDialog() {
 
       <DialogFooter>
         <DialogCloseButton>Cancelar</DialogCloseButton>
-        <DialogSubmitButton>Criar serviço</DialogSubmitButton>
+        <DialogSubmitButton>
+          <CheckCircle2 />
+          Salvar e ativar serviço
+        </DialogSubmitButton>
       </DialogFooter>
     </DialogForm>
   );

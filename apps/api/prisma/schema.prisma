@@ -84,6 +84,19 @@ model Verifications {
   @@map("verifications")
 }
 
+model ServiceCategories {
+  id       String               @id @default(cuid())
+  slug     String               @unique
+  name     String
+  group    ServiceCategoryGroup
+  icon     String?
+  isActive Boolean              @default(true) @map("is_active")
+
+  services Services[]
+
+  @@map("service_categories")
+}
+
 // ---- WITH ORGANIZATION -------------------------------------------------------------------------------
 
 model Organizations {
@@ -262,6 +275,7 @@ model Professionals {
 model Services {
   id             String @id @default(cuid())
   organizationId String @map("organization_id")
+  categoryId     String @map("category_id")
 
   name            String
   description     String
@@ -274,6 +288,7 @@ model Services {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   organizations               Organizations                @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  serviceCategories           ServiceCategories            @relation(fields: [categoryId], references: [id])
   professionalServices        ProfessionalServices[]
   professionalCommissionRules ProfessionalCommissionRule[]
   commissionEntries           CommissionEntry[]
@@ -530,4 +545,13 @@ enum CommissionEntryStatus {
   PENDING // atendimento concluído, comissão devida
   PAID // repassada ao profissional (fechamento)
   REVERSED // atendimento estornado/cancelado após conclusão
+}
+
+enum ServiceCategoryGroup {
+  HAIR
+  BEARD
+  FACE
+  NAILS
+  BODY
+  OTHER
 }

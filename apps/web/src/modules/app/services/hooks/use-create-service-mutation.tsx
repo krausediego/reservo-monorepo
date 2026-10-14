@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createServiceApi } from "../api";
 import { toast } from "sonner";
-import type { IListServicesSchema } from "@reservo/types";
 import { servicesKeys } from "../services.keys";
 
 export function useCreateServiceMutation() {
@@ -9,24 +8,10 @@ export function useCreateServiceMutation() {
 
   return useMutation({
     mutationFn: createServiceApi,
-    onSuccess: ({ service }) => {
+    onSuccess: () => {
       toast.success("Serviço criado com sucesso");
 
-      queryClient.setQueriesData<IListServicesSchema.GetResponse>(
-        {
-          queryKey: servicesKeys.all(),
-        },
-        (cache) => {
-          if (!cache) return cache;
-
-          return {
-            ...cache,
-            data: [service, ...cache.data],
-          };
-        },
-      );
-
-      queryClient.invalidateQueries({ queryKey: servicesKeys.all() });
+      queryClient.resetQueries({ queryKey: servicesKeys.all() });
     },
     onError: ({ message }) => {
       toast.error(message);

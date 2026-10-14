@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch --tsconfig tsconfig.json src/server.ts | pino-pretty --messageKey message --ignore severity",
     "generate": "tsx scripts/generate-module.ts",
+    "seed": "tsx --tsconfig tsconfig.json src/infra/database/seed",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",

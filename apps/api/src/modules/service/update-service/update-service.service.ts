@@ -38,6 +38,7 @@ export class UpdateServiceService
     const service = await this.db.services.update({
       data: {
         name: params.name,
+        categoryId: params.categoryId,
         description: params.description,
         durationMinutes: params.durationMinutes,
         priceCents: params.priceCents,

@@ -11,6 +11,11 @@ export const listServicesSchema = z.object({
       .transform((val) => (Array.isArray(val) ? val : val.split(",")))
       .pipe(z.array(z.cuid2()))
       .optional(),
+    categories: z
+      .union([z.string(), z.array(z.string())])
+      .transform((val) => (Array.isArray(val) ? val : val.split(",")))
+      .pipe(z.array(z.cuid2()))
+      .optional(),
     orderBy: z
       .union([z.literal("asc"), z.literal("desc")])
       .optional()
@@ -18,4 +23,8 @@ export const listServicesSchema = z.object({
   }),
 });
 
-export const listServicesResponseSchema = paginatedResponse(serviceSchema);
+export const listServicesResponseSchema = paginatedResponse(
+  serviceSchema.extend({
+    categoryName: z.string(),
+  }),
+);

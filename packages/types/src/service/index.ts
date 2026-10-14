@@ -3,3 +3,5 @@ export * from "./list-services.types";
 export * from "./get-service.types";
 export * from "./update-service.types";
 export * from "./remove-service.types";
+export * from "./overview-service.types";
+export * from "./list-categories-service.types";

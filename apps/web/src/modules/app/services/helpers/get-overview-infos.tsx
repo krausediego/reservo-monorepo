@@ -29,7 +29,11 @@ export function getOverviewInfos(
   const formattedPercentActive = new Intl.NumberFormat("pt-BR", {
     style: "percent",
     maximumFractionDigits: 1,
-  }).format(overview.totalActiveServices / overview.totalServices);
+  }).format(
+    overview.totalServices
+      ? overview.totalActiveServices / overview.totalServices
+      : 0,
+  );
 
   return [
     {

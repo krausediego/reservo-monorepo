@@ -76,7 +76,7 @@ function FilterField({ def, onChange, value, isMobile }: FilterFieldProps) {
 
           <SelectContent position="popper">
             {def.options.map(({ icon: Icon, ...opt }) => (
-              <SelectItem value={opt.value}>
+              <SelectItem key={opt.value} value={opt.value}>
                 {Icon && <Icon className="size-4" />}
                 {opt.label}
               </SelectItem>

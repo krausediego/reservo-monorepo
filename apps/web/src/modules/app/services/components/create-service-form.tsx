@@ -157,7 +157,7 @@ export function CreateServiceForm() {
                 type="single"
                 variant="outline"
                 value={String(field.value)}
-                onValueChange={(e) => field.onChange(parseInt(e))}
+                onValueChange={(e) => e && field.onChange(Number(e))}
                 className="flex flex-wrap"
               >
                 {durationOptions({ stepMinutes: 15, maxMinutes: 2 * 60 }).map(

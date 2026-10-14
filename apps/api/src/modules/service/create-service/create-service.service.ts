@@ -20,20 +20,22 @@ export class CreateServiceService
   async run(params: CreateService.Params): Promise<CreateService.Response> {
     this.log("info", "Starting process create-service");
 
+    const professionalIds = [...new Set(params.professionals)];
+
     const allProfessionalExists = await this.db.professionals.findMany({
       select: {
         id: true,
       },
       where: {
         id: {
-          in: params.professionals,
+          in: professionalIds,
         },
         isActive: true,
         deleted: false,
       },
     });
 
-    if (allProfessionalExists.length !== params.professionals.length) {
+    if (allProfessionalExists.length !== professionalIds.length) {
       this.log("warn", "One or more informed professionals do not exist.");
       throw new ConflictError(
         "Um ou mais profissionais informados não existem",

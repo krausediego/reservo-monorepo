@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { CreateProfessionalDialog } from "./create-professional-dialog";
 
 export function ProfessionalsPageActions() {
@@ -18,7 +18,7 @@ export function ProfessionalsPageActions() {
       <Dialog>
         <DialogTrigger asChild>
           <Button>
-            <Plus />
+            <UserPlus />
             Adicionar profissional
           </Button>
         </DialogTrigger>

@@ -2,6 +2,7 @@ import { z } from "zod";
 import { paginatedResponse, paginationQuerySchema } from "../helpers";
 import {
   professionalAvailabilitiesSchema,
+  professionalRatingStats,
   professionalSchema,
 } from "./professional.schemas";
 import { serviceSchema } from "../service";
@@ -30,6 +31,10 @@ export const listProfessionalsResponseSchema = paginatedResponse(
         email: true,
         phoneNumber: true,
       }),
+    }),
+    rating: professionalRatingStats.pick({
+      reviewCount: true,
+      ratingAvg: true,
     }),
     availabilities: z.array(professionalAvailabilitiesSchema),
     services: z.array(serviceSchema.pick({ id: true, name: true })),

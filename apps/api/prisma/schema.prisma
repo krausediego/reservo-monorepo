@@ -125,6 +125,7 @@ model Organizations {
   establishmentAvailabilities     EstablishmentAvailabilities[]
   customers                       Customers[]
   appointments                    Appointments[]
+  reviews                         Reviews[]
 
   @@map("organizations")
 }
@@ -143,6 +144,7 @@ model Members {
   organizations Organizations  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   professionals Professionals?
   appointments  Appointments[]
+  reviews       Reviews[]
 
   @@index([organizationId])
   @@index([userId])
@@ -268,6 +270,8 @@ model Professionals {
   professionalCommissionRules ProfessionalCommissionRule[]
   commissionEntries           CommissionEntry[]
   appointments                Appointments[]
+  reviews                     Reviews[]
+  professionalRatingStats     ProfessionalRatingStats?
 
   @@map("professionals")
 }
@@ -351,6 +355,7 @@ model Customers {
   organizations Organizations  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   users         Users?         @relation(fields: [userId], references: [id], onDelete: SetNull)
   appointments  Appointments[]
+  reviews       Reviews[]
 
   @@unique([organizationId, userId])
   @@unique([organizationId, phone])
@@ -389,11 +394,62 @@ model Appointments {
   professional Professionals @relation(fields: [professionalId], references: [id])
   service      Services      @relation(fields: [serviceId], references: [id])
   createdBy    Members?      @relation(fields: [createdById], references: [id])
+  reviews      Reviews[]
 
   @@index([professionalId, startsAt])
   @@index([organizationId, startsAt])
   @@index([customerId, startsAt])
   @@map("appointments")
+}
+
+model Reviews {
+  id             String @id @default(cuid())
+  organizationId String @map("organization_id")
+  professionalId String @map("professional_id")
+  customerId     String @map("customer_id")
+  appointmentId  String @map("appointment_id")
+
+  rating  Int
+  comment String? @db.VarChar(1000)
+
+  reply       String?   @db.VarChar(1000)
+  repliedAt   DateTime? @map("replied_at")
+  repliedById String?   @map("replied_by_id") // Member
+
+  isPublic  Boolean  @default(true) @map("is_public")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  professionals Professionals @relation(fields: [professionalId], references: [id])
+  customers     Customers     @relation(fields: [customerId], references: [id])
+  appointments  Appointments  @relation(fields: [appointmentId], references: [id])
+  repliedBy     Members?      @relation(fields: [repliedById], references: [id])
+
+  @@index([professionalId, createdAt])
+  @@index([organizationId, createdAt])
+  @@index([customerId])
+  @@map("reviews")
+}
+
+model ProfessionalRatingStats {
+  id             String @id @default(cuid())
+  professionalId String @unique @map("professional_id")
+
+  reviewCount Int     @default(0) @map("review_count")
+  ratingSum   Int     @default(0) @map("rating_sum")
+  ratingAvg   Decimal @default(0) @map("rating_avg") @db.Decimal(3, 2)
+  rating1     Int     @default(0) @map("rating_1")
+  rating2     Int     @default(0) @map("rating_2")
+  rating3     Int     @default(0) @map("rating_3")
+  rating4     Int     @default(0) @map("rating_4")
+  rating5     Int     @default(0) @map("rating_5")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@map("professional_rating_stats")
 }
 
 model EstablishmentCommissionDefault {

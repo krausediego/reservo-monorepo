@@ -73,6 +73,12 @@ export class ListProfessionalsService
               },
             },
           },
+          professionalRatingStats: {
+            select: {
+              reviewCount: true,
+              ratingAvg: true,
+            },
+          },
         },
         where,
         take: pagination.limit,
@@ -92,9 +98,11 @@ export class ListProfessionalsService
           members,
           ...professional
         }) => {
+          const { professionalRatingStats, ...restProfessional } = professional;
+
           return {
             professional: {
-              ...professional,
+              ...restProfessional,
               user: {
                 email: members.users.email,
                 phoneNumber: members.users.phoneNumber,
@@ -106,6 +114,10 @@ export class ListProfessionalsService
                     key: professional.avatarStorageKey,
                   })
                   .catch(() => null)),
+            },
+            rating: {
+              reviewCount: professionalRatingStats?.reviewCount ?? 0,
+              ratingAvg: professionalRatingStats?.ratingAvg.toNumber() ?? 0,
             },
             availabilities: professionalAvailabilities,
             services: professionalServices.map((ps) => ps.services),

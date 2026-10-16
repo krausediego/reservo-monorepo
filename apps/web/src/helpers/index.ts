@@ -6,3 +6,4 @@ export * from "./time-conversion";
 export * from "./input-masks";
 export * from "./member-role-to-text";
 export * from "./currency";
+export * from "./format-availability";

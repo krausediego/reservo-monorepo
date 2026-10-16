@@ -23,3 +23,17 @@ export const professionalAvailabilitiesSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
 });
+
+export const professionalRatingStats = z.object({
+  id: z.cuid2(),
+  professionalId: z.cuid2(),
+  reviewCount: z.number(),
+  ratingSum: z.number(),
+  ratingAvg: z.number(),
+  rating1: z.number(),
+  rating2: z.number(),
+  rating3: z.number(),
+  rating4: z.number(),
+  rating5: z.number(),
+  updatedAt: z.date(),
+});

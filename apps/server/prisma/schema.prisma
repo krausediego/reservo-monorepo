@@ -1,0 +1,615 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  runtime      = "bun"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Users {
+  id                  String   @id @default(cuid())
+  name                String
+  email               String   @unique
+  emailVerified       Boolean  @default(false) @map("email_verified")
+  role                UserRole @default(CLIENT)
+  image               String?
+  phoneNumber         String?  @unique @map("phone_number")
+  phoneNumberVerified Boolean? @map("phone_number_verified")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sessions    Sessions[]
+  accounts    Accounts[]
+  members     Members[]
+  invitations Invitations[]
+  customers   Customers[]
+
+  @@map("users")
+}
+
+model Sessions {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  expiresAt            DateTime @map("expires_at")
+  token                String   @unique
+  ipAddress            String?  @map("ip_address")
+  userAgent            String?  @map("user_agent")
+  activeOrganizationId String?  @map("active_organization_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Accounts {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verifications {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+model ServiceCategories {
+  id       String               @id @default(cuid())
+  slug     String               @unique
+  name     String
+  group    ServiceCategoryGroup
+  icon     String?
+  isActive Boolean              @default(true) @map("is_active")
+
+  services Services[]
+
+  @@map("service_categories")
+}
+
+// ---- WITH ORGANIZATION -------------------------------------------------------------------------------
+
+model Organizations {
+  id               String                  @id @default(cuid())
+  name             String
+  slug             String                  @unique
+  stripeCustomerId String?                 @map("stripe_customer_id")
+  accessState      OrganizationAccessState @default(GRACE) @map("access_state")
+  gracePausedAt    DateTime?               @map("grace_paused_at")
+  metadata         String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  members                         Members[]
+  invitations                     Invitations[]
+  establishments                  Establishments?
+  professionals                   Professionals[]
+  services                        Services[]
+  professionalServices            ProfessionalServices[]
+  professionalAvailabilities      ProfessionalAvailabilities[]
+  establishmentCommissionDefaults EstablishmentCommissionDefault[]
+  professionalCommissionRules     ProfessionalCommissionRule[]
+  commissionEntries               CommissionEntry[]
+  auditLogs                       AuditLogs[]
+  establishmentAvailabilities     EstablishmentAvailabilities[]
+  customers                       Customers[]
+  appointments                    Appointments[]
+  reviews                         Reviews[]
+
+  @@map("organizations")
+}
+
+model Members {
+  id             String @id @default(cuid())
+  userId         String @map("user_id")
+  organizationId String @map("organization_id")
+
+  role MemberRole @default(PROFESSIONAL)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users         Users          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizations Organizations  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  professionals Professionals?
+  appointments  Appointments[]
+  reviews       Reviews[]
+
+  @@index([organizationId])
+  @@index([userId])
+  @@map("members")
+}
+
+model Invitations {
+  id             String @id @default(cuid())
+  inviterId      String @map("inviter_id")
+  organizationId String @map("organization_id")
+
+  email     String
+  role      MemberRole       @default(PROFESSIONAL)
+  status    InvitationStatus @default(PENDING)
+  expiresAt DateTime         @map("expires_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  users         Users         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+  @@map("invitations")
+}
+
+model Subscriptions {
+  id                   String    @id @default(cuid())
+  plan                 String
+  referenceId          String    @map("reference_id")
+  status               String    @default("incomplete")
+  stripeCustomerId     String?   @map("stripe_customer_id")
+  stripeSubscriptionId String?   @map("stripe_subscription_id")
+  periodStart          DateTime? @map("period_start")
+  periodEnd            DateTime? @map("period_end")
+  cancelAtPeriodEnd    Boolean?  @default(false) @map("cancel_at_period_end")
+  cancelAt             DateTime? @map("cancel_at")
+  canceledAt           DateTime? @map("canceled_at")
+  endedAt              DateTime? @map("ended_at")
+  seats                Int?
+  trialStart           DateTime? @map("trial_start")
+  trialEnd             DateTime? @map("trial_end")
+  billingInterval      String?   @map("billing_interval")
+  stripeScheduleId     String?   @map("stripe_schedule_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("subscriptions")
+}
+
+model Establishments {
+  id             String @id @default(cuid())
+  organizationId String @unique @map("organization_id")
+
+  name            String
+  slug            String  @unique
+  cnpj            String
+  description     String
+  street          String
+  number          Int
+  neighborhood    String
+  city            String
+  state           String
+  zipCode         String  @map("zip_code")
+  latitude        Decimal
+  longitude       Decimal
+  timezone        String  @default("America/Sao_Paulo")
+  isActive        Boolean @default(true) @map("is_active")
+  phone           String?
+  logoStorageKey  String? @map("logo_storage_key")
+  coverStorageKey String? @map("cover_storage_key")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizations               Organizations                 @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  establishmentAvailabilities EstablishmentAvailabilities[]
+
+  @@map("establishments")
+}
+
+model EstablishmentAvailabilities {
+  id              String @id @default(cuid())
+  establishmentId String @map("establishment_id")
+  organizationId  String @map("organization_id")
+
+  dayOfWeek    Int     @map("day_of_week")
+  startMinutes Int     @map("start_minutes")
+  endMinutes   Int     @map("end_minutes")
+  opened       Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  establishments Establishments @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  organizations  Organizations  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([establishmentId, dayOfWeek])
+  @@index([establishmentId, dayOfWeek])
+  @@map("establishment_availabilities")
+}
+
+model Professionals {
+  id             String @id @default(cuid())
+  memberId       String @unique @map("member_id")
+  organizationId String @map("organizationId")
+
+  name             String
+  bio              String
+  isActive         Boolean @default(true) @map("is_active")
+  deleted          Boolean @default(false)
+  avatarStorageKey String? @map("avatar_storage_key")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizations               Organizations                @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members                     Members                      @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  professionalServices        ProfessionalServices[]
+  professionalAvailabilities  ProfessionalAvailabilities[]
+  professionalCommissionRules ProfessionalCommissionRule[]
+  commissionEntries           CommissionEntry[]
+  appointments                Appointments[]
+  reviews                     Reviews[]
+  professionalRatingStats     ProfessionalRatingStats?
+
+  @@map("professionals")
+}
+
+model Services {
+  id             String @id @default(cuid())
+  organizationId String @map("organization_id")
+  categoryId     String @map("category_id")
+
+  name            String
+  description     String
+  durationMinutes Int     @map("duration_minutes")
+  priceCents      Int     @map("price_cents")
+  isActive        Boolean @default(true) @map("is_active")
+  deleted         Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organizations               Organizations                @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  serviceCategories           ServiceCategories            @relation(fields: [categoryId], references: [id])
+  professionalServices        ProfessionalServices[]
+  professionalCommissionRules ProfessionalCommissionRule[]
+  commissionEntries           CommissionEntry[]
+  appointments                Appointments[]
+
+  @@map("services")
+}
+
+model ProfessionalServices {
+  id             String @id @default(cuid())
+  professionalId String @map("professional_id")
+  serviceId      String @map("service_id")
+  organizationId String @map("organization_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  services      Services      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("professional_services")
+}
+
+model ProfessionalAvailabilities {
+  id             String @id @default(cuid())
+  professionalId String @map("professional_id")
+  organizationId String @map("organization_id")
+
+  dayOfWeek    Int     @map("day_of_week")
+  startMinutes Int     @map("start_minutes")
+  endMinutes   Int     @map("end_minutes")
+  opened       Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([professionalId, dayOfWeek])
+  @@index([professionalId, dayOfWeek])
+  @@map("professional_availabilities")
+}
+
+model Customers {
+  id             String  @id @default(cuid())
+  userId         String? @map("user_id")
+  organizationId String  @map("organization_id")
+
+  name   String
+  phone  String?
+  email  String?
+  notes  String?
+  source CustomerSource
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organizations Organizations  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  users         Users?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  appointments  Appointments[]
+  reviews       Reviews[]
+
+  @@unique([organizationId, userId])
+  @@unique([organizationId, phone])
+  @@index([userId])
+  @@map("customers")
+}
+
+model Appointments {
+  id             String @id @default(cuid())
+  customerId     String @map("customer_id")
+  professionalId String @map("professional_id")
+  serviceId      String @map("service_id")
+  organizationId String @map("organization_id")
+
+  startsAt DateTime          @map("starts_at")
+  endsAt   DateTime          @map("ends_at")
+  status   AppointmentStatus @default(PENDING)
+  origin   AppointmentOrigin
+
+  priceCents  Int @map("price_cents")
+  durationMin Int @map("duration_min")
+
+  notes         String?
+  internalNotes String? @map("internal_notes")
+
+  cancelledAt  DateTime? @map("cancelled_at")
+  cancelledBy  String?   @map("cancelled_by")
+  cancelReason String?
+
+  createdById String?  @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  organization Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer     Customers     @relation(fields: [customerId], references: [id])
+  professional Professionals @relation(fields: [professionalId], references: [id])
+  service      Services      @relation(fields: [serviceId], references: [id])
+  createdBy    Members?      @relation(fields: [createdById], references: [id])
+  reviews      Reviews[]
+
+  @@index([professionalId, startsAt])
+  @@index([organizationId, startsAt])
+  @@index([customerId, startsAt])
+  @@map("appointments")
+}
+
+model Reviews {
+  id             String @id @default(cuid())
+  organizationId String @map("organization_id")
+  professionalId String @map("professional_id")
+  customerId     String @map("customer_id")
+  appointmentId  String @map("appointment_id")
+
+  rating  Int
+  comment String? @db.VarChar(1000)
+
+  reply       String?   @db.VarChar(1000)
+  repliedAt   DateTime? @map("replied_at")
+  repliedById String?   @map("replied_by_id") // Member
+
+  isPublic  Boolean  @default(true) @map("is_public")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  professionals Professionals @relation(fields: [professionalId], references: [id])
+  customers     Customers     @relation(fields: [customerId], references: [id])
+  appointments  Appointments  @relation(fields: [appointmentId], references: [id])
+  repliedBy     Members?      @relation(fields: [repliedById], references: [id])
+
+  @@index([professionalId, createdAt])
+  @@index([organizationId, createdAt])
+  @@index([customerId])
+  @@map("reviews")
+}
+
+model ProfessionalRatingStats {
+  id             String @id @default(cuid())
+  professionalId String @unique @map("professional_id")
+
+  reviewCount Int     @default(0) @map("review_count")
+  ratingSum   Int     @default(0) @map("rating_sum")
+  ratingAvg   Decimal @default(0) @map("rating_avg") @db.Decimal(3, 2)
+  rating1     Int     @default(0) @map("rating_1")
+  rating2     Int     @default(0) @map("rating_2")
+  rating3     Int     @default(0) @map("rating_3")
+  rating4     Int     @default(0) @map("rating_4")
+  rating5     Int     @default(0) @map("rating_5")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@map("professional_rating_stats")
+}
+
+model EstablishmentCommissionDefault {
+  id             String @id @default(cuid())
+  organizationId String @map("organization_id")
+
+  domain CommissionDomain
+  type   CommissionType
+  value  Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, domain])
+  @@map("establishment_commission_default")
+}
+
+model ProfessionalCommissionRule {
+  id             String  @id @default(cuid())
+  professionalId String  @map("professional_id")
+  serviceId      String? @map("service_id")
+  organizationId String  @map("organization_id")
+  // TODO: Add productId
+
+  domain CommissionDomain
+  type   CommissionType
+  value  Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  services      Services?     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  // TODO: Add productId
+  @@unique([professionalId, domain, serviceId])
+  @@index([organizationId, professionalId])
+  @@map("professional_commission_rule")
+}
+
+model CommissionEntry {
+  id             String  @id @default(cuid())
+  professionalId String  @map("professional_id")
+  serviceId      String? @map("service_id")
+  organizationId String  @map("organization_id")
+  // TODO: Add productId
+
+  domain          CommissionDomain
+  baseAmount      Int                   @map("base_amount") // Preço praticado do item, em centavos
+  appliedType     CommissionType        @map("applied_type") // Como foi calculado
+  appliedValue    Int                   @map("applied_value") // bps ou centavos, conforme appliedType
+  commissionCents Int                   @map("commission_cents") // RESULTADO final, em centavos
+  sourceLevel     Int                   @map("source_level") // 1 = exceção, 2 = default, 3 = casa
+  status          CommissionEntryStatus @default(PENDING)
+  appointmentId   String?               @map("appointment_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  professionals Professionals @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  services      Services?     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, professionalId, createdAt])
+  @@index([appointmentId])
+  @@map("commission_entry")
+}
+
+// ---- AUDIT LOGS -------------------------------
+
+model AuditLogs {
+  id             String @id @default(cuid())
+  userId         String @map("user_id")
+  entityId       String @map("entity_id")
+  organizationId String @map("organization_id")
+
+  entity  String
+  action  String
+  changes Json?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  organizations Organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([entity, entityId])
+  @@map("audit_logs")
+}
+
+// ---- ENUMS ------------------------------------
+
+enum CustomerSource {
+  ONLINE
+  WALK_IN
+  IMPORTED
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum AppointmentOrigin {
+  ONLINE // cliente agendou pelo site/app
+  DASH // profissional criou pelo sistema
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+enum MemberRole {
+  OWNER
+  MANAGER
+  PROFESSIONAL
+}
+
+enum UserRole {
+  CLIENT
+  ADMIN
+}
+
+enum OrganizationAccessState {
+  ACTIVE
+  GRACE
+  EXPIRED
+  CANCELED
+}
+
+enum CommissionDomain {
+  SERVICE
+  PRODUCT
+}
+
+enum CommissionType {
+  PERCENTAGE // value = basis points (4000 = 40%)
+  FIXED // value = centavos (1500 = R$ 15,00)
+}
+
+enum CommissionEntryStatus {
+  PENDING // atendimento concluído, comissão devida
+  PAID // repassada ao profissional (fechamento)
+  REVERSED // atendimento estornado/cancelado após conclusão
+}
+
+enum ServiceCategoryGroup {
+  HAIR
+  BEARD
+  FACE
+  NAILS
+  BODY
+  OTHER
+}
